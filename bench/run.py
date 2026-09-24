@@ -43,7 +43,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from threading import Lock
 
-from system_one.client import APIError, set_max_in_flight
+from decisions.client import APIError, set_max_in_flight
 
 from .adapters import (ChainOfThoughtArm, EmbeddingArm, JevArm, LayaArm,
                        PrivatemodeArm)

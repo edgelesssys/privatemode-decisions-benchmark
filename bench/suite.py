@@ -29,7 +29,7 @@ import sys
 import time
 from pathlib import Path
 
-from system_one.client import set_max_in_flight
+from decisions.client import set_max_in_flight
 
 from . import run as run_module
 from .datasets import frozen, has_images

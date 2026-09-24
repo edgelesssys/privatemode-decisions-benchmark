@@ -1,4 +1,4 @@
-# Privatemode System One vs. TypeSafe Jev vs. Laya
+# Privatemode Decisions vs. TypeSafe Jev vs. Laya
 
 Speed, accuracy and cost of three System One implementations on labelled
 public data.
@@ -10,7 +10,7 @@ the identical state string, the identical option names in the identical
 order, and the identical instruction line; the only thing that differs is
 what is behind the call.
 
-* **Privatemode** — [`system_one`](https://github.com/edgelesssys/privatemode-system-one)
+* **Privatemode** — [`decisions`](https://github.com/edgelesssys/privatemode-decisions)
   against GLM-5.3-Flash through a `privatemode-proxy`. A general-purpose LLM
   in an attested enclave, answering in one masked forward pass read out of a
   single logit row.
@@ -27,7 +27,7 @@ replicates, seed 0. Everything below is recomputed from the runs by
 `python -m bench.aggregate`; the full tables, with the spread between
 replicates on every figure, are in [`results/suite.md`](results/suite.md).
 The raw runs are in the release
-[`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-system-one-benchmark/releases/tag/runs-2026-09-24);
+[`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24);
 [`results/README.md`](results/README.md) shows how to rebuild the report
 from them.
 The first three-dataset pilot is kept in [`results/pilot/`](results/pilot/).
@@ -220,13 +220,13 @@ docker run -d -p 8082:8080 ghcr.io/edgelesssys/privatemode/privatemode-proxy:lat
   --apiKey <privatemode-api-key>
 
 python3 -m venv .venv
-.venv/bin/pip install git+https://github.com/edgelesssys/privatemode-system-one
+.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions"
 .venv/bin/pip install -e '.[dev,laya]'               # laya pulls torch + transformers
 cp .env.example .env                                 # proxy URL, Jev key, HF token
 ```
 
 The first install is the library under test; to work on it alongside, use
-`pip install -e ../privatemode-system-one` with a local checkout instead.
+`pip install -e ../privatemode-decisions` with a local checkout instead.
 
 Three commands, in the order they have to happen.
 

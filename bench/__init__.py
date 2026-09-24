@@ -1,4 +1,4 @@
-"""Privatemode System One against TypeSafe AI's Jev, on labelled data.
+"""Privatemode Decisions against TypeSafe AI's Jev, on labelled data.
 
 Both products expose the same abstraction -- a piece of state, a set of
 named options, one typed answer with a probability per option -- so the

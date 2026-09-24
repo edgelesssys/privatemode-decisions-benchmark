@@ -223,7 +223,7 @@ it.
 Latency is a headline number, so what the clock measures is decided rather
 than inherited. Three things could contaminate it and each is handled.
 
-**Our own queuing.** `system_one`'s client starts its clock before acquiring
+**Our own queuing.** The `decisions` client starts its clock before acquiring
 the shared in-flight semaphore, so a request waiting on *our* gate reported
 that wait as vendor latency. The benchmark's transport starts the clock
 after the gate and records the wait separately, so "the gate was never
@@ -275,7 +275,7 @@ Both are built, both run under `--arms full`, and every report labels them
 so that no table reads as a five-way product comparison.
 
 **`glm-cot` — chain-of-thought on the same model.** GLM-5.3-Flash asked
-normally, reasoning allowed, answer parsed. Privatemode's System One arm
+normally, reasoning allowed, answer parsed. The Privatemode Decisions arm
 runs the same model, so this separates *the technique* — one masked forward
 pass, no room to think — from *the model*. Without it nobody can tell which
 of the two a Privatemode number is about, and that is the first question a

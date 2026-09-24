@@ -10,7 +10,7 @@ python -m bench.aggregate results --write results/suite.md
 
 ## Where the raw answers are
 
-In the release [`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-system-one-benchmark/releases/tag/runs-2026-09-24),
+In the release [`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24),
 not in the repository: one answer per line with its full probability
 distribution comes to 320 MB across the 186 runs, 52 MB compressed. Every
 run the suite and the latency probes took is in it, the controls and the
@@ -18,8 +18,8 @@ renaming included, so the report can be rebuilt without asking a single
 question again:
 
 ```sh
-curl -LO https://github.com/edgelesssys/privatemode-system-one-benchmark/releases/download/runs-2026-09-24/runs.tar.gz
-curl -LO https://github.com/edgelesssys/privatemode-system-one-benchmark/releases/download/runs-2026-09-24/runs.tar.gz.sha256
+curl -LO https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/runs-2026-09-24/runs.tar.gz
+curl -LO https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/runs-2026-09-24/runs.tar.gz.sha256
 shasum -a 256 -c runs.tar.gz.sha256        # or: sha256sum -c
 tar -xzf runs.tar.gz                       # into results/<dataset>/
 .venv/bin/python -m bench.aggregate results --write results/suite.md

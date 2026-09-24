@@ -42,7 +42,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:  # generating renamings needs a model; reading them does not
-    from system_one import OpenAIClient
+    from decisions import OpenAIClient
 
 from .datasets import frozen
 from .specs import BY_NAME, SPECS
@@ -188,7 +188,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     load_env(Path(__file__).resolve().parent.parent / ".env")
-    from system_one import OpenAIClient
+    from decisions import OpenAIClient
 
     client = OpenAIClient.from_env()
     import os

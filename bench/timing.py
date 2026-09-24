@@ -4,7 +4,7 @@ Latency is a headline number, so what the clock covers has to be decided
 rather than inherited. Three things could contaminate it, and each is
 handled here rather than hoped about.
 
-*Our own queuing.* ``system_one``'s client starts its clock before it
+*Our own queuing.* The ``decisions`` client starts its clock before it
 acquires the shared in-flight semaphore, so a request that waits on our gate
 reports that wait as vendor latency. At concurrency 1 the gate is never
 contended and it costs nothing; at concurrency 16, or with
@@ -34,7 +34,7 @@ import json
 import threading
 import time
 
-from system_one.client import APIError, OpenAIClient, _gate
+from decisions.client import APIError, OpenAIClient, _gate
 
 #: Statuses that mean "not now" rather than "here is your answer".
 THROTTLE_STATUS = {429, 503, 529}

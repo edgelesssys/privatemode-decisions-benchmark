@@ -1,7 +1,7 @@
 """One arm per product, behind one method: ``ask(task) -> Answer``.
 
 Both arms POST through the same connection-pooled client from the
-``system_one`` package. That is not laziness -- latency is one of the three
+``decisions`` package. That is not laziness -- latency is one of the three
 things being measured, and a fresh TLS handshake costs more than either
 forward pass, so the transport has to be held constant or the numbers are
 about urllib rather than about the models.
@@ -35,8 +35,8 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from system_one import Choice, OpenAIClient, SystemOne
-from system_one.images import to_data_url
+from decisions import Choice, OpenAIClient, SystemOne
+from decisions.images import to_data_url
 
 from .datasets import Task
 from .timing import TimedClient
@@ -74,7 +74,7 @@ class Arm:
 
 
 class PrivatemodeArm(Arm):
-    """Privatemode System One: one masked forward pass through the proxy.
+    """Privatemode Decisions: one masked forward pass through the proxy.
 
     The deployment reports at most 128 ids in ``logprob_token_ids``, while
     the mask in ``allowed_token_ids`` takes every option. Above 128 options
@@ -91,9 +91,9 @@ class PrivatemodeArm(Arm):
     def __init__(self, base_url: str | None = None, api_key: str | None = None,
                  model: str | None = None, permutations: int = 1,
                  image_max_side: int | None = None) -> None:
-        base_url = base_url or os.environ["SYSTEM_ONE_BASE_URL"]
-        api_key = api_key or os.environ.get("SYSTEM_ONE_API_KEY") or None
-        self.model = model or os.environ.get("SYSTEM_ONE_MODEL", "glm-5.3-flash")
+        base_url = base_url or os.environ["DECISIONS_BASE_URL"]
+        api_key = api_key or os.environ.get("DECISIONS_API_KEY") or None
+        self.model = model or os.environ.get("DECISIONS_MODEL", "glm-5.3-flash")
         self.permutations = permutations
         #: Longest edge the picture is scaled to before it is sent. Image
         #: tokens are the whole cost of a document decision, so this is a
@@ -320,9 +320,9 @@ class ChainOfThoughtArm(Arm):
     def __init__(self, base_url: str | None = None, api_key: str | None = None,
                  model: str | None = None, max_tokens: int = 4000,
                  image_max_side: int | None = None) -> None:
-        base_url = base_url or os.environ["SYSTEM_ONE_BASE_URL"]
-        api_key = api_key or os.environ.get("SYSTEM_ONE_API_KEY") or None
-        self.model = model or os.environ.get("SYSTEM_ONE_MODEL", "glm-5.3-flash")
+        base_url = base_url or os.environ["DECISIONS_BASE_URL"]
+        api_key = api_key or os.environ.get("DECISIONS_API_KEY") or None
+        self.model = model or os.environ.get("DECISIONS_MODEL", "glm-5.3-flash")
         self.max_tokens = max_tokens
         self.image_max_side = image_max_side
         self._client = TimedClient(base_url, api_key)
@@ -445,8 +445,8 @@ class EmbeddingArm(Arm):
 
     def __init__(self, base_url: str | None = None, api_key: str | None = None,
                  model: str | None = None) -> None:
-        base_url = base_url or os.environ["SYSTEM_ONE_BASE_URL"]
-        api_key = api_key or os.environ.get("SYSTEM_ONE_API_KEY") or None
+        base_url = base_url or os.environ["DECISIONS_BASE_URL"]
+        api_key = api_key or os.environ.get("DECISIONS_API_KEY") or None
         self.model = model or os.environ.get("EMBED_MODEL", "qwen3-embedding-4b")
         self._client = TimedClient(base_url, api_key)
         self._options: dict[tuple, tuple[list[list[float]], int]] = {}

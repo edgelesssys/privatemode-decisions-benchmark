@@ -37,7 +37,7 @@ def cache_dir() -> Path:
 
 def get(url: str, attempts: int = 6) -> dict:
     """GET with backoff measured in minutes, because the limit is that coarse."""
-    headers = {"User-Agent": "privatemode-system-one-benchmark"}
+    headers = {"User-Agent": "privatemode-decisions-benchmark"}
     token = os.environ.get("HF_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
@@ -119,7 +119,7 @@ def class_label_names(features: list[dict], field: str) -> list[str] | None:
 
 
 def fetch_bytes(url: str, attempts: int = 6) -> bytes:
-    headers = {"User-Agent": "privatemode-system-one-benchmark"}
+    headers = {"User-Agent": "privatemode-decisions-benchmark"}
     token = os.environ.get("HF_TOKEN")
     if token:
         headers["Authorization"] = f"Bearer {token}"
