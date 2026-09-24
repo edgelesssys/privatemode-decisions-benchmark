@@ -216,7 +216,7 @@ the control arms were re-run at 1000 rather than compared across sizes.
 ## Run it
 
 ```sh
-docker run -d -p 8082:8080 ghcr.io/edgelesssys/privatemode/privatemode-proxy:latest \
+docker run -d -p 127.0.0.1:8080:8080 ghcr.io/edgelesssys/privatemode/privatemode-proxy:latest \
   --apiKey <privatemode-api-key>
 
 python3 -m venv .venv
