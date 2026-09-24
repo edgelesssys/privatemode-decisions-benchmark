@@ -1,0 +1,11 @@
+{
+  "dataset": "xnli_de",
+  "model": "gpt-oss-120b",
+  "options": 3,
+  "rename": {
+    "entailment": "implies",
+    "neutral": "undetermined",
+    "contradiction": "conflict"
+  },
+  "problems": []
+}

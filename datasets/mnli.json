@@ -1,0 +1,31 @@
+{
+  "name": "mnli",
+  "hf": "nyu-mll/glue",
+  "config": "mnli",
+  "split": "validation_matched",
+  "rows": 9815,
+  "options": [
+    "entailment",
+    "neutral",
+    "contradiction"
+  ],
+  "option_count": 3,
+  "options_stable": true,
+  "chance_uniform": 0.3333333333333333,
+  "majority_share": 0.3565,
+  "classes_in_sample": 3,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 187.4965,
+    "p50": 171,
+    "p95": 350,
+    "max": 976
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "nli",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Does the premise entail the hypothesis, contradict it, or neither?"
+}

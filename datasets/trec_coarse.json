@@ -1,0 +1,37 @@
+{
+  "name": "trec_coarse",
+  "hf": "SetFit/TREC-QC",
+  "config": "default",
+  "split": "test",
+  "rows": 500,
+  "options": [
+    "abbreviation",
+    "description and abstract concepts",
+    "entities",
+    "human beings",
+    "locations",
+    "numeric values"
+  ],
+  "option_count": 6,
+  "options_stable": true,
+  "chance_uniform": 0.16666666666666666,
+  "majority_share": 0.276,
+  "classes_in_sample": 6,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 35.958,
+    "p50": 34,
+    "p95": 64,
+    "max": 91
+  },
+  "duplicate_states": 0,
+  "stats_sample": 500,
+  "family": "intent",
+  "language": "en",
+  "tier": "seen",
+  "ladder": [
+    "trec",
+    "coarse"
+  ],
+  "instructions": "What kind of answer does this question ask for?"
+}

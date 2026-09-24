@@ -1,0 +1,83 @@
+name: Latency probe
+
+# Runs the latency part of the benchmark from GitHub's hosted runners, so it
+# can be compared with the same probe run elsewhere (see bench/latency_probe.py).
+# Manual only: it spends API credit and needs the repository's secrets.
+on:
+  workflow_dispatch:
+    inputs:
+      n:
+        description: Examples per dataset and arm
+        default: "150"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: edgelesssys/privatemode-system-one
+          path: privatemode-system-one
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -q -e ./privatemode-system-one -e .
+
+      # The proxy gets the key as an argument inside the runner; its output
+      # is discarded rather than printed, and GitHub masks the secret in any
+      # log line regardless.
+      - name: Start the Privatemode proxy
+        env:
+          PRIVATEMODE_API_KEY: ${{ secrets.PRIVATEMODE_API_KEY }}
+        run: |
+          docker run -d --name proxy -p 8080:8080 \
+            ghcr.io/edgelesssys/privatemode/privatemode-proxy:latest \
+            --apiKey "$PRIVATEMODE_API_KEY" > /dev/null
+          for i in $(seq 1 90); do
+            if curl -sf -o /dev/null http://localhost:8080/v1/models; then echo "proxy ready"; exit 0; fi
+            sleep 2
+          done
+          echo "proxy did not become ready"; exit 1
+
+      - name: Probe
+        env:
+          SYSTEM_ONE_BASE_URL: http://localhost:8080/v1
+          SYSTEM_ONE_API_KEY: ${{ secrets.PRIVATEMODE_API_KEY }}
+          JEV_API_KEY: ${{ secrets.JEV_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: python -m bench.latency_probe --out probe-out -n "${{ inputs.n }}"
+
+      - name: Check that no key is in the results
+        env:
+          K1: ${{ secrets.PRIVATEMODE_API_KEY }}
+          K2: ${{ secrets.JEV_API_KEY }}
+          K3: ${{ secrets.HF_TOKEN }}
+        run: |
+          python - <<'EOF'
+          import os, pathlib, sys
+          keys = [os.environ[k] for k in ("K1", "K2", "K3") if os.environ.get(k)]
+          for path in pathlib.Path("probe-out").rglob("*"):
+              if path.is_file() and any(k in path.read_text(errors="ignore") for k in keys):
+                  sys.exit(f"a key appears in {path}; not uploading")
+          print("no key in the results")
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: latency-probe
+          path: probe-out
+          retention-days: 30
+
+      - name: Stop the proxy
+        if: always()
+        run: docker rm -f proxy > /dev/null 2>&1 || true

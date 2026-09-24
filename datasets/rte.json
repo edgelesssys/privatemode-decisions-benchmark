@@ -1,0 +1,30 @@
+{
+  "name": "rte",
+  "hf": "nyu-mll/glue",
+  "config": "rte",
+  "split": "validation",
+  "rows": 277,
+  "options": [
+    "entailment",
+    "not_entailment"
+  ],
+  "option_count": 2,
+  "options_stable": true,
+  "chance_uniform": 0.5,
+  "majority_share": 0.5270758122743683,
+  "classes_in_sample": 2,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 331.4801444043321,
+    "p50": 273,
+    "p95": 718,
+    "max": 1105
+  },
+  "duplicate_states": 0,
+  "stats_sample": 277,
+  "family": "nli",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Does the first sentence entail the second?"
+}

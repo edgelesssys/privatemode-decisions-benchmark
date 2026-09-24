@@ -1,0 +1,10 @@
+{
+  "dataset": "rotten_tomatoes",
+  "model": "gpt-oss-120b",
+  "options": 2,
+  "rename": {
+    "neg": "bad",
+    "pos": "good"
+  },
+  "problems": []
+}

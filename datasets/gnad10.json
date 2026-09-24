@@ -1,0 +1,37 @@
+{
+  "name": "gnad10",
+  "hf": "community-datasets/gnad10",
+  "config": "default",
+  "split": "test",
+  "rows": 1028,
+  "options": [
+    "Web",
+    "Panorama",
+    "International",
+    "Wirtschaft",
+    "Sport",
+    "Inland",
+    "Etat",
+    "Wissenschaft",
+    "Kultur"
+  ],
+  "option_count": 9,
+  "options_stable": true,
+  "chance_uniform": 0.1111111111111111,
+  "majority_share": 0.16342412451361868,
+  "classes_in_sample": 9,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 2627.3103112840467,
+    "p50": 2164,
+    "p95": 5895,
+    "max": 32600
+  },
+  "duplicate_states": 0,
+  "stats_sample": 1028,
+  "family": "topic",
+  "language": "de",
+  "tier": "unclear",
+  "ladder": null,
+  "instructions": "In welches Ressort gehört dieser Artikel?"
+}

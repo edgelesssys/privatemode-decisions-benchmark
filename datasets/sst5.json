@@ -1,0 +1,33 @@
+{
+  "name": "sst5",
+  "hf": "SetFit/sst5",
+  "config": "default",
+  "split": "test",
+  "rows": 2210,
+  "options": [
+    "negative",
+    "neutral",
+    "positive",
+    "very negative",
+    "very positive"
+  ],
+  "option_count": 5,
+  "options_stable": true,
+  "chance_uniform": 0.2,
+  "majority_share": 0.2835,
+  "classes_in_sample": 5,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 102.7935,
+    "p50": 99,
+    "p95": 192,
+    "max": 256
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "sentiment",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "How positive is this review, on a five-point scale?"
+}

@@ -1,0 +1,21 @@
+{
+  "dataset": "scotus",
+  "model": "gpt-oss-120b",
+  "options": 13,
+  "rename": {
+    "Criminal Procedure": "Penal Process",
+    "Civil Rights": "Private Liberties",
+    "First Amendment": "Initial Revision",
+    "Due Process": "Fair Procedure",
+    "Privacy": "Secrecy",
+    "Attorneys": "Counselors",
+    "Unions": "Collectives",
+    "Economic Activity": "Commercial Operations",
+    "Judicial Power": "Court Authority",
+    "Federalism": "National-Regional Balance",
+    "Interstate Relations": "Cross-State Interactions",
+    "Federal Taxation": "National Revenue",
+    "Miscellaneous": "Assorted"
+  },
+  "problems": []
+}

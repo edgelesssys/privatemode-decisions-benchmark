@@ -1,0 +1,30 @@
+{
+  "name": "tweet_offensive",
+  "hf": "cardiffnlp/tweet_eval",
+  "config": "offensive",
+  "split": "test",
+  "rows": 860,
+  "options": [
+    "non-offensive",
+    "offensive"
+  ],
+  "option_count": 2,
+  "options_stable": true,
+  "chance_uniform": 0.5,
+  "majority_share": 0.7209302325581395,
+  "classes_in_sample": 2,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 143.68255813953488,
+    "p50": 131,
+    "p95": 275,
+    "max": 314
+  },
+  "duplicate_states": 11,
+  "stats_sample": 860,
+  "family": "moderation",
+  "language": "en",
+  "tier": "likely",
+  "ladder": null,
+  "instructions": "Is this tweet offensive?"
+}

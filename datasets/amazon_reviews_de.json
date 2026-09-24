@@ -1,0 +1,40 @@
+{
+  "name": "amazon_reviews_de",
+  "hf": "mteb/amazon_reviews_multi",
+  "config": "de",
+  "split": "test",
+  "rows": 5000,
+  "options": [
+    "1 Stern",
+    "2 Sterne",
+    "3 Sterne",
+    "4 Sterne",
+    "5 Sterne"
+  ],
+  "option_count": 5,
+  "options_stable": true,
+  "chance_uniform": 0.2,
+  "majority_share": 0.2045,
+  "classes_in_sample": 5,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 226.2845,
+    "p50": 179,
+    "p95": 556,
+    "max": 1816
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "sentiment",
+  "language": "de",
+  "tier": "likely",
+  "ladder": null,
+  "instructions": "Wie viele Sterne vergibt diese Rezension?",
+  "rename": {
+    "0": "1 Stern",
+    "1": "2 Sterne",
+    "2": "3 Sterne",
+    "3": "4 Sterne",
+    "4": "5 Sterne"
+  }
+}

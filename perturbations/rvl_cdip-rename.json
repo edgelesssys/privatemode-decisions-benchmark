@@ -1,0 +1,24 @@
+{
+  "dataset": "rvl_cdip",
+  "model": "gpt-oss-120b",
+  "options": 16,
+  "rename": {
+    "letter": "correspondence",
+    "form": "template",
+    "email": "digitalnote",
+    "handwritten": "scripted",
+    "advertisement": "promo",
+    "scientific report": "research brief",
+    "scientific publication": "research paper",
+    "specification": "blueprint",
+    "file folder": "document holder",
+    "news article": "press piece",
+    "budget": "financialplan",
+    "invoice": "bill",
+    "presentation": "slideshow",
+    "questionnaire": "survey",
+    "resume": "profile",
+    "memo": "note"
+  },
+  "problems": []
+}

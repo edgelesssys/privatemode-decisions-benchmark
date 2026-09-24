@@ -1,0 +1,11 @@
+{
+  "dataset": "mnli",
+  "model": "gpt-oss-120b",
+  "options": 3,
+  "rename": {
+    "entailment": "implies",
+    "neutral": "none",
+    "contradiction": "conflict"
+  },
+  "problems": []
+}

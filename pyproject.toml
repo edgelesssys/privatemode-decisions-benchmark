@@ -1,0 +1,27 @@
+[project]
+name = "privatemode-system-one-benchmark"
+version = "0.1.0"
+description = "Speed, accuracy and cost of Privatemode System One, TypeSafe Jev and Laya on labelled public datasets"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+# Deliberately no runtime dependencies: the datasets come over plain HTTP and
+# every metric is computed here, so a run needs nothing but the arms it uses.
+dependencies = []
+
+[project.optional-dependencies]
+# The Privatemode arm measures the library that actually ships, rather than a
+# reimplementation of it. To change the library alongside, clone it next to
+# this one and `pip install -e ../privatemode-system-one` instead.
+privatemode = ["privatemode-system-one @ git+https://github.com/edgelesssys/privatemode-system-one"]
+# The local arm. Heavy (torch + transformers, ~1.7 GB of weights on first
+# use) and only needed for --arms all|laya, so it is not a base dependency.
+laya = ["laya>=0.3.5", "torch>=2.2", "transformers>=4.48"]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["bench"]

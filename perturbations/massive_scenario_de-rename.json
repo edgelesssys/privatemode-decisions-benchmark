@@ -1,0 +1,26 @@
+{
+  "dataset": "massive_scenario_de",
+  "model": "gpt-oss-120b",
+  "options": 18,
+  "rename": {
+    "alarm": "alert",
+    "audio": "sound",
+    "calendar": "schedule",
+    "cooking": "cuisine",
+    "datetime": "timestamp",
+    "email": "correspondence",
+    "general": "miscellaneous",
+    "iot": "smart_devices",
+    "lists": "inventories",
+    "music": "tunes",
+    "news": "headlines",
+    "play": "engage",
+    "qa": "inquiry",
+    "recommendation": "suggestion",
+    "social": "community",
+    "takeaway": "to_go",
+    "transport": "transit",
+    "weather": "climate"
+  },
+  "problems": []
+}

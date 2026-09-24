@@ -1,0 +1,98 @@
+{
+  "location": {
+    "country": "DE"
+  },
+  "trivial_requests": {
+    "privatemode": {
+      "min_ms": 30.2,
+      "median_ms": 31.4,
+      "max_ms": 35.3,
+      "status": 401
+    },
+    "jev": {
+      "min_ms": 178.3,
+      "median_ms": 184.0,
+      "max_ms": 193.3,
+      "status": 200
+    }
+  },
+  "decisions": {
+    "per_dataset": {
+      "ag_news": {
+        "privatemode": {
+          "n": 150,
+          "p10_ms": 172.3,
+          "p50_ms": 179.4,
+          "p95_ms": 268.0
+        },
+        "jev": {
+          "n": 150,
+          "p10_ms": 234.2,
+          "p50_ms": 264.9,
+          "p95_ms": 335.7
+        }
+      },
+      "banking77": {
+        "privatemode": {
+          "n": 150,
+          "p10_ms": 305.5,
+          "p50_ms": 318.8,
+          "p95_ms": 470.9
+        },
+        "jev": {
+          "n": 150,
+          "p10_ms": 236.2,
+          "p50_ms": 260.8,
+          "p95_ms": 326.9
+        }
+      },
+      "sst2": {
+        "privatemode": {
+          "n": 150,
+          "p10_ms": 173.3,
+          "p50_ms": 180.5,
+          "p95_ms": 234.6
+        },
+        "jev": {
+          "n": 150,
+          "p10_ms": 234.7,
+          "p50_ms": 262.7,
+          "p95_ms": 345.3
+        }
+      },
+      "trec_coarse": {
+        "privatemode": {
+          "n": 150,
+          "p10_ms": 169.6,
+          "p50_ms": 180.1,
+          "p95_ms": 257.8
+        },
+        "jev": {
+          "n": 150,
+          "p10_ms": 242.2,
+          "p50_ms": 272.6,
+          "p95_ms": 324.8
+        }
+      }
+    },
+    "median_over_datasets": {
+      "privatemode": {
+        "p10_ms": 172.8,
+        "p50_ms": 180.3,
+        "p95_ms": 262.9
+      },
+      "jev": {
+        "p10_ms": 235.4,
+        "p50_ms": 263.8,
+        "p95_ms": 331.3
+      }
+    }
+  },
+  "datasets": [
+    "sst2",
+    "ag_news",
+    "trec_coarse",
+    "banking77"
+  ],
+  "n": 150
+}

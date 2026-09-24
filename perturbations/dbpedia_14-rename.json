@@ -1,0 +1,22 @@
+{
+  "dataset": "dbpedia_14",
+  "model": "gpt-oss-120b",
+  "options": 14,
+  "rename": {
+    "Company": "corporation",
+    "EducationalInstitution": "academy",
+    "Artist": "creator",
+    "Athlete": "sportsperson",
+    "OfficeHolder": "incumbent",
+    "MeanOfTransportation": "vehicle",
+    "Building": "structure",
+    "NaturalPlace": "landscape",
+    "Village": "hamlet",
+    "Animal": "creature",
+    "Plant": "flora",
+    "Album": "record",
+    "Film": "movie",
+    "WrittenWork": "text"
+  },
+  "problems": []
+}

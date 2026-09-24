@@ -1,0 +1,42 @@
+{
+  "name": "dbpedia_14",
+  "hf": "fancyzhx/dbpedia_14",
+  "config": "dbpedia_14",
+  "split": "test",
+  "rows": 70000,
+  "options": [
+    "Company",
+    "EducationalInstitution",
+    "Artist",
+    "Athlete",
+    "OfficeHolder",
+    "MeanOfTransportation",
+    "Building",
+    "NaturalPlace",
+    "Village",
+    "Animal",
+    "Plant",
+    "Album",
+    "Film",
+    "WrittenWork"
+  ],
+  "option_count": 14,
+  "options_stable": true,
+  "chance_uniform": 0.07142857142857142,
+  "majority_share": 0.082,
+  "classes_in_sample": 14,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 316.0115,
+    "p50": 320,
+    "p95": 513,
+    "max": 1301
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "topic",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Which kind of entity does this article describe?"
+}

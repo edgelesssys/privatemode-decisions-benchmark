@@ -1,0 +1,10 @@
+{
+  "dataset": "toxic_conversations",
+  "model": "gpt-oss-120b",
+  "options": 2,
+  "rename": {
+    "not toxic": "no harm",
+    "toxic": "poisonous"
+  },
+  "problems": []
+}

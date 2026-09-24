@@ -1,0 +1,34 @@
+{
+  "name": "emotion",
+  "hf": "dair-ai/emotion",
+  "config": "split",
+  "split": "test",
+  "rows": 2000,
+  "options": [
+    "sadness",
+    "joy",
+    "love",
+    "anger",
+    "fear",
+    "surprise"
+  ],
+  "option_count": 6,
+  "options_stable": true,
+  "chance_uniform": 0.16666666666666666,
+  "majority_share": 0.3475,
+  "classes_in_sample": 6,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 96.5865,
+    "p50": 86,
+    "p95": 207,
+    "max": 296
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "sentiment",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Which emotion does this message express?"
+}

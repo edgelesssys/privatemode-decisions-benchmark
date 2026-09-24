@@ -1,0 +1,30 @@
+{
+  "name": "rotten_tomatoes",
+  "hf": "cornell-movie-review-data/rotten_tomatoes",
+  "config": "default",
+  "split": "test",
+  "rows": 1066,
+  "options": [
+    "neg",
+    "pos"
+  ],
+  "option_count": 2,
+  "options_stable": true,
+  "chance_uniform": 0.5,
+  "majority_share": 0.5,
+  "classes_in_sample": 2,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 115.5234521575985,
+    "p50": 113,
+    "p95": 206,
+    "max": 261
+  },
+  "duplicate_states": 0,
+  "stats_sample": 1066,
+  "family": "sentiment",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Is this movie review positive or negative?"
+}

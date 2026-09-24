@@ -1,0 +1,37 @@
+{
+  "name": "patent",
+  "hf": "ccdv/patent-classification",
+  "config": "abstract",
+  "split": "test",
+  "rows": 5000,
+  "options": [
+    "Human Necessities",
+    "Performing Operations; Transporting",
+    "Chemistry; Metallurgy",
+    "Textiles; Paper",
+    "Fixed Constructions",
+    "Mechanical Engineering; Lightning; Heating; Weapons; Blasting",
+    "Physics",
+    "Electricity",
+    "General tagging of new or cross-sectional technology"
+  ],
+  "option_count": 9,
+  "options_stable": true,
+  "chance_uniform": 0.1111111111111111,
+  "majority_share": 0.218,
+  "classes_in_sample": 9,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 680.94,
+    "p50": 660,
+    "p95": 1182,
+    "max": 1759
+  },
+  "duplicate_states": 4,
+  "stats_sample": 2000,
+  "family": "topic",
+  "language": "en",
+  "tier": "unclear",
+  "ladder": null,
+  "instructions": "Which patent category does this abstract belong to?"
+}

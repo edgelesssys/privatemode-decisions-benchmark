@@ -1,0 +1,10 @@
+{
+  "dataset": "tweet_offensive",
+  "model": "gpt-oss-120b",
+  "options": 2,
+  "rename": {
+    "non-offensive": "harmless",
+    "offensive": "abusive"
+  },
+  "problems": []
+}

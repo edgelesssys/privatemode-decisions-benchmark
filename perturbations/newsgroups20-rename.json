@@ -1,0 +1,28 @@
+{
+  "dataset": "newsgroups20",
+  "model": "gpt-oss-120b",
+  "options": 20,
+  "rename": {
+    "alt.atheism": "non.religion",
+    "comp.graphics": "computer.visuals",
+    "comp.os.ms-windows.misc": "system.microsoft.other",
+    "comp.sys.ibm.pc.hardware": "machine.intel.desktop.equipment",
+    "comp.sys.mac.hardware": "machine.apple.desktop.equipment",
+    "comp.windows.x": "machine.gui.xserver",
+    "misc.forsale": "various.market",
+    "rec.autos": "forum.cars",
+    "rec.motorcycles": "forum.bikes",
+    "rec.sport.baseball": "forum.game.diamond",
+    "rec.sport.hockey": "forum.game.ice",
+    "sci.crypt": "science.enigma",
+    "sci.electronics": "science.circuits",
+    "sci.med": "science.health",
+    "sci.space": "science.cosmos",
+    "soc.religion.christian": "community.faith.church",
+    "talk.politics.guns": "chat.governance.firearms",
+    "talk.politics.mideast": "chat.governance.middleeast",
+    "talk.politics.misc": "chat.governance.other",
+    "talk.religion.misc": "chat.faith.other"
+  },
+  "problems": []
+}

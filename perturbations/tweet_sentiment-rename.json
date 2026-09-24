@@ -1,0 +1,11 @@
+{
+  "dataset": "tweet_sentiment",
+  "model": "gpt-oss-120b",
+  "options": 3,
+  "rename": {
+    "negative": "adverse",
+    "neutral": "impartial",
+    "positive": "favorable"
+  },
+  "problems": []
+}

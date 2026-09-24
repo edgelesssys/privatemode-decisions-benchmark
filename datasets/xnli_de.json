@@ -1,0 +1,31 @@
+{
+  "name": "xnli_de",
+  "hf": "facebook/xnli",
+  "config": "de",
+  "split": "validation",
+  "rows": 2490,
+  "options": [
+    "entailment",
+    "neutral",
+    "contradiction"
+  ],
+  "option_count": 3,
+  "options_stable": true,
+  "chance_uniform": 0.3333333333333333,
+  "majority_share": 0.3415,
+  "classes_in_sample": 3,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 203.7915,
+    "p50": 200,
+    "p95": 314,
+    "max": 410
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "nli",
+  "language": "de",
+  "tier": "likely",
+  "ladder": null,
+  "instructions": "Folgt die Hypothese aus der Prämisse, widerspricht sie ihr, oder keines von beidem?"
+}

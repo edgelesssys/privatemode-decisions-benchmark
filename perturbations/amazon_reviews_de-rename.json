@@ -1,0 +1,13 @@
+{
+  "dataset": "amazon_reviews_de",
+  "model": "gpt-oss-120b",
+  "options": 5,
+  "rename": {
+    "1 Stern": "1 Punkt",
+    "2 Sterne": "2 Punkte",
+    "3 Sterne": "3 Punkte",
+    "4 Sterne": "4 Punkte",
+    "5 Sterne": "5 Punkte"
+  },
+  "problems": []
+}

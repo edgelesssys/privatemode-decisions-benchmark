@@ -1,0 +1,17 @@
+{
+  "dataset": "patent",
+  "model": "gpt-oss-120b",
+  "options": 9,
+  "rename": {
+    "Human Necessities": "basic needs",
+    "Performing Operations; Transporting": "Executing Tasks; Moving",
+    "Chemistry; Metallurgy": "Chemical Science; Metalworking",
+    "Textiles; Paper": "Cloth; Pulp",
+    "Fixed Constructions": "Stationary Structures",
+    "Mechanical Engineering; Lightning; Heating; Weapons; Blasting": "Machine Design; Electrical Discharge; Thermal; Armaments; Explosives",
+    "Physics": "Natural Science",
+    "Electricity": "Power",
+    "General tagging of new or cross-sectional technology": "Broad classification of emerging interdisciplinary tech"
+  },
+  "problems": []
+}

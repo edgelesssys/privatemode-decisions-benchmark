@@ -1,0 +1,30 @@
+{
+  "name": "sst2",
+  "hf": "stanfordnlp/sst2",
+  "config": "default",
+  "split": "validation",
+  "rows": 872,
+  "options": [
+    "negative",
+    "positive"
+  ],
+  "option_count": 2,
+  "options_stable": true,
+  "chance_uniform": 0.5,
+  "majority_share": 0.5091743119266054,
+  "classes_in_sample": 2,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 104.84174311926606,
+    "p50": 102,
+    "p95": 186,
+    "max": 243
+  },
+  "duplicate_states": 0,
+  "stats_sample": 872,
+  "family": "sentiment",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Is the sentiment of this movie-review excerpt positive or negative?"
+}

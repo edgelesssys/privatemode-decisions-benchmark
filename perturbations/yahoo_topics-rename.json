@@ -1,0 +1,18 @@
+{
+  "dataset": "yahoo_topics",
+  "model": "gpt-oss-120b",
+  "options": 10,
+  "rename": {
+    "Society & Culture": "Community & Traditions",
+    "Science & Mathematics": "Research & Numbers",
+    "Health": "Wellness",
+    "Education & Reference": "Learning & Sources",
+    "Computers & Internet": "Hardware & Web",
+    "Sports": "Athletics",
+    "Business & Finance": "Commerce & Money",
+    "Entertainment & Music": "Amusement & Tunes",
+    "Family & Relationships": "Household & Bonds",
+    "Politics & Government": "Policy & Administration"
+  },
+  "problems": []
+}

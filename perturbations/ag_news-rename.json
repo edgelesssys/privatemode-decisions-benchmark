@@ -1,0 +1,12 @@
+{
+  "dataset": "ag_news",
+  "model": "gpt-oss-120b",
+  "options": 4,
+  "rename": {
+    "World": "global",
+    "Sports": "athletics",
+    "Business": "commerce",
+    "Sci/Tech": "research and innovation"
+  },
+  "problems": []
+}

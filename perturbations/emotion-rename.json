@@ -1,0 +1,14 @@
+{
+  "dataset": "emotion",
+  "model": "gpt-oss-120b",
+  "options": 6,
+  "rename": {
+    "sadness": "sorrow",
+    "joy": "glee",
+    "love": "affection",
+    "anger": "ire",
+    "fear": "dread",
+    "surprise": "astonishment"
+  },
+  "problems": []
+}

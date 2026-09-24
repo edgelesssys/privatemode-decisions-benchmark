@@ -1,0 +1,30 @@
+{
+  "name": "boolq",
+  "hf": "google/boolq",
+  "config": "default",
+  "split": "validation",
+  "rows": 3270,
+  "options": [
+    "true",
+    "false"
+  ],
+  "option_count": 2,
+  "options_stable": true,
+  "chance_uniform": 0.5,
+  "majority_share": 0.627,
+  "classes_in_sample": 2,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 611.957,
+    "p50": 553,
+    "p95": 1175,
+    "max": 4836
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "qa",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Answer the question from the passage."
+}

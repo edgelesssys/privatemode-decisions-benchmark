@@ -1,0 +1,50 @@
+{
+  "name": "rvl_cdip",
+  "hf": "jinhybr/rvl_cdip_400_train_val_test",
+  "config": "default",
+  "split": "test",
+  "rows": 1600,
+  "options": [
+    "letter",
+    "form",
+    "email",
+    "handwritten",
+    "advertisement",
+    "scientific report",
+    "scientific publication",
+    "specification",
+    "file folder",
+    "news article",
+    "budget",
+    "invoice",
+    "presentation",
+    "questionnaire",
+    "resume",
+    "memo"
+  ],
+  "option_count": 16,
+  "options_stable": true,
+  "chance_uniform": 0.0625,
+  "majority_share": 0.0625,
+  "classes_in_sample": 16,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 40.0,
+    "p50": 40,
+    "p95": 40,
+    "max": 40
+  },
+  "duplicate_states": 0,
+  "images": true,
+  "image_longest_side": {
+    "p50": 1000,
+    "max": 1207
+  },
+  "stats_sample": 1600,
+  "family": "document",
+  "language": "en",
+  "tier": "likely",
+  "ladder": null,
+  "instructions": "Which kind of document is this scan?",
+  "rename": null
+}

@@ -1,0 +1,13 @@
+{
+  "dataset": "sst5",
+  "model": "gpt-oss-120b",
+  "options": 5,
+  "rename": {
+    "negative": "adverse",
+    "neutral": "impartial",
+    "positive": "favorable",
+    "very negative": "extremely adverse",
+    "very positive": "extremely favorable"
+  },
+  "problems": []
+}

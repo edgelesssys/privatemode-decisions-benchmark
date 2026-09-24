@@ -1,0 +1,38 @@
+{
+  "name": "yahoo_topics",
+  "hf": "community-datasets/yahoo_answers_topics",
+  "config": "yahoo_answers_topics",
+  "split": "test",
+  "rows": 60000,
+  "options": [
+    "Society & Culture",
+    "Science & Mathematics",
+    "Health",
+    "Education & Reference",
+    "Computers & Internet",
+    "Sports",
+    "Business & Finance",
+    "Entertainment & Music",
+    "Family & Relationships",
+    "Politics & Government"
+  ],
+  "option_count": 10,
+  "options_stable": true,
+  "chance_uniform": 0.1,
+  "majority_share": 0.1125,
+  "classes_in_sample": 10,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 568.807,
+    "p50": 394,
+    "p95": 1604,
+    "max": 5869
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "topic",
+  "language": "en",
+  "tier": "likely",
+  "ladder": null,
+  "instructions": "Which topic does this question belong to?"
+}

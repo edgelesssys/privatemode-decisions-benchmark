@@ -1,0 +1,14 @@
+{
+  "dataset": "trec_coarse",
+  "model": "gpt-oss-120b",
+  "options": 6,
+  "rename": {
+    "abbreviation": "condensed_term",
+    "description and abstract concepts": "explanatory ideas",
+    "entities": "objects",
+    "human beings": "living persons",
+    "locations": "places",
+    "numeric values": "number data"
+  },
+  "problems": []
+}

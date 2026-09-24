@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.egg-info/
+.env
+.cache/
+
+# Raw per-answer runs: 320 MB, 52 MB compressed. They are published as a
+# release instead (see results/README.md), and results/suite.md is rebuilt
+# from them with one command.
+results/*/*.jsonl

@@ -1,0 +1,17 @@
+{
+  "dataset": "gnad10",
+  "model": "gpt-oss-120b",
+  "options": 9,
+  "rename": {
+    "Web": "Online",
+    "Panorama": "Übersicht",
+    "International": "Global",
+    "Wirtschaft": "Ökonomie",
+    "Sport": "Athletik",
+    "Inland": "Binnen",
+    "Etat": "Budget",
+    "Wissenschaft": "Forschung",
+    "Kultur": "Kunst"
+  },
+  "problems": []
+}

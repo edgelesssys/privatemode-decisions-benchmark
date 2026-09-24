@@ -1,0 +1,10 @@
+{
+  "dataset": "rte",
+  "model": "gpt-oss-120b",
+  "options": 2,
+  "rename": {
+    "entailment": "implication",
+    "not_entailment": "no_implication"
+  },
+  "problems": []
+}

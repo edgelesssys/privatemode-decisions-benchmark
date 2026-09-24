@@ -1,0 +1,32 @@
+{
+  "name": "ag_news",
+  "hf": "fancyzhx/ag_news",
+  "config": "default",
+  "split": "test",
+  "rows": 7600,
+  "options": [
+    "World",
+    "Sports",
+    "Business",
+    "Sci/Tech"
+  ],
+  "option_count": 4,
+  "options_stable": true,
+  "chance_uniform": 0.25,
+  "majority_share": 0.262,
+  "classes_in_sample": 4,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 232.0245,
+    "p50": 229,
+    "p95": 328,
+    "max": 844
+  },
+  "duplicate_states": 0,
+  "stats_sample": 2000,
+  "family": "topic",
+  "language": "en",
+  "tier": "seen",
+  "ladder": null,
+  "instructions": "Which section of the newspaper does this story belong to?"
+}

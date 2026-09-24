@@ -1,0 +1,30 @@
+{
+  "name": "toxic_conversations",
+  "hf": "mteb/toxic_conversations_50k",
+  "config": "default",
+  "split": "test",
+  "rows": 50000,
+  "options": [
+    "not toxic",
+    "toxic"
+  ],
+  "option_count": 2,
+  "options_stable": true,
+  "chance_uniform": 0.5,
+  "majority_share": 0.9215,
+  "classes_in_sample": 2,
+  "unknown_gold_in_sample": 0,
+  "state_chars": {
+    "mean": 303.9345,
+    "p50": 205,
+    "p95": 963,
+    "max": 1000
+  },
+  "duplicate_states": 1,
+  "stats_sample": 2000,
+  "family": "moderation",
+  "language": "en",
+  "tier": "unclear",
+  "ladder": null,
+  "instructions": "Is this comment toxic?"
+}

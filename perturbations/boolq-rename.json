@@ -1,0 +1,10 @@
+{
+  "dataset": "boolq",
+  "model": "gpt-oss-120b",
+  "options": 2,
+  "rename": {
+    "true": "correct",
+    "false": "wrong"
+  },
+  "problems": []
+}

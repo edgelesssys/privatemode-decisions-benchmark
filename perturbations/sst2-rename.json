@@ -1,0 +1,10 @@
+{
+  "dataset": "sst2",
+  "model": "gpt-oss-120b",
+  "options": 2,
+  "rename": {
+    "negative": "adverse",
+    "positive": "favorable"
+  },
+  "problems": []
+}
