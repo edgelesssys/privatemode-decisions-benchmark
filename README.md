@@ -135,6 +135,13 @@ them: a synonym can change what a question asks (boolq's `true`/`false`
 became `correct`/`wrong`), in which case the drop does not isolate
 memorisation.
 
+### Calibration
+
+Whether the Privatemode arm's probabilities can be trusted, how a
+temperature fixes their overconfidence without labels, and what conformal
+prediction sets need, is a separate analysis of two further runs:
+[`results/calibration/part-1/`](results/calibration/part-1/README.md).
+
 ### What is outside these columns
 
 Confidential computing. Privatemode runs the model inside an attested

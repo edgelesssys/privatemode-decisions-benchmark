@@ -63,6 +63,9 @@ class Answer:
     #: 429/503/529 responses seen while producing this answer. Any at all
     #: and the arm's latency is flagged in the report.
     throttled: int = 0
+    #: Probability on the option tokens before the mask (Privatemode only):
+    #: low means the model wanted to answer outside the options.
+    option_mass: float | None = None
 
 
 class Arm:
@@ -100,8 +103,10 @@ class PrivatemodeArm(Arm):
         #: declared parameter and the run records it.
         self.image_max_side = image_max_side
         self._client = TimedClient(base_url, api_key)
+        # Raw probabilities: calibration is measured from them, so the
+        # library's default temperature must not be baked into the runs.
         self._engine = SystemOne(self._client, self.model,
-                                 permutations=permutations)
+                                 permutations=permutations, temperature=1.0)
 
     def ask(self, task: Task) -> Answer:
         response = self._engine.system_one(
@@ -128,6 +133,7 @@ class PrivatemodeArm(Arm):
                       input_tokens=usage.input_tokens,
                       output_tokens=usage.output_tokens,
                       cached_tokens=usage.cached_tokens,
+                      option_mass=getattr(answer, "option_mass", None),
                       **self._client.last())
 
     def close(self) -> None:

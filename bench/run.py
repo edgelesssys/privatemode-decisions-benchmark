@@ -275,6 +275,8 @@ def execute(args) -> Path:
                            throttled=answer.throttled,
                            concurrency=args.concurrency,
                            attempts=attempts)
+                if answer.option_mass is not None:
+                    row["option_mass"] = answer.option_mass
             except Exception as error:
                 row.update(error=f"{type(error).__name__}: {error}"[:300])
             with lock:

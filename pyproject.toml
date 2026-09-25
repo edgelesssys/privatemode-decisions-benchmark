@@ -17,7 +17,9 @@ privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesss
 # The local arm. Heavy (torch + transformers, ~1.7 GB of weights on first
 # use) and only needed for --arms all|laya, so it is not a base dependency.
 laya = ["laya>=0.3.5", "torch>=2.2", "transformers>=4.48"]
-dev = ["pytest>=8"]
+# The calibration analysis (bench.calibration, bench.calibrate_report).
+calibration = ["numpy>=1.26", "matplotlib>=3.8"]
+dev = ["pytest>=8", "numpy>=1.26"]
 
 [build-system]
 requires = ["setuptools>=77"]

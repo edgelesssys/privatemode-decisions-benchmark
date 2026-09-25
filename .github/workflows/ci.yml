@@ -10,6 +10,6 @@ jobs:
         with:
           python-version: "3.14"
       # The metrics are the claim, and they need neither keys nor network.
-      - run: pip install pytest
+      - run: pip install pytest numpy
       - run: python -m pytest -q tests
       - run: python -m compileall -q bench
