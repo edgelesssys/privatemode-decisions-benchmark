@@ -31,6 +31,13 @@ ranges from 1.4 to 3.7 (median 2.0); it is stable between runs (a factor of
 
 ![Reliability](reliability.png)
 
+The right panel plots the distance from the diagonal: below 0 is
+overconfident. The "default T" is the option-count formula in result 3,
+fitted without the dataset being scored. "T per task" is fitted on that
+task's own calibration half. The [overview](../README.md#results) has every
+method, and Jev, in one table on the same examples. The table is also at the
+end of section 3 of [full-report.md](full-report.md).
+
 **3. Without labels, a formula gets most of the way.** On datasets left out
 of the fit, with *excess ECE*: a dataset's ECE minus the ECE a perfectly
 calibrated model shows on the same number of examples, so 0 is as good as

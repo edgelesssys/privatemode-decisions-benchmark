@@ -84,7 +84,33 @@ def plots(out: Path, figures: dict) -> None:
     colors = {"raw": "#c0504d", "formula T": "#4f81bd", "family T": "#f79646",
               "context + T": "#9bbb59", "oracle T": "#8064a2"}
 
-    if "reliability" in figures:
+    if "methods" in figures:
+        # Two views of the same bins. Left: the usual diagram, where the
+        # calibrated curves all hug the diagonal. Right: accuracy minus
+        # confidence, which stretches exactly the part the left one squeezes.
+        styles = {"GLM raw": ("#c0504d", "-"), "GLM, default T (no labels)": ("#4f81bd", "-"),
+                  "GLM, T per task (~500 labels)": ("#8064a2", "--"),
+                  "Jev, as returned": ("#7f7f7f", "-")}
+        fig, (left, right) = plt.subplots(1, 2, figsize=(8.6, 4.0))
+        left.plot([0.25, 1], [0.25, 1], color="#bbb", lw=0.8, ls=":")
+        right.axhline(0, color="#bbb", lw=0.8, ls=":")
+        for label, curve in figures["methods"].items():
+            xs, ys, _ = map(np.array, zip(*curve))
+            color, ls = styles.get(label, (None, "-"))
+            left.plot(xs, ys, marker="o", ms=3, lw=1.6, ls=ls, color=color, label=label)
+            right.plot(xs, ys - xs, marker="o", ms=3, lw=1.6, ls=ls, color=color, label=label)
+        left.set(xlabel="stated confidence", ylabel="share correct", xlim=(0.25, 1.01),
+                 ylim=(0.25, 1.01), title="Reliability: on the diagonal is calibrated")
+        right.set(xlabel="stated confidence", ylabel="share correct − confidence",
+                  xlim=(0.25, 1.01), title="Gap to the diagonal: below 0 is overconfident")
+        right.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
+        left.legend(frameon=False, loc="upper left", fontsize=7.5)
+        fig.suptitle("28 text datasets, test halves, every dataset weighted equally; "
+                     "15 equal-size bins", fontsize=8, color="#555")
+        fig.tight_layout()
+        fig.savefig(out / "reliability.png")
+        plt.close(fig)
+    elif "reliability" in figures:
         fig, ax = plt.subplots(figsize=(4.2, 4.2))
         ax.plot([0, 1], [0, 1], color="#999", lw=0.8, ls="--")
         for label, curve in figures["reliability"].items():
@@ -185,6 +211,114 @@ def plots(out: Path, figures: dict) -> None:
         fig.tight_layout()
         fig.savefig(out / "option_mass.png")
         plt.close(fig)
+
+
+# -- every method side by side ----------------------------------------------
+
+#: (key, name, what it does, labels it needs), in the order the table shows them.
+METHODS = (
+    ("raw", "raw", "the model's probabilities as they come (T = 1)", "none"),
+    ("global", "one T for all tasks",
+     "a single temperature fitted on all other datasets", "none"),
+    ("formula", "**default: T from the option count**",
+     "log T = a + b·log(options), fitted on all other datasets; the library's default", "none"),
+    ("family", "T from the task family",
+     "one temperature per kind of task (sentiment, intent, …), fitted on the other datasets "
+     "of that family", "none"),
+    ("context", "neutral-input correction + T",
+     "divide out the answer to empty or `N/A` input, then a temperature", "none"),
+    ("oracle", "T per task", "a temperature fitted on this task's calibration half", "~500"),
+    ("jev", "Jev, as returned", "`jev-latest`'s probabilities, rounded to 0.01", "none"),
+    ("jev unzero", "Jev, zeros set to 0.005",
+     "half a rounding unit where Jev says 0, so a temperature can be fitted", "none"),
+    ("jev own", "Jev, zeros set + T per task",
+     "the same, then a temperature fitted on this task's calibration half", "~500"),
+)
+#: Shown in the reliability figure: the rest sit on top of "formula" and hide it.
+CURVES = {"raw": "GLM raw", "formula": "GLM, default T (no labels)",
+          "oracle": "GLM, T per task (~500 labels)", "jev": "Jev, as returned"}
+
+
+def compare_methods(args, run, text_names, temperatures, priors):
+    """Every calibration method, GLM and Jev, on the test-half examples both
+    systems answered, so each number in the table is about the same questions.
+
+    ``temperatures`` maps a method to its per-dataset T, each fitted without
+    the test half it is scored on (and, for the zero-label ones, without the
+    dataset). Returns ``None`` without the published runs, which hold Jev.
+    """
+    if not args.published:
+        return None
+    from .calibrate_extensions import JEV_UNIT, common, load_arm
+    jev = load_arm(Path(args.published), "jev")
+
+    def unzero(P):
+        Q = np.where(P == 0, JEV_UNIT / 2, P)
+        return Q / Q.sum(axis=1, keepdims=True)
+
+    parts: dict[str, list] = defaultdict(list)   # method -> [(P, y), ...], one per dataset
+    temps: dict[str, list] = defaultdict(list)
+    names = [n for n in text_names if n in jev]
+    for n in names:
+        glm, other = common(run[n], jev[n])
+        (_, test_g), (cal_j, test_j) = c.split(glm), c.split(other)
+        y = test_g.y
+        for key in ("global", "formula", "family", "oracle"):
+            t = temperatures[key][n]
+            parts[key].append((c.scale(test_g.P, t), y))
+            temps[key].append(t)
+        parts["raw"].append((test_g.P, y))
+        if n in priors and n in temperatures["context"]:
+            fixed = c.contextual(test_g.P, np.array(priors[n]))
+            parts["context"].append((c.scale(fixed, temperatures["context"][n]), y))
+            temps["context"].append(temperatures["context"][n])
+        parts["jev"].append((test_j.P, test_j.y))
+        parts["jev unzero"].append((unzero(test_j.P), test_j.y))
+        t = c.fit_temperature([(unzero(cal_j.P), cal_j.y)])
+        parts["jev own"].append((c.scale(unzero(test_j.P), t), test_j.y))
+        temps["jev own"].append(t)
+
+    def ece_of(key):
+        return [c.ece(P, y) for P, y in parts[key]]
+
+    rows, table_rows = {}, []
+    for key, name, how, labels in METHODS:
+        if not parts[key]:
+            continue
+        eces = ece_of(key)
+        excess = mean(e - c.ece_floor(P, draws=100) for e, (P, _) in zip(eces, parts[key]))
+        # Share of the per-task gain in ECE, as in section 2; GLM methods only.
+        if key.startswith("jev") or len(parts[key]) != len(parts["raw"]):
+            share = None
+        else:
+            gain = sum(ece_of("raw")) - sum(ece_of("oracle"))
+            share = (sum(ece_of("raw")) - sum(eces)) / gain
+        row = {"name": name, "how": how, "labels": labels,
+               "t": float(np.median(temps[key])) if temps[key] else 1.0,
+               "accuracy": mean(c.accuracy(P, y) for P, y in parts[key]),
+               "confidence": mean(float(P.max(1).mean()) for P, _ in parts[key]),
+               "ece": mean(eces), "excess": excess, "share": share}
+        rows[key] = row
+        table_rows.append([name, how, labels,
+                           "1" if key in ("raw", "jev", "jev unzero") else f"{row['t']:.2f}",
+                           f"{row['accuracy'] * 100:.1f}%", f"{row['confidence'] * 100:.1f}%",
+                           f"{(row['confidence'] - row['accuracy']) * 100:+.1f}",
+                           fmt(row["ece"]), f"**{fmt(row['excess'])}**" if key == "formula"
+                           else fmt(row["excess"]),
+                           "—" if share is None else f"{share:.0%}"])
+    n_rows = sum(len(y) for _, y in parts["raw"])
+    markdown = (
+        f"All methods on the same {n_rows:,} examples: the test halves of the {len(names)} text "
+        "datasets, restricted to the examples Jev answered too. Every temperature was fitted "
+        "without these examples, and the zero-label ones without the dataset. *T* is the "
+        "median over datasets; *overconfidence* is mean confidence minus accuracy in points; "
+        "*excess ECE* is ECE minus the sampling floor (0 is as calibrated as the sample can "
+        "show); *share* is the part of the per-task temperature's ECE reduction a method "
+        "achieves.\n\n"
+        + table(table_rows, ["method", "what it does", "labels", "T", "accuracy", "confidence",
+                             "overconfidence", "ECE", "excess ECE", "share"]))
+    curves = {CURVES[k]: pooled_reliability(parts[k]) for k in CURVES if parts[k]}
+    return {"rows": rows, "markdown": markdown, "curves": curves}
 
 
 # -- the report -----------------------------------------------------------
@@ -428,6 +562,13 @@ def report(args) -> str:
         figures["reliability"]["context + T"] = pooled_reliability(
             [(c.scale(corrected[n][1], cc_lodo[n]), halves[n][1].y) for n in names])
     figures["ece"] = ece_fig
+    methods = compare_methods(args, run, text_names, {
+        "global": lodo, "formula": formula_lodo, "family": same_family, "oracle": oracle,
+        "context": cc_lodo}, priors)
+    if methods:
+        md.append("\n### Every method on the same examples\n")
+        md.append(methods["markdown"])
+        figures["methods"] = methods["curves"]
 
     # Phase 4 -----------------------------------------------------------
     md.append("\n## 4. Conformal prediction sets\n")
@@ -651,7 +792,8 @@ def report(args) -> str:
     summary_json = {"global_t": global_t, "formula": formula, "oracle": oracle,
                     "lodo": lodo, "context_lodo": cc_lodo, "shipped": shipped,
                     "excess_ece": summary_excess, "contamination": contamination,
-                    "half_split": {"excess_ece": mean(half_excess), "share": mean(half_share)}}
+                    "half_split": {"excess_ece": mean(half_excess), "share": mean(half_share)},
+                    "methods": methods["rows"] if methods else {}}
     (out / "summary.json").write_text(json.dumps(summary_json, indent=1))
     # What the library ships, for its scripts/update_calibration.py.
     meta = next(iter(run.values())).meta

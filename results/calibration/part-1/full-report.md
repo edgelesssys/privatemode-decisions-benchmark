@@ -168,6 +168,22 @@ Priors from neutral content (`N/A`, empty, `[MASK]`, and `k. A.` for German sets
 | ledgar | 0.46 | 0.085 | 0.106 | +0.147 | -1.8 | hurts |
 | clinc150 | 0.88 | 0.066 | 0.174 | +0.645 | -8.4 | hurts |
 
+### Every method on the same examples
+
+All methods on the same 13,005 examples: the test halves of the 28 text datasets, restricted to the examples Jev answered too. Every temperature was fitted without these examples, and the zero-label ones without the dataset. *T* is the median over datasets; *overconfidence* is mean confidence minus accuracy in points; *excess ECE* is ECE minus the sampling floor (0 is as calibrated as the sample can show); *share* is the part of the per-task temperature's ECE reduction a method achieves.
+
+| method | what it does | labels | T | accuracy | confidence | overconfidence | ECE | excess ECE | share |
+|---|---|---|---|---|---|---|---|---|---|
+| raw | the model's probabilities as they come (T = 1) | none | 1 | 78.1% | 92.7% | +14.6 | 0.149 | 0.129 | 0% |
+| one T for all tasks | a single temperature fitted on all other datasets | none | 2.15 | 78.1% | 80.0% | +1.9 | 0.088 | 0.040 | 63% |
+| **default: T from the option count** | log T = a + b·log(options), fitted on all other datasets; the library's default | none | 2.22 | 78.1% | 80.4% | +2.3 | 0.081 | **0.032** | 71% |
+| T from the task family | one temperature per kind of task (sentiment, intent, …), fitted on the other datasets of that family | none | 2.50 | 78.1% | 78.9% | +0.8 | 0.079 | 0.029 | 74% |
+| neutral-input correction + T | divide out the answer to empty or `N/A` input, then a temperature | none | 2.33 | 75.0% | 76.0% | +1.0 | 0.111 | 0.059 | 40% |
+| T per task | a temperature fitted on this task's calibration half | ~500 | 2.03 | 78.1% | 79.3% | +1.2 | 0.054 | 0.006 | 100% |
+| Jev, as returned | `jev-latest`'s probabilities, rounded to 0.01 | none | 1 | 77.5% | 87.5% | +10.0 | 0.110 | 0.080 | — |
+| Jev, zeros set to 0.005 | half a rounding unit where Jev says 0, so a temperature can be fitted | none | 1 | 77.5% | 80.8% | +3.3 | 0.128 | 0.082 | — |
+| Jev, zeros set + T per task | the same, then a temperature fitted on this task's calibration half | ~500 | 1.19 | 77.5% | 78.8% | +1.3 | 0.070 | 0.021 | — |
+
 ## 4. Conformal prediction sets
 
 Split conformal on each dataset's calibration half, evaluated on its test half. LAC scores 1 − p(gold); APS the mass of options at least as likely as the gold one. Probabilities: raw, and after the formula temperature fitted without the dataset (the library's default).
