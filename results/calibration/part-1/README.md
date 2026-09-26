@@ -44,6 +44,22 @@ the sample can show.
 | from the task family, e.g. sentiment 2.9, intent 1.8 | 0.029 | 74% |
 | per task, fitted on labels (reference) | 0.006 | 100% |
 
+The formula holds under stricter separation between fitting and testing:
+
+| the option formula, fitted without … | mean excess ECE | share of the per-task gain |
+|---|---|---|
+| the dataset in question (as above) | 0.032 | 71% |
+| its related datasets too (the four MASSIVE sets, both TREC, MNLI and XNLI, the SST family, both TweetEval) | 0.032 | 71% |
+| half of all tasks, tested on the other half (50 random splits) | 0.035 | 68% (60–76%) |
+| its whole task family | 0.054 | 45% |
+
+Siblings in the fit don't flatter the result, and fitting on half the tasks
+gives the same answer with more spread. **A new kind of task is the
+realistic worst case:** with no dataset of the same family in the fit, the
+default recovers 45% of the per-task gain. The method itself (the formula's
+form, the shrinkage, the prefill) was chosen on these datasets; only
+datasets kept out of the whole study can measure that, which part 3 plans.
+
 What sets the right T is mostly how hard the task is: across datasets, log T
 falls by 1.4 per unit of accuracy. The model is about equally confident
 everywhere, so it is most overconfident where it is least accurate. No

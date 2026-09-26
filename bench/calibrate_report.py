@@ -26,6 +26,12 @@ from .specs import SPECS
 SPEC = {s.name: s for s in SPECS}
 DOCUMENT = "rvl_cdip"      # scanned pages: kept apart from the text sets throughout
 SMALL = 300                # test halves at or below this are weak evidence
+#: Datasets built from the same source, held out together to check that a
+#: sibling in the fit doesn't flatter the leave-one-out numbers.
+RELATED = (("massive_scenario_en", "massive_scenario_de", "massive_intent_en", "massive_intent_de"),
+           ("trec_coarse", "trec_fine"), ("mnli", "xnli_de"),
+           ("sst2", "sst5", "rotten_tomatoes"), ("tweet_offensive", "tweet_sentiment"))
+HALF_SPLITS = 50           # random half-of-the-tasks splits for the formula
 COVERAGES = (0.90, 0.95)
 LABEL_COUNTS = (50, 100, 250, 500)
 
@@ -235,6 +241,16 @@ def report(args) -> str:
         a, b = c.fit_formula({m: oracle[m] for m in text_names if m != n}, options)
         formula_lodo[n] = c.formula_temperature(a, b, options[n])
     formula = c.fit_formula({m: oracle[m] for m in text_names}, options)
+
+    def formula_without(held_out: set[str], n: str) -> float:
+        a, b = c.fit_formula({m: oracle[m] for m in text_names if m not in held_out}, options)
+        return c.formula_temperature(a, b, options[n])
+
+    related = {m: set(g) for g in RELATED for m in g}
+    formula_related = {n: formula_without(related.get(n, set()) | {n}, n) for n in text_names}
+    formula_family_out = {n: formula_without({m for m in text_names
+                                              if SPEC[m].family == SPEC[n].family}, n)
+                          for n in text_names}
     same_family = {}
     for n in text_names:
         peers = [m for m in text_names if m != n and SPEC[m].family == SPEC[n].family]
@@ -277,6 +293,15 @@ def report(args) -> str:
             totals[label][0] += raw_e - e
             totals[label][1] += raw_e - orc_e
             excesses[label].append(excess(n, t))
+        # Stricter hold-outs for the shipped default, reported in the summary table only.
+        for label, t in (("formula, related datasets held out", formula_related[n]),
+                         ("formula, whole family held out", formula_family_out[n])):
+            e, l = scores(n, t)
+            gain = raw_l - orc_l
+            share[label].append((raw_l - l) / gain if gain > 1e-9 else float("nan"))
+            totals[label][0] += raw_e - e
+            totals[label][1] += raw_e - orc_e
+            excesses[label].append(excess(n, t))
         rows.append(cells)
         ece_fig[n] = {"raw": raw_e, "formula T": scores(n, formula_lodo[n])[0],
                       "family T": scores(n, same_family[n])[0], "oracle T": orc_e}
@@ -294,11 +319,39 @@ def report(args) -> str:
               "floor for every method and hides the differences.) The ECE share is the total "
               "reduction over the per-task reduction; the NLL share is the median per "
               "dataset.\n")
+    # The formula fitted on a random half of the tasks, tested on the other half.
+    split_rng = np.random.default_rng(c.SEED)
+    half_excess, half_share = [], []
+    for _ in range(HALF_SPLITS):
+        order = split_rng.permutation(text_names)
+        fit, held = set(order[:len(order) // 2]), order[len(order) // 2:]
+        a, b = c.fit_formula({m: oracle[m] for m in fit}, options)
+        num = den = 0.0
+        split_excess = []
+        for n in held:
+            t = c.formula_temperature(a, b, options[n])
+            raw_e, orc_e, e = scores(n, 1.0)[0], scores(n, oracle[n])[0], scores(n, t)[0]
+            num, den = num + raw_e - e, den + raw_e - orc_e
+            split_excess.append(excess(n, t))
+        half_excess.append(mean(split_excess))
+        half_share.append(num / den)
     md.append(table([["raw", fmt(mean(excesses["raw"])), "0", "0"]]
                     + [[k, fmt(mean(excesses[k])), fmt(totals[k][0] / totals[k][1], 2),
                         fmt(float(np.nanmedian(v)), 2)] for k, v in share.items()]
+                    + [[(f"formula, fitted on half the tasks, tested on the other half "
+                         f"({HALF_SPLITS} splits)"), fmt(mean(half_excess)),
+                        (f"{mean(half_share):.2f} ({np.percentile(half_share, 5):.2f}–"
+                         f"{np.percentile(half_share, 95):.2f})"), ""]]
                     + [["per task (oracle)", fmt(mean(excesses["per task (oracle)"])), "1", "1"]],
                     ["method", "mean excess ECE", "ECE share", "NLL share (median)"]))
+    md.append("\nThe formula holds up under stricter hold-outs: leaving out related datasets "
+              "(the four MASSIVE sets, both TREC sets, MNLI and XNLI, the SST family, the two "
+              "TweetEval tasks) changes nothing, and fitting on half of the tasks gives the "
+              "same result with more spread. **A new kind of task is the realistic worst "
+              "case:** with no dataset of the same family in the fit, the default recovers "
+              "less of the per-task gain. The method itself (the formula's form, the shrinkage, "
+              "the prefill) was chosen on these datasets, which no split can undo; only "
+              "datasets kept out of the whole study can measure that.\n")
     summary_excess = {k: mean(v) for k, v in excesses.items()}
     md.append("\n`floor` is the ECE a perfectly calibrated model would show on this many "
               "examples (labels drawn from its own probabilities); values near it are as good "
@@ -597,7 +650,8 @@ def report(args) -> str:
     plots(out, figures)
     summary_json = {"global_t": global_t, "formula": formula, "oracle": oracle,
                     "lodo": lodo, "context_lodo": cc_lodo, "shipped": shipped,
-                    "excess_ece": summary_excess, "contamination": contamination}
+                    "excess_ece": summary_excess, "contamination": contamination,
+                    "half_split": {"excess_ece": mean(half_excess), "share": mean(half_share)}}
     (out / "summary.json").write_text(json.dumps(summary_json, indent=1))
     # What the library ships, for its scripts/update_calibration.py.
     meta = next(iter(run.values())).meta

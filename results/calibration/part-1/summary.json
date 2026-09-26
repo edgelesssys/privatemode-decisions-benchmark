@@ -117,7 +117,9 @@
   "global T (LODO)": 0.03985584653182219,
   "formula (LODO)": 0.03216001019052785,
   "same family (LODO)": 0.029463231139906943,
-  "leave family out": 0.06171620007710078
+  "leave family out": 0.06171620007710078,
+  "formula, related datasets held out": 0.032449104699601335,
+  "formula, whole family held out": 0.05364833378756347
  },
  "contamination": {
   "accuracy": [
@@ -132,5 +134,9 @@
    0.09243061809991744,
    0.11843610402336714
   ]
+ },
+ "half_split": {
+  "excess_ece": 0.03472027350775138,
+  "share": 0.684929558539917
  }
 }

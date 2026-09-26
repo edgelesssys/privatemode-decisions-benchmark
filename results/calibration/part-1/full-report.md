@@ -51,7 +51,13 @@ How each zero-label method does on datasets left out of its fit. **Excess ECE** 
 | formula (LODO) | 0.032 | 0.71 | 0.94 |
 | same family (LODO) | 0.029 | 0.74 | 0.99 |
 | leave family out | 0.062 | 0.39 | 0.91 |
+| formula, related datasets held out | 0.032 | 0.71 | 0.93 |
+| formula, whole family held out | 0.054 | 0.45 | 0.89 |
+| formula, fitted on half the tasks, tested on the other half (50 splits) | 0.035 | 0.68 (0.60–0.76) |  |
 | per task (oracle) | 0.006 | 1 | 1 |
+
+The formula holds up under stricter hold-outs: leaving out related datasets (the four MASSIVE sets, both TREC sets, MNLI and XNLI, the SST family, the two TweetEval tasks) changes nothing, and fitting on half of the tasks gives the same result with more spread. **A new kind of task is the realistic worst case:** with no dataset of the same family in the fit, the default recovers less of the per-task gain. The method itself (the formula's form, the shrinkage, the prefill) was chosen on these datasets, which no split can undo; only datasets kept out of the whole study can measure that.
+
 
 `floor` is the ECE a perfectly calibrated model would show on this many examples (labels drawn from its own probabilities); values near it are as good as the sample can show.
 
