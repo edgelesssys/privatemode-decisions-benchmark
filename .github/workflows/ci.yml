@@ -10,6 +10,7 @@ jobs:
         with:
           python-version: "3.14"
       # The metrics are the claim, and they need neither keys nor network.
-      - run: pip install pytest numpy
+      # The library, for the parity tests between its calibration code and ours.
+      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions"
       - run: python -m pytest -q tests
       - run: python -m compileall -q bench

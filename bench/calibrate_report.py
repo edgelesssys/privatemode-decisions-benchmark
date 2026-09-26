@@ -599,6 +599,13 @@ def report(args) -> str:
                     "lodo": lodo, "context_lodo": cc_lodo, "shipped": shipped,
                     "excess_ece": summary_excess, "contamination": contamination}
     (out / "summary.json").write_text(json.dumps(summary_json, indent=1))
+    # What the library ships, for its scripts/update_calibration.py.
+    meta = next(iter(run.values())).meta
+    constants = {"model": (meta.get("arms") or {}).get("privatemode", "unknown"),
+                 "formula": list(shipped["formula"]), "family": shipped["family"],
+                 "source": (f"privatemode-decisions-benchmark, results/calibration/part-1/"
+                            f"constants.json (run {meta.get('started', '?')})")}
+    (out / "constants.json").write_text(json.dumps(constants, indent=1) + "\n")
     return "\n".join(md) + "\n"
 
 
