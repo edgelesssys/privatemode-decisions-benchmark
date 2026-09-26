@@ -148,5 +148,7 @@ python -m bench.calibrate_report --run runs/r1 --second runs/r2 \
 ```
 
 Run a suite command twice on the same `--out` to fill rows lost to the
-proxy's rate limit. The raw runs used here are in the release
+proxy's rate limit. [Part 2](../part-2/README.md) compares Jev on the same
+examples, adds a guaranteed error rate for automated answers, and tests
+position bias. The raw runs used here are in the release
 `calibration-2026-09-26`.

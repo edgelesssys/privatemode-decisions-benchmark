@@ -190,7 +190,8 @@ def auroc_interval(score: np.ndarray, positive: np.ndarray, draws: int = 500,
 # -- temperature ----------------------------------------------------------
 
 def fit_temperature(parts: list[tuple[np.ndarray, np.ndarray]],
-                    low: float = 0.05, high: float = 50.0) -> float:
+                    low: float = 0.05, high: float = 50.0,
+                    prior: float = 1.0, shrinkage: float = 0.0) -> float:
     """T minimizing the mean NLL, each (P, y) part weighted equally.
 
     NLL is convex in 1/T, so a golden-section search on log T finds the
@@ -198,9 +199,13 @@ def fit_temperature(parts: list[tuple[np.ndarray, np.ndarray]],
     """
     logs = [(np.log(np.maximum(P, FLOOR)), y) for P, y in parts]
 
+    n = sum(len(y) for _, y in logs) / len(logs)
+
     def loss(log_t: float) -> float:
         t = math.exp(log_t)
-        return sum(nll(softmax(L / t), y) for L, y in logs) / len(logs)
+        fit = sum(nll(softmax(L / t), y) for L, y in logs) / len(logs)
+        # Optional pull towards ``prior``, worth ``shrinkage`` examples.
+        return fit + shrinkage / n * (log_t - math.log(prior)) ** 2
 
     a, b = math.log(low), math.log(high)
     g = (math.sqrt(5) - 1) / 2
@@ -279,3 +284,88 @@ def set_stats(sets: np.ndarray, y: np.ndarray) -> dict[str, float]:
             "size": float(sizes.mean()),
             "single": float(np.mean(sizes == 1)),
             "empty": float(np.mean(sizes == 0))}
+
+
+# -- isotonic regression on top-label confidence ---------------------------
+
+def fit_isotonic(confidence: np.ndarray, correct: np.ndarray):
+    """Pool-adjacent-violators: a non-decreasing map from confidence to accuracy.
+
+    Returns ``(knots, values)`` for :func:`apply_isotonic`. It calibrates the
+    top answer's confidence only, not the whole distribution, which is why it
+    can repair rounded outputs that temperature cannot.
+    """
+    order = np.argsort(confidence, kind="stable")
+    x, y = confidence[order], correct[order].astype(float)
+    values, weights, starts = [], [], []
+    for i, v in enumerate(y):
+        values.append(v)
+        weights.append(1.0)
+        starts.append(i)
+        while len(values) > 1 and values[-2] > values[-1]:
+            w = weights[-2] + weights[-1]
+            values[-2] = (values[-2] * weights[-2] + values[-1] * weights[-1]) / w
+            weights[-2] = w
+            del values[-1], weights[-1], starts[-1]
+    ends = starts[1:] + [len(x)]
+    knots = np.array([x[s:e].mean() for s, e in zip(starts, ends)])
+    return knots, np.array(values)
+
+
+def apply_isotonic(model, confidence: np.ndarray) -> np.ndarray:
+    knots, values = model
+    return np.interp(confidence, knots, values)
+
+
+def ece_top(confidence: np.ndarray, correct: np.ndarray, bins: int = BINS) -> float:
+    """ECE of a top-label confidence that isn't part of a distribution."""
+    order = np.argsort(confidence, kind="stable")
+    n = len(confidence)
+    return float(sum(abs(confidence[c].mean() - correct[c].mean()) * len(c) / n
+                     for c in np.array_split(order, bins) if len(c)))
+
+
+# -- a guaranteed error rate on automated answers (Learn then Test) --------
+
+def binomial_cdf(k: int, n: int, p: float) -> float:
+    """P(X <= k) for X ~ Binomial(n, p), summed in log space."""
+    if k >= n:
+        return 1.0
+    if k < 0:
+        return 0.0
+    log_terms = [math.lgamma(n + 1) - math.lgamma(i + 1) - math.lgamma(n - i + 1)
+                 + (i * math.log(p) if i else 0.0) + ((n - i) * math.log1p(-p) if n - i else 0.0)
+                 for i in range(k + 1)]
+    top = max(log_terms)
+    return min(1.0, math.exp(top) * sum(math.exp(t - top) for t in log_terms))
+
+
+def automation_threshold(confidence: np.ndarray, correct: np.ndarray, max_error: float,
+                         delta: float = 0.1, step: float = 0.05) -> float:
+    """Lowest confidence threshold whose error among automated answers is
+    at most ``max_error``, with probability ``1 - delta``.
+
+    Learn then Test with fixed-sequence testing over a grid: the candidates
+    automate 5%, 10%, ... of the calibration answers, most confident first.
+    Each null hypothesis "the error above this threshold exceeds max_error"
+    is tested with an exact binomial test at level ``delta``, in that order,
+    and testing stops at the first failure, so no correction for multiple
+    tests is needed. Levels too small to reject even with zero errors are
+    skipped; which ones depends on ``max_error`` and ``delta`` only, not on
+    the labels. Returns ``inf`` (automate nothing) if no level is certified.
+    """
+    order = np.argsort(-confidence, kind="stable")
+    conf, wrong = confidence[order], (~correct[order].astype(bool)).astype(int)
+    errors = np.cumsum(wrong)
+    smallest = math.ceil(math.log(delta) / math.log1p(-max_error))
+    chosen = float("inf")
+    for level in np.arange(step, 1 + 1e-9, step):
+        n = math.ceil(len(conf) * level)
+        while n < len(conf) and conf[n] == conf[n - 1]:
+            n += 1      # a threshold can't split a run of equal confidences
+        if n < smallest:
+            continue
+        if binomial_cdf(int(errors[n - 1]), n, max_error) > delta:
+            break
+        chosen = float(conf[n - 1])
+    return chosen

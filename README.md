@@ -140,7 +140,7 @@ memorisation.
 Whether the Privatemode arm's probabilities can be trusted, how a
 temperature fixes their overconfidence without labels, and what conformal
 prediction sets need, is a separate analysis of two further runs:
-[`results/calibration/part-1/`](results/calibration/part-1/README.md).
+[`results/calibration/`](results/calibration/README.md).
 
 ### What is outside these columns
 

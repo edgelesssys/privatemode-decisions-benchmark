@@ -48,3 +48,37 @@ def test_the_split_is_fixed_and_disjoint():
     again, _ = c.split(d)
     assert set(cal.index).isdisjoint(test.index) and len(cal.index) + len(test.index) == 100
     assert (cal.index == again.index).all()
+
+
+def test_learn_then_test_keeps_the_error_promise():
+    rng = np.random.default_rng(3)
+    violations, automated = [], []
+    for _ in range(200):
+        conf = rng.uniform(0.5, 1, 1500)
+        right = rng.random(1500) < conf
+        t = c.automation_threshold(conf[:500], right[:500], 0.10, 0.1)
+        m = conf[500:] >= t
+        automated.append(m.mean())
+        violations.append(m.any() and (~right[500:][m]).mean() > 0.10)
+    assert np.mean(violations) <= 0.1
+    assert np.mean(automated) > 0.1
+
+
+def test_learn_then_test_automates_nothing_it_cannot_certify():
+    conf = np.linspace(0.5, 1, 20)
+    assert c.automation_threshold(conf, np.ones(20, bool), 0.10, 0.1) == np.inf
+
+
+def test_isotonic_regression_calibrates_a_monotone_distortion():
+    rng = np.random.default_rng(4)
+    x = rng.uniform(0, 1, 6000)
+    y = rng.random(6000) < x ** 2
+    model = c.fit_isotonic(x[:3000], y[:3000])
+    assert c.ece_top(c.apply_isotonic(model, x[3000:]), y[3000:]) < 0.03 < c.ece_top(x[3000:], y[3000:])
+
+
+def test_binomial_cdf():
+    import math
+    n, p = 40, 0.1
+    exact = sum(math.comb(n, i) * p ** i * (1 - p) ** (n - i) for i in range(4))
+    assert c.binomial_cdf(3, n, p) == pytest.approx(exact)
