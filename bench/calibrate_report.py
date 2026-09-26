@@ -90,7 +90,8 @@ def plots(out: Path, figures: dict) -> None:
         # confidence, which stretches exactly the part the left one squeezes.
         styles = {"GLM raw": ("#c0504d", "-"), "GLM, default T (no labels)": ("#4f81bd", "-"),
                   "GLM, T per task (~500 labels)": ("#8064a2", "--"),
-                  "Jev, as returned": ("#7f7f7f", "-")}
+                  "Jev, as returned": ("#7f7f7f", "-"),
+                  "Jev, default T (no labels)": ("#2e9e8f", "-")}
         fig, (left, right) = plt.subplots(1, 2, figsize=(8.6, 4.0))
         left.plot([0.25, 1], [0.25, 1], color="#bbb", lw=0.8, ls=":")
         right.axhline(0, color="#bbb", lw=0.8, ls=":")
@@ -231,12 +232,16 @@ METHODS = (
     ("jev", "Jev, as returned", "`jev-latest`'s probabilities, rounded to 0.01", "none"),
     ("jev unzero", "Jev, zeros set to 0.005",
      "half a rounding unit where Jev says 0, so a temperature can be fitted", "none"),
+    ("jev default", "Jev, zeros set + default T",
+     "the same recipe as GLM's default: log T = a + b·log(options), fitted on Jev's other "
+     "datasets", "none"),
     ("jev own", "Jev, zeros set + T per task",
-     "the same, then a temperature fitted on this task's calibration half", "~500"),
+     "zeros set, then a temperature fitted on this task's calibration half", "~500"),
 )
 #: Shown in the reliability figure: the rest sit on top of "formula" and hide it.
 CURVES = {"raw": "GLM raw", "formula": "GLM, default T (no labels)",
-          "oracle": "GLM, T per task (~500 labels)", "jev": "Jev, as returned"}
+          "oracle": "GLM, T per task (~500 labels)", "jev": "Jev, as returned",
+          "jev default": "Jev, default T (no labels)"}
 
 
 def compare_methods(args, run, text_names, temperatures, priors):
@@ -259,9 +264,18 @@ def compare_methods(args, run, text_names, temperatures, priors):
     parts: dict[str, list] = defaultdict(list)   # method -> [(P, y), ...], one per dataset
     temps: dict[str, list] = defaultdict(list)
     names = [n for n in text_names if n in jev]
+    halves = {n: (c.split(common(run[n], jev[n])[0]), c.split(common(run[n], jev[n])[1]))
+              for n in names}
+    # Jev's own temperatures, and from them its zero-label default: the
+    # option-count formula refitted on Jev, each dataset left out of its own T.
+    jev_own = {n: c.fit_temperature([(unzero(halves[n][1][0].P), halves[n][1][0].y)])
+               for n in names}
+    options = {n: run[n].k for n in names}
+    jev_default = {n: c.formula_temperature(
+        *c.fit_formula({m: jev_own[m] for m in names if m != n}, options), options[n])
+        for n in names}
     for n in names:
-        glm, other = common(run[n], jev[n])
-        (_, test_g), (cal_j, test_j) = c.split(glm), c.split(other)
+        (_, test_g), (cal_j, test_j) = halves[n]
         y = test_g.y
         for key in ("global", "formula", "family", "oracle"):
             t = temperatures[key][n]
@@ -274,9 +288,9 @@ def compare_methods(args, run, text_names, temperatures, priors):
             temps["context"].append(temperatures["context"][n])
         parts["jev"].append((test_j.P, test_j.y))
         parts["jev unzero"].append((unzero(test_j.P), test_j.y))
-        t = c.fit_temperature([(unzero(cal_j.P), cal_j.y)])
-        parts["jev own"].append((c.scale(unzero(test_j.P), t), test_j.y))
-        temps["jev own"].append(t)
+        for key, t in (("jev default", jev_default[n]), ("jev own", jev_own[n])):
+            parts[key].append((c.scale(unzero(test_j.P), t), test_j.y))
+            temps[key].append(t)
 
     def ece_of(key):
         return [c.ece(P, y) for P, y in parts[key]]
@@ -287,12 +301,14 @@ def compare_methods(args, run, text_names, temperatures, priors):
             continue
         eces = ece_of(key)
         excess = mean(e - c.ece_floor(P, draws=100) for e, (P, _) in zip(eces, parts[key]))
-        # Share of the per-task gain in ECE, as in section 2; GLM methods only.
-        if key.startswith("jev") or len(parts[key]) != len(parts["raw"]):
+        # Share of the per-task gain in ECE, as in section 2: for GLM from raw
+        # to its T per task, for Jev from as returned to its T per task.
+        base, best = ("jev", "jev own") if key.startswith("jev") else ("raw", "oracle")
+        if key in ("jev", "jev unzero") or len(parts[key]) != len(parts[base]):
             share = None
         else:
-            gain = sum(ece_of("raw")) - sum(ece_of("oracle"))
-            share = (sum(ece_of("raw")) - sum(eces)) / gain
+            gain = sum(ece_of(base)) - sum(ece_of(best))
+            share = (sum(ece_of(base)) - sum(eces)) / gain
         row = {"name": name, "how": how, "labels": labels,
                "t": float(np.median(temps[key])) if temps[key] else 1.0,
                "accuracy": mean(c.accuracy(P, y) for P, y in parts[key]),
@@ -303,8 +319,9 @@ def compare_methods(args, run, text_names, temperatures, priors):
                            "1" if key in ("raw", "jev", "jev unzero") else f"{row['t']:.2f}",
                            f"{row['accuracy'] * 100:.1f}%", f"{row['confidence'] * 100:.1f}%",
                            f"{(row['confidence'] - row['accuracy']) * 100:+.1f}",
-                           fmt(row["ece"]), f"**{fmt(row['excess'])}**" if key == "formula"
-                           else fmt(row["excess"]),
+                           fmt(row["ece"]),
+                           (f"**{fmt(row['excess'])}**" if key in ("formula", "jev default")
+                            else fmt(row["excess"])),
                            "—" if share is None else f"{share:.0%}"])
     n_rows = sum(len(y) for _, y in parts["raw"])
     markdown = (
@@ -314,7 +331,7 @@ def compare_methods(args, run, text_names, temperatures, priors):
         "median over datasets; *overconfidence* is mean confidence minus accuracy in points; "
         "*excess ECE* is ECE minus the sampling floor (0 is as calibrated as the sample can "
         "show); *share* is the part of the per-task temperature's ECE reduction a method "
-        "achieves.\n\n"
+        "achieves, measured for Jev from its probabilities as returned to its own per-task T.\n\n"
         + table(table_rows, ["method", "what it does", "labels", "T", "accuracy", "confidence",
                              "overconfidence", "ECE", "excess ECE", "share"]))
     curves = {CURVES[k]: pooled_reliability(parts[k]) for k in CURVES if parts[k]}

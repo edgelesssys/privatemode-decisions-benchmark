@@ -170,7 +170,7 @@ Priors from neutral content (`N/A`, empty, `[MASK]`, and `k. A.` for German sets
 
 ### Every method on the same examples
 
-All methods on the same 13,005 examples: the test halves of the 28 text datasets, restricted to the examples Jev answered too. Every temperature was fitted without these examples, and the zero-label ones without the dataset. *T* is the median over datasets; *overconfidence* is mean confidence minus accuracy in points; *excess ECE* is ECE minus the sampling floor (0 is as calibrated as the sample can show); *share* is the part of the per-task temperature's ECE reduction a method achieves.
+All methods on the same 13,005 examples: the test halves of the 28 text datasets, restricted to the examples Jev answered too. Every temperature was fitted without these examples, and the zero-label ones without the dataset. *T* is the median over datasets; *overconfidence* is mean confidence minus accuracy in points; *excess ECE* is ECE minus the sampling floor (0 is as calibrated as the sample can show); *share* is the part of the per-task temperature's ECE reduction a method achieves, measured for Jev from its probabilities as returned to its own per-task T.
 
 | method | what it does | labels | T | accuracy | confidence | overconfidence | ECE | excess ECE | share |
 |---|---|---|---|---|---|---|---|---|---|
@@ -182,7 +182,8 @@ All methods on the same 13,005 examples: the test halves of the 28 text datasets
 | T per task | a temperature fitted on this task's calibration half | ~500 | 2.03 | 78.1% | 79.3% | +1.2 | 0.054 | 0.006 | 100% |
 | Jev, as returned | `jev-latest`'s probabilities, rounded to 0.01 | none | 1 | 77.5% | 87.5% | +10.0 | 0.110 | 0.080 | — |
 | Jev, zeros set to 0.005 | half a rounding unit where Jev says 0, so a temperature can be fitted | none | 1 | 77.5% | 80.8% | +3.3 | 0.128 | 0.082 | — |
-| Jev, zeros set + T per task | the same, then a temperature fitted on this task's calibration half | ~500 | 1.19 | 77.5% | 78.8% | +1.3 | 0.070 | 0.021 | — |
+| Jev, zeros set + default T | the same recipe as GLM's default: log T = a + b·log(options), fitted on Jev's other datasets | none | 1.25 | 77.5% | 80.0% | +2.5 | 0.094 | **0.042** | 40% |
+| Jev, zeros set + T per task | zeros set, then a temperature fitted on this task's calibration half | ~500 | 1.19 | 77.5% | 78.8% | +1.3 | 0.070 | 0.021 | 100% |
 
 ## 4. Conformal prediction sets
 

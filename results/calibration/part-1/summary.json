@@ -228,16 +228,27 @@
    "excess": 0.08210701976767988,
    "share": null
   },
+  "jev default": {
+   "name": "Jev, zeros set + default T",
+   "how": "the same recipe as GLM's default: log T = a + b\u00b7log(options), fitted on Jev's other datasets",
+   "labels": "none",
+   "t": 1.250170058082941,
+   "accuracy": 0.775263856579097,
+   "confidence": 0.8000252968453502,
+   "ece": 0.09388173066912134,
+   "excess": 0.04208691266332425,
+   "share": 0.403563895013399
+  },
   "jev own": {
    "name": "Jev, zeros set + T per task",
-   "how": "the same, then a temperature fitted on this task's calibration half",
+   "how": "zeros set, then a temperature fitted on this task's calibration half",
    "labels": "~500",
    "t": 1.1938435279333435,
    "accuracy": 0.775263856579097,
    "confidence": 0.7882989858215037,
    "ece": 0.06970329513268082,
    "excess": 0.020979947876002634,
-   "share": null
+   "share": 1.0
   }
  }
 }
