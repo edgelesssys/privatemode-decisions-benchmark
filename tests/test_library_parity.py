@@ -36,6 +36,11 @@ def dataset(name):
     return P, y, answers, [d["options"][i] for i in y]
 
 
+def scaled_by_library(answers, temperature):
+    options = list(answers[0].probabilities)
+    return np.array([[library.scale(a.probabilities, temperature)[o] for o in options] for a in answers])
+
+
 @pytest.fixture(params=sorted(FIXTURE))
 def data(request):
     return dataset(request.param)
@@ -67,7 +72,11 @@ def test_conformal_cutoffs(data):
 def test_automation_threshold(data, max_error):
     P, y, answers, labels = data
     fitted = library.calibrate(answers, labels, max_error=max_error, **ALONE)
-    Pt = c.scale(P, fitted.temperature)
+    # The library's own scaled probabilities: numpy's exp and log can differ
+    # from the math module's in the last bit on some platforms, which breaks
+    # near-ties between confidences and moves the threshold to a neighbouring
+    # answer. The temperature itself is compared in test_temperature_fit.
+    Pt = scaled_by_library(answers, fitted.temperature)
     assert c.automation_threshold(Pt.max(1), Pt.argmax(1) == y, max_error, 0.1) == pytest.approx(
         fitted.threshold, abs=1e-12)
 
@@ -97,7 +106,14 @@ def test_bias_cutoffs_and_threshold_out_of_fold(data, max_error):
         pytest.skip("installed privatemode-decisions has no bias yet")
     assert FOLDS == library.FOLDS
     fitted = library.calibrate(answers, labels, coverage=0.9, max_error=max_error)
-    Pf = out_of_fold(P, y, True)
-    assert c.threshold(c.lac_scores(Pf, y), 0.9) == pytest.approx(fitted.cutoffs["*"], abs=1e-5)
-    expected = c.automation_threshold(Pf.max(1), Pf.argmax(1) == y, max_error, 0.1)
-    assert expected == pytest.approx(fitted.threshold, abs=1e-5)
+    # The out-of-fold probabilities agree between the two fits ...
+    options = list(answers[0].probabilities)
+    ours = library._out_of_fold(answers, labels, library.FOLDS)
+    Pl = np.array([[row[o] for o in options] for row in ours])
+    assert out_of_fold(P, y, True) == pytest.approx(Pl, abs=1e-4)
+    # ... and the cutoff and threshold computed from them match exactly. From
+    # the library's own probabilities: the two fits differ by about 1e-7,
+    # enough to break a near-tie and move a threshold to the next answer.
+    assert c.threshold(c.lac_scores(Pl, y), 0.9) == pytest.approx(fitted.cutoffs["*"], abs=1e-12)
+    expected = c.automation_threshold(Pl.max(1), Pl.argmax(1) == y, max_error, 0.1)
+    assert expected == pytest.approx(fitted.threshold, abs=1e-12)
