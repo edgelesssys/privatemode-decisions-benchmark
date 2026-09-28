@@ -814,10 +814,19 @@ def report(args) -> str:
     (out / "summary.json").write_text(json.dumps(summary_json, indent=1))
     # What the library ships, for its scripts/update_calibration.py.
     meta = next(iter(run.values())).meta
-    constants = {"model": (meta.get("arms") or {}).get("privatemode", "unknown"),
+    requested = (meta.get("arms") or {}).get("privatemode", "unknown")
+    served = sorted({m for d in run.values() for m in d.meta.get("served_model", [])})
+    if len(served) > 1:
+        raise SystemExit(f"the run was answered by several models: {served}")
+    constants = {"model": served[0] if served else requested,
                  "formula": list(shipped["formula"]), "family": shipped["family"],
-                 "source": (f"privatemode-decisions-benchmark, results/calibration/part-1/"
-                            f"constants.json (run {meta.get('started', '?')})")}
+                 "source": (f"privatemode-decisions-benchmark, {args.source} "
+                            f"(run {meta.get('started', '?')})")}
+    if served and served[0] != requested:
+        constants["alias"] = requested
+    fingerprints = sorted({f for d in run.values() for f in d.meta.get("fingerprint", [])})
+    if fingerprints:
+        constants["fingerprint"] = fingerprints
     (out / "constants.json").write_text(json.dumps(constants, indent=1) + "\n")
     return "\n".join(md) + "\n"
 
@@ -860,6 +869,8 @@ def main() -> None:
     parser.add_argument("--label-check", help="banking77 label check, results/calibration/part-1/"
                                               "banking77-label-check.json")
     parser.add_argument("--out", required=True)
+    parser.add_argument("--source", default="results/calibration/part-1/constants.json",
+                        help="where constants.json will be published, for the library's comment")
     args = parser.parse_args()
     text = report(args)
     (Path(args.out) / "report.md").write_text(text)

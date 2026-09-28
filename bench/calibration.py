@@ -71,10 +71,16 @@ def load_run(directory: Path, arm: str = "privatemode") -> dict[str, Dataset]:
         P = np.array([[r["probabilities"][o] for o in options] for r in rows], dtype=float)
         mass = (np.array([r["option_mass"] for r in rows], dtype=float)
                 if all("option_mass" in r for r in rows) else None)
+        meta = dict(meta or {})
+        # What the endpoint said answered, where the run recorded it.
+        served = sorted({r["served_model"] for r in rows if r.get("served_model")})
+        if served:
+            meta["served_model"] = served
+            meta["fingerprint"] = sorted({r["fingerprint"] for r in rows if r.get("fingerprint")})
         out[path.parent.name] = Dataset(
             path.parent.name, options, np.array([r["index"] for r in rows]),
             P / P.sum(axis=1, keepdims=True), np.array([position[r["gold"]] for r in rows]),
-            mass, meta or {})
+            mass, meta)
     return out
 
 
@@ -223,6 +229,78 @@ def fit_temperature(parts: list[tuple[np.ndarray, np.ndarray]],
     return math.exp((a + b) / 2)
 
 
+def scale_bias(P: np.ndarray, temperature: float, bias: np.ndarray) -> np.ndarray:
+    """Temperature plus a bias per option: ``softmax(log p / T + b)``.
+
+    Unlike a temperature alone, the bias can change the chosen option.
+    """
+    return softmax(np.log(np.maximum(P, FLOOR)) / temperature + bias)
+
+
+def fit_temperature_bias(P: np.ndarray, y: np.ndarray, prior: float = 1.0,
+                         shrinkage: float = 0.0, strength: float = 5.0) -> tuple[float, np.ndarray]:
+    """A temperature and a bias per option minimizing the mean NLL of
+    ``softmax(log p / T + b)``, with pulls worth ``shrinkage`` examples
+    (``log T`` towards ``log prior``) and ``strength`` examples (``b``
+    towards 0): ``shrinkage / n · (log T − log prior)² + strength / n · |b|²``.
+
+    With few labels the bias stays small and the fit is close to the
+    temperature alone. Damped Newton on ``(log T, b)``; the bias is returned
+    centred, since adding a constant to every option changes nothing.
+    """
+    L = np.log(np.maximum(P, FLOOR))
+    n, k = L.shape
+    onehot = np.zeros_like(L)
+    onehot[np.arange(n), y] = 1
+    rho, lam, s0 = shrinkage / n, strength / n, math.log(prior)
+
+    def loss(theta):
+        return (nll(softmax(L * math.exp(-theta[0]) + theta[1:]), y)
+                + rho * (theta[0] - s0) ** 2 + lam * float(theta[1:] @ theta[1:]))
+
+    theta = np.zeros(k + 1)
+    theta[0] = math.log(fit_temperature([(P, y)], prior=prior, shrinkage=shrinkage))
+    current = loss(theta)
+    for _ in range(100):
+        Z = L * math.exp(-theta[0])
+        p = softmax(Z + theta[1:])
+        r = p - onehot
+        pz = (p * Z).sum(axis=1)                       # E_p[Z] per row
+        grad = np.empty(k + 1)
+        # d z / d log T = −Z and d² z / d (log T)² = Z
+        grad[0] = -np.mean((r * Z).sum(axis=1)) + 2 * rho * (theta[0] - s0)
+        grad[1:] = r.mean(axis=0) + 2 * lam * theta[1:]
+        hess = np.empty((k + 1, k + 1))
+        var_z = (p * Z * Z).sum(axis=1) - pz ** 2
+        hess[0, 0] = np.mean(var_z + (r * Z).sum(axis=1)) + 2 * rho
+        hess[0, 1:] = hess[1:, 0] = -(p * (Z - pz[:, None])).mean(axis=0)
+        hess[1:, 1:] = (np.diag(p.sum(axis=0)) - p.T @ p) / n + 2 * lam * np.eye(k)
+        # The temperature direction can be locally concave: damp until positive definite.
+        damping = 0.0
+        while True:
+            try:
+                np.linalg.cholesky(hess + damping * np.eye(k + 1))
+                break
+            except np.linalg.LinAlgError:
+                damping = max(1e-8, damping * 10)
+        step = np.linalg.solve(hess + damping * np.eye(k + 1), grad)
+        size = 1.0
+        while size > 1e-6:
+            candidate = theta - size * step
+            value = loss(candidate)
+            if value <= current - 1e-4 * size * float(grad @ step):
+                break
+            size /= 2
+        else:
+            break
+        change = float(np.abs(candidate - theta).max())
+        theta, current = candidate, value
+        if change < 1e-9:
+            break
+    bias = theta[1:]
+    return math.exp(theta[0]), bias - bias.mean()
+
+
 def fit_formula(temps: dict[str, float], options: dict[str, int]) -> tuple[float, float]:
     """``log T = a + b * log(options)`` by least squares over datasets."""
     x = np.log([options[d] for d in temps])
@@ -369,3 +447,94 @@ def automation_threshold(confidence: np.ndarray, correct: np.ndarray, max_error:
             break
         chosen = float(conf[n - 1])
     return chosen
+
+
+# -- conformal cutoffs per group of classes ----------------------------------------
+
+#: Quantiles that describe a class's score distribution (Ding et al. 2023).
+QUANTILES = (0.5, 0.6, 0.7, 0.8, 0.9)
+
+
+def kmeans(X: np.ndarray, m: int, iterations: int = 100) -> np.ndarray:
+    """Lloyd's algorithm from a deterministic farthest-point start: the
+    point nearest the mean, then repeatedly the point farthest from every
+    centre chosen so far. Returns a cluster per row."""
+    m = min(m, len(X))
+    centres = [int(np.argmin(((X - X.mean(axis=0)) ** 2).sum(axis=1)))]
+    while len(centres) < m:
+        distance = ((X[:, None, :] - X[centres][None]) ** 2).sum(axis=2).min(axis=1)
+        centres.append(int(np.argmax(distance)))
+    C = X[centres].astype(float)
+    assign = np.zeros(len(X), int)
+    for _ in range(iterations):
+        new = ((X[:, None, :] - C[None]) ** 2).sum(axis=2).argmin(axis=1)
+        if _ and np.array_equal(new, assign):
+            break
+        assign = new
+        for j in range(m):
+            if (assign == j).any():
+                C[j] = X[assign == j].mean(axis=0)
+    return assign
+
+
+def group_cutoffs(P: np.ndarray, y: np.ndarray, groups: np.ndarray, coverage: float) -> np.ndarray:
+    """A cutoff per class: the conformal quantile of its group's scores.
+
+    ``groups[c]`` is class c's group, -1 for none. Classes without a group,
+    and groups too small to certify ``coverage``, share one cutoff over all
+    rows (the marginal one)."""
+    scores = lac_scores(P, y)
+    marginal = threshold(scores, coverage)
+    cutoffs = np.full(P.shape[1], marginal)
+    for g in set(groups.tolist()) - {-1}:
+        members = np.where(groups == g)[0]
+        rows = np.isin(y, members)
+        q = threshold(scores[rows], coverage)
+        if q != float("inf"):
+            cutoffs[members] = q
+    return cutoffs
+
+
+def ding_groups(P: np.ndarray, y: np.ndarray, coverage: float, per_group: int = 50,
+                ) -> tuple[np.ndarray, np.ndarray]:
+    """Clustered conformal (Ding et al. 2023): the first half of the labelled
+    rows describes each class by quantiles of its scores and k-means groups
+    the classes, about one group per ``per_group`` rows left for the cutoffs;
+    returns the groups and those rows. Classes with fewer than
+    ``ceil(1 / (1 - coverage)) - 1`` rows in the first half stay ungrouped,
+    as in the paper."""
+    half = len(y) // 2
+    first, rest = np.arange(half), np.arange(half, len(y))
+    k = P.shape[1]
+    minimum = max(2, math.ceil(1 / (1 - coverage)) - 1)
+    scores = lac_scores(P[first], y[first])
+    counts = np.bincount(y[first], minlength=k)
+    eligible = np.where(counts >= minimum)[0]
+    groups = np.full(k, -1)
+    m = max(1, int(np.isin(y[rest], eligible).sum()) // per_group)
+    if len(eligible) >= 2 and m > 1:
+        X = np.array([np.quantile(scores[y[first] == cls], QUANTILES) for cls in eligible])
+        groups[eligible] = kmeans(X, m)
+    elif len(eligible):
+        groups[eligible] = 0
+    return groups, rest
+
+
+def unlabelled_groups(P: np.ndarray, labels: int, per_group: int = 50) -> np.ndarray:
+    """Groups of classes from answers alone, no labels: each class is
+    described by quantiles of the probability it gets where it is the answer,
+    the label-free stand-in for its score distribution, and k-means makes
+    about one group per ``per_group`` labels. Classes the model never
+    answers stay ungrouped."""
+    k = P.shape[1]
+    choice = P.argmax(axis=1)
+    counts = np.bincount(choice, minlength=k)
+    eligible = np.where(counts >= 3)[0]
+    groups = np.full(k, -1)
+    m = max(1, labels // per_group)
+    if len(eligible) >= 2 and m > 1:
+        X = np.array([np.quantile(1 - P[choice == cls, cls], QUANTILES) for cls in eligible])
+        groups[eligible] = kmeans(X, m)
+    elif len(eligible):
+        groups[eligible] = 0
+    return groups

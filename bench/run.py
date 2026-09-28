@@ -277,6 +277,10 @@ def execute(args) -> Path:
                            attempts=attempts)
                 if answer.option_mass is not None:
                     row["option_mass"] = answer.option_mass
+                if answer.served_model:
+                    row["served_model"] = answer.served_model
+                if answer.fingerprint:
+                    row["fingerprint"] = answer.fingerprint
             except Exception as error:
                 row.update(error=f"{type(error).__name__}: {error}"[:300])
             with lock:

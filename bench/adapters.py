@@ -66,6 +66,10 @@ class Answer:
     #: Probability on the option tokens before the mask (Privatemode only):
     #: low means the model wanted to answer outside the options.
     option_mass: float | None = None
+    #: The model the endpoint says answered, and its build (``model`` and
+    #: ``system_fingerprint`` of the response), when it reports them.
+    served_model: str | None = None
+    fingerprint: str | None = None
 
 
 class Arm:

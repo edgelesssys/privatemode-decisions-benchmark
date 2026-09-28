@@ -84,5 +84,11 @@ class TimedClient(OpenAIClient):
             self._local.detail = {"gate_wait_s": waited, "throttled": throttled}
             if status >= 400:
                 raise APIError(status, raw)
-            return json.loads(raw), elapsed
+            parsed = json.loads(raw)
+            # What the alias resolved to: ``glm-flash-latest`` can move to
+            # another model, so a run records what actually answered.
+            self._local.detail.update(
+                served_model=parsed.get("model"),
+                fingerprint=parsed.get("system_fingerprint"))
+            return parsed, elapsed
         raise RuntimeError("unreachable")
