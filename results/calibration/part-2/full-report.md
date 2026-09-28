@@ -74,7 +74,7 @@ Per dataset, share automated (error among automated on the test half):
 
 | dataset | options | accuracy | ε = 2% | ε = 5% | ε = 10% |
 |---|---|---|---|---|---|
-| boolq | 2 | 0.91 | 0% (0.0%) | 42% (1.9%) | 94% (5.6%) |
+| boolq | 2 | 0.91 | 0% (0.0%) | 42% (1.9%) | 92% (5.4%) |
 | rotten_tomatoes | 2 | 0.94 | 0% (0.0%) | 90% (3.3%) | 100% (6.0%) |
 | rte | 2 | 0.89 | 0% (0.0%) | 0% (0.0%) | 49% (2.9%) |
 | sst2 | 2 | 0.96 | 31% (0.0%) | 91% (1.8%) | 100% (4.1%) |
@@ -91,10 +91,10 @@ Per dataset, share automated (error among automated on the test half):
 | gnad10 | 9 | 0.67 | 0% (0.0%) | 0% (0.0%) | 12% (5.1%) |
 | patent | 9 | 0.55 | 0% (0.0%) | 0% (0.0%) | 0% (0.0%) |
 | yahoo_topics | 10 | 0.76 | 0% (0.0%) | 0% (0.0%) | 0% (0.0%) |
-| scotus | 13 | 0.68 | 0% (0.0%) | 0% (0.0%) | 15% (6.7%) |
+| scotus | 13 | 0.68 | 0% (0.0%) | 0% (0.0%) | 15% (6.8%) |
 | dbpedia_14 | 14 | 0.98 | 97% (1.0%) | 100% (2.0%) | 100% (2.0%) |
 | massive_scenario_de | 18 | 0.74 | 23% (0.0%) | 48% (2.9%) | 62% (6.5%) |
-| massive_scenario_en | 18 | 0.76 | 0% (0.0%) | 0% (0.0%) | 68% (10.0%) |
+| massive_scenario_en | 18 | 0.76 | 0% (0.0%) | 0% (0.0%) | 68% (9.8%) |
 | newsgroups20 | 20 | 0.73 | 0% (0.0%) | 0% (0.0%) | 63% (6.7%) |
 | trec_fine | 42 | 0.80 | 0% (0.0%) | 0% (0.0%) | 58% (6.9%) |
 | massive_intent_de | 59 | 0.80 | 0% (0.0%) | 0% (0.0%) | 0% (0.0%) |
@@ -109,8 +109,8 @@ Per dataset, share automated (error among automated on the test half):
 |---|---|---|---|---|---|---|---|---|
 | 20 | 0% | 0.0% | 0% | 0.0% | 0% | 0.0% | 0.908 | 40.1% |
 | 50 | 25% | 1.3% | 25% | 0.9% | 11% | 1.1% | 0.901 | 44.4% |
-| 100 | 27% | 1.6% | 27% | 1.4% | 23% | 1.4% | 0.903 | 41.6% |
-| 250 | 37% | 1.4% | 37% | 1.6% | 29% | 1.4% | 0.900 | 42.4% |
+| 100 | 27% | 1.5% | 27% | 1.4% | 23% | 1.4% | 0.903 | 41.6% |
+| 250 | 37% | 1.5% | 37% | 1.4% | 29% | 1.4% | 0.900 | 42.4% |
 | 500 | 39% | 0.0% | 39% | 0.0% | 34% | 1.3% | 0.898 | 39.1% |
 
 Fitting one temperature on the same labels keeps both guarantees in practice: violations stay well under 10% and coverage at 90%, while splitting the labels costs automation. calibrate() therefore uses all labels for both steps.

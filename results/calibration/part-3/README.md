@@ -54,9 +54,9 @@ on all labels:
 
 | labels | T only, same labels (part 2) | T + bias, same labels | **T + bias, out-of-fold (shipped)** |
 |---|---|---|---|
-| 50 | 25% automated / 1.1% over ε / coverage 0.900 | 29% / 1.8% / 0.893 | 20% / 0.7% / 0.908 |
-| 100 | 27% / 1.1% / 0.902 | 33% / 2.5% / 0.898 | 23% / 1.2% / 0.908 |
-| 250 | 38% / 0.6% / 0.901 | 43% / 4.3% / 0.899 | 32% / 1.3% / 0.906 |
+| 50 | 25% automated / 0.9% over ε / coverage 0.900 | 29% / 1.8% / 0.893 | 20% / 0.7% / 0.908 |
+| 100 | 27% / 1.1% / 0.902 | 33% / 2.3% / 0.898 | 23% / 1.2% / 0.908 |
+| 250 | 38% / 0.6% / 0.901 | 43% / 4.4% / 0.899 | 32% / 1.3% / 0.906 |
 | 500 | 39% / 0.0% / 0.898 | 46% / 8.7% / 0.899 | 35% / 0.4% / 0.903 |
 
 Automated share at ε = 10%, share of draws whose automated error on the test
@@ -78,7 +78,7 @@ same fit and the same out-of-fold cutoffs, on the same examples:
 | 100 | GLM-5.3-Flash | 78.1% | **80.2%** | 0.008 → **0.005** | **1.70** | 23% |
 | 100 | Jev | 77.5% | 79.6% | 0.023 → 0.014 | 1.79 | 24% |
 | 500 | GLM-5.3-Flash | 76.1% | **79.1%** | 0.006 → **0.003** | **1.62** | 36% |
-| 500 | Jev | 75.1% | 78.7% | 0.022 → 0.007 | 1.67 | 36% |
+| 500 | Jev | 75.1% | 78.7% | 0.022 → 0.007 | 1.67 | 35% |
 
 Both gain about 2 points at 100 labels and 3.5 at 500. After calibration GLM
 is 0.6 points ahead at 100 labels and 0.4 at 500, better calibrated (excess

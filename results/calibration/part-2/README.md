@@ -79,7 +79,7 @@ the datasets that have 500). With 20 labels nothing can be certified: even
 temperature and then the cutoffs and threshold on the same labels, which
 strictly speaking breaks the guarantees' assumptions: the temperature can
 change which answers count as most confident. Tested on exactly that path,
-with 50 to 500 labels: at most 1.6% of draws exceeded the 10% error bound
+with 50 to 500 labels: at most 1.4% of draws exceeded the 10% error bound
 (the guarantee allows 10%), and 90% sets covered 0.898–0.908. Splitting the
 labels between the two steps, which is strictly valid, cost automation: 11%
 instead of 25% at 50 labels, 34% instead of 39% at 500.

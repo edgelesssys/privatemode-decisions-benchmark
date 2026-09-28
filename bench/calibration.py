@@ -437,8 +437,11 @@ def automation_threshold(confidence: np.ndarray, correct: np.ndarray, max_error:
     errors = np.cumsum(wrong)
     smallest = math.ceil(math.log(delta) / math.log1p(-max_error))
     chosen = float("inf")
-    for level in np.arange(step, 1 + 1e-9, step):
-        n = math.ceil(len(conf) * level)
+    levels = round(1 / step)
+    for level in range(1, levels + 1):
+        # Integer arithmetic, as the library: a float step (0.15000000000000002)
+        # would round some levels up by one answer.
+        n = -(-len(conf) * level // levels)
         while n < len(conf) and conf[n] == conf[n - 1]:
             n += 1      # a threshold can't split a run of equal confidences
         if n < smallest:
