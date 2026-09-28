@@ -32,6 +32,12 @@ The raw runs are in the release
 from them.
 The first three-dataset pilot is kept in [`results/pilot/`](results/pilot/).
 
+These runs used the library's earlier prompt, with the state before the
+question. The library now asks the question before the state as well,
+which gained 1.6 points on average on the test halves
+([`results/prefill/`](results/prefill/README.md)); `bench.suite
+--state-first` reproduces the runs above.
+
 ### Accuracy
 
 On the 28 datasets both can answer, Jev and Privatemode are
@@ -145,6 +151,16 @@ datasets, rotation runs, neutral inputs and runs of two other models, in
 raw probabilities (calibration temperature 1) for it, so the ECE and Brier
 columns here describe the raw model; the library softens them by default.
 
+### A longer prompt, one read
+
+Whether GLM-5.3-Flash answers better in the same single read when the
+prompt repeats the question before the state, adds filler, or lets the
+model think briefly first, and how it then compares with Jev on MMLU-Pro
+and JevBench's public items: [`results/prefill/`](results/prefill/README.md).
+Asking the question first gains 1.6 points across the 29 datasets; filler
+gains at most a point, and only when long (1,024 tokens), and nothing on top
+of asking the question first.
+
 ### What is outside these columns
 
 Confidential computing. Privatemode runs the model inside an attested
@@ -230,7 +246,7 @@ docker run -d -p 127.0.0.1:8080:8080 ghcr.io/edgelesssys/privatemode/privatemode
   --apiKey <privatemode-api-key>
 
 python3.14 -m venv .venv
-.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@ae35442fc59e65d0b1a4dcc70e7f35187358dc3e"
+.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@5e27cbcc2f56dff642980da0a649879d356f3690"
 .venv/bin/pip install -e '.[dev,laya]'               # laya pulls torch + transformers
 cp .env.example .env                                 # proxy URL, Jev key, HF token
 ```
@@ -247,6 +263,7 @@ Three commands, in the order they have to happen.
 # 2. Run. The suite forecasts its cost and refuses to start over --budget-eur.
 .venv/bin/python -m bench.suite --dry-run -n 1000 --replicates 2 --arms all
 .venv/bin/python -m bench.suite -n 1000 --replicates 2 --arms all --concurrency 16
+#    (add --state-first for the prompt layout the published runs used)
 
 # 3. Aggregate. Recomputed from the JSONL, so a new question costs nothing.
 .venv/bin/python -m bench.aggregate results --write results/suite.md
