@@ -21,6 +21,10 @@ thought). What changes is the prompt before it:
   is ``R-Q`` with dots in the think block, ``RQ-FF`` the same framed as
   "Let me think. … Ok, now let me answer.", ``RQ-mid`` puts the dots between
   the state and the final question: ``[question] [state] [dots] [question]``.
+  ``QA`` asks as if the call had five questions about the state, all of them
+  with their options before the state (a prefix every question of the call
+  shares), then the state and the one question asked: the row's own question
+  at a random position among four generic ones (:data:`OTHER_QUESTIONS`).
 * ``F-*`` put content-free filler of about ``--tokens`` tokens in the think
   block (``F-before``: before the state and question instead, the placement
   control). ``F-count`` counts in digits and is a diagnostic only, since the
@@ -72,7 +76,9 @@ ARMS = ("B", "B2", "R-Q", "R-full", "R-think", "F-dots", "F-alpha", "F-words", "
         # The question restated in the think block, padded with dots to --tokens:
         "RF",
         # R-Q combined with filler of --tokens:
-        "RQ-F", "RQ-FF", "RQ-mid")
+        "RQ-F", "RQ-FF", "RQ-mid",
+        # Several questions about one state, all of them first (a shared prefix):
+        "QA")
 MODEL = os.environ.get("DECISIONS_MODEL", "glm-5.3-flash")
 #: As the suite sends scanned pages (``bench.run`` default).
 IMAGE_MAX_SIDE = 1024
@@ -224,6 +230,29 @@ def jevbench_tasks(root: Path) -> list[Task]:
     return tasks
 
 
+#: The other questions of a five-question call in the QA arm: generic, so
+#: they fit any state, and none of them the row's own.
+OTHER_QUESTIONS = (
+    Choice({"English": None, "German": None, "other": None},
+           instructions="Which language is the text written in?"),
+    Choice({"positive": None, "neutral": None, "negative": None},
+           instructions="What is the overall tone of the text?"),
+    Choice({"yes": "a person is named", "no": "no person is named"},
+           instructions="Does the text name a person?"),
+    Choice({"short": "one or two sentences", "medium": "a paragraph", "long": "several paragraphs"},
+           instructions="How long is the text?"),
+)
+
+
+def call_questions(question: Choice, index: int) -> tuple[list[Choice], int]:
+    """The row's question among the other four, at a position fixed by the
+    row's index; returns the questions in call order and that position."""
+    position = random.Random(index).randrange(len(OTHER_QUESTIONS) + 1)
+    questions = list(OTHER_QUESTIONS)
+    questions.insert(position, question)
+    return questions, position
+
+
 class Prefill(SystemOne):
     """Builds each arm's request around the library's own."""
 
@@ -261,6 +290,10 @@ class Prefill(SystemOne):
         think = None
         if arm == "R-Q":
             user = PREAMBLE + self.question_text(question) + "\n" + whole
+        elif arm == "QA":
+            questions, _ = call_questions(question, index)
+            lead = "".join(self.question_text(q) + "\n" for q in questions)
+            user = PREAMBLE + lead + whole
         elif arm in ("RQ-F", "RQ-FF"):
             user = PREAMBLE + self.question_text(question) + "\n" + whole
             think = (self.fillers["dots"] if arm == "RQ-F"
@@ -337,6 +370,8 @@ class Prefill(SystemOne):
                "cached_tokens": cached, "latency_s": latency + slowest}
         if thought is not None:
             row.update(thought=thought, generated_tokens=generated)
+        if arm == "QA":
+            row["position"] = call_questions(question, task.index)[1]
         return row
 
 

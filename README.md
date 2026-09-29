@@ -33,7 +33,7 @@ from them.
 The first three-dataset pilot is kept in [`results/pilot/`](results/pilot/).
 
 These runs used the library's earlier prompt, with the state before the
-question. The library now asks the question before the state as well,
+question. The library now asks the questions before the state as well,
 which gained 1.6 points on average on the test halves
 ([`results/prefill/`](results/prefill/README.md)); `bench.suite
 --state-first` reproduces the runs above.

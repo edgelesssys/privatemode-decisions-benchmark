@@ -17,7 +17,8 @@ repo; the tools are `bench/prefill.py` (runs), `bench/prefill_report.py`
 | Does repetition help? | **Yes: the question and its options also before the state (R-Q).** Dev +2.2 points [+1.2, +3.2], 12 datasets better and 2 worse. On the test halves +1.6 points (median +1.2), 15 wins, 12 ties, 2 losses, Wilcoxon p = 0.002, confirmed in two replicates. |
 | Why that shape? | Under the causal mask the state is read before the model knows what is asked. Repeating only the instruction before the state does nothing (+0.0), so it's the options, read first, that help. A third copy (R-QSQS) or repeating the state too (R-full) gains no more. |
 | Where? | Where the baseline is unsure: +9.7 points in the least sure fifth, about 0 elsewhere. Most on sentiment (sst5 +10.3, toxic_conversations +6.3) and intent (massive +3 to +4); nothing on topic sets that were already easy, and −2.2 on scanned documents (rvl_cdip). |
-| What does it cost? | Prompt tokens ×1.6 on average (EUR 0.135 → 0.223 per 1,000). At concurrency 1, nothing measurable up to about 20 options; with long option lists the list is sent twice: +110 ms on banking77 (77 options), +330 ms on clinc150 (151). Five questions about one 2,000-token state: +100 ms per call with `mode="staged"`. |
+| What does it cost? | Prompt tokens ×1.6 on average (EUR 0.135 → 0.223 per 1,000). At concurrency 1, nothing measurable up to about 20 options; with long option lists the list is sent twice: +110 ms on banking77 (77 options), +330 ms on clinc150 (151). With several questions per state the layout matters (next row). |
+| Several questions per state? | Leading every request with **all** of the call's questions keeps a shared, cacheable prefix, but keeps less of the gain: +0.9 points [−0.15, +1.98] with five questions per state, against +2.2 when each request leads with its own question. On 2,000-token states it was the fastest layout (p50 670 ms, 59% cached), because Privatemode only caches prefixes of about 2,300 tokens. It is the library's default; the own question first is `question_first="own"`. |
 | Calibration? | Better: NLL after a temperature 0.553 → 0.499 on the dev set, and the shipped default temperature still fits (excess ECE 0.016 with R-Q against 0.023 for the baseline, both on the test halves), so no new constants are needed. |
 | Label strings? | No more dependence: renaming every option costs −7.7 points for the baseline and −8.1 with R-Q. |
 | And real thinking? | The ceiling, and a different trade. 128 thinking tokens and then our read: +2.3 points on the dev set at +1.7 s, but worse calibrated (its own T is 3.9); 32 tokens do nothing. On MMLU-Pro it is +12 points where no prompt variant helps. Thinking only where the one-pass answer is below 0.9 keeps most of it: +10.0 on MMLU-Pro for 53% of questions, +1.9 on the classification sets for 21%. |
@@ -55,6 +56,49 @@ Same 3,388 dev rows and baseline as the screening; the full tables are in
   the 28 the dots fix alone are fewer than asking the baseline again flips
   (35). Averaging the two arms' answers (81.6%) is below R-Q alone (82.1%).
 - Stopped here: no combination beat R-Q, so none went to the test halves.
+
+## Several questions about one state
+
+The benchmark asks one question per state. To see what the layouts do when
+a call has several, the same 3,388 dev rows were asked as if the call had
+five questions: the row's own question at a random position among four
+generic ones (language, tone, whether a person is named, length), all with
+their options before the state, then the state and the row's question
+(arm `QA` in `bench.prefill`; full tables in
+[screening-multi-question.md](screening-multi-question.md)).
+
+| layout | accuracy vs state first [95% CI] | datasets + / − | least sure fifth |
+|---|---|---|---:|
+| own question first (R-Q) | **+2.18 [+1.21, +3.16]** | 12 / 2 | +9.7 |
+| all five questions first (QA) | +0.89 [−0.15, +1.98] | 7 / 5 | +5.9 |
+
+With four other questions in front, about 40% of the gain remains: +3.2
+points on sentiment and +1.6 on intent, nothing on NLI and topic tasks. The
+row's position in the block makes no clear difference (each position
+within ±2 points).
+
+What the layouts cost, five questions per call with `mode="staged"`, one
+call at a time (`bench.prefill_cache`, [cache-multi-question.json](cache-multi-question.json)):
+
+| layout | short states (ag_news): p50, cached | 2,000-token states (scotus): p50, cached |
+|---|---|---|
+| state first | 403 ms, 0% | 809 ms, 3% |
+| own question first | 409 ms, 0% | 935 ms, 0% |
+| all questions first | 530 ms, 0% | **670 ms, 59%** |
+
+Privatemode only caches prefixes of about 2,300 tokens. The state-first
+requests stay below that (about 1,950 tokens each on scotus), so even the
+state they share isn't reused; the question block lifts every request of
+the call over it, and the block itself is shared by every call with the
+same questions. Short states are never cached, so there the extra tokens
+only cost time.
+
+**What the library does with it:** all of the call's questions first is the
+default (`question_first=True`), for the cache with long states;
+`question_first="own"` leads each request with its own question, more
+accurate with several questions per call; `False` is the old layout. With
+one question per call the first two are identical, which is what the
+confirmation below measured.
 
 ## (a) Against the current state
 
@@ -119,12 +163,11 @@ the maintainer's run.
 
 ## What changes in the library
 
-The library now asks the question before the state as well, by default
-(`question_first=True`; `False` restores the old layout). The default
-temperatures apply unchanged: the calibration check above found them at
-least as good on the new prompt (excess ECE 0.016 against 0.023). It is
-worth it for one question per state with up to a few dozen options; with
-many options, or many questions about one long state, it costs latency.
+The library now asks the questions before the state as well, by default:
+all of the call's questions first (`question_first=True`), each request's
+own question first as an option (`"own"`), or the old layout (`False`).
+The default temperatures apply unchanged: the calibration check above found
+them at least as good on the new prompt (excess ECE 0.016 against 0.023).
 
 The benchmark's Privatemode arm follows the library's default and records
 it in the run identity; `--state-first` reproduces the layout the published
@@ -166,6 +209,8 @@ python -m bench.prefill --run runs/r1 --out runs/prefill/confirm --split test --
 python -m bench.prefill --run runs/r1 --out runs/prefill/renamed --split test --rows 250 --perturb rename --arms B,R-Q
 python -m bench.prefill --run runs/r1 --out runs/prefill/latency --split test --rows 80 --threads 1 --arms B,R-Q,B2 \
     --only sst2,ag_news,trec_coarse,massive_scenario_en,banking77,clinc150
+python -m bench.prefill --run runs/r1 --out runs/prefill/screen --arms QA
+python -m bench.prefill_cache --out cache-ag.json -n 40
 python -m bench.prefill_cache --out cache-scotus.json -n 30 --dataset scotus
 # JevBench's own runner, per tier (original, easy, hard) and model
 python -m jevbench.cli run --tasks datasets/public/<tier>.jsonl --adapter openai_compat \

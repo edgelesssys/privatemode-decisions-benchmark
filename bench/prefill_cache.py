@@ -1,16 +1,17 @@
-"""What asking the question first costs when several questions share a state.
+"""What the prompt layouts cost when several questions share a state.
 
-    python -m bench.prefill_cache --out runs/cache.json [-n 40]
+    python -m bench.prefill_cache --out runs/cache.json [-n 40] [--dataset scotus]
 
-The benchmark asks one question per state, so it can't show the cost of
-``question_first``: the state is no longer the prefix that the questions of
-one call share, so vLLM's prefix cache can reuse only the preamble. This asks
-five questions about each of ``-n`` states (ag_news articles by default;
-``--dataset scotus`` for long ones, where sharing the state matters) with ``mode="staged"``,
-one call at a time, with and without ``question_first`` (alternating, so
-both see the same server conditions), and records the wall time of each
-call and the prompt tokens served from the cache. Needs the library with
-``question_first`` (privatemode-decisions, branch ``accuracy`` or later).
+The benchmark asks one question per state, so it can't show how the layouts
+differ when a call has several: with the state first, the requests of a call
+share the state; with each request's own question first, only the preamble;
+with all of the call's questions first (the library's default), the
+question block and the state. This asks five questions about each of ``-n``
+states (ag_news articles by default; ``--dataset scotus`` for long ones)
+with ``mode="staged"``, one call at a time, in all three layouts (rotating
+which goes first), and records each call's wall time and the prompt tokens
+served from the cache. Privatemode only caches prefixes of about 2,300
+tokens, so the difference shows with long states.
 """
 
 from __future__ import annotations
@@ -40,6 +41,9 @@ QUESTIONS = {
 }
 
 
+LAYOUTS = ("state first", "own question first", "all questions first")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--out", required=True)
@@ -48,19 +52,24 @@ def main() -> None:
     args = parser.parse_args()
     set_max_in_flight(9)
     engine = SystemOne.from_env("glm-5.3-flash", temperature=1.0)
+    calls = {"state first": lambda s: engine.system_one(s, QUESTIONS, mode="staged", question_first=False),
+             "own question first": lambda s: engine.system_one(s, QUESTIONS, mode="staged", question_first="own"),
+             "all questions first": lambda s: engine.system_one(s, QUESTIONS, mode="staged", question_first=True)}
     rows = []
     tasks = load(args.dataset, 1000)
-    for task in tasks[len(tasks) - args.n:]:     # rows the other runs used least
-        for first in ((False, True) if task.index % 2 else (True, False)):
-            response = engine.system_one(task.state, QUESTIONS, mode="staged", question_first=first)
-            rows.append({"index": task.index, "question_first": first,
+    for number, task in enumerate(tasks[len(tasks) - args.n:]):     # rows the other runs used least
+        # Rotate which layout goes first, so none always follows a warm cache.
+        order = LAYOUTS[number % 3:] + LAYOUTS[:number % 3]
+        for layout in order:
+            response = calls[layout](task.state)
+            rows.append({"index": task.index, "layout": layout,
                          "wall_s": response.timings["wall"],
                          "input_tokens": response.usage.input_tokens,
                          "cached_tokens": response.usage.cached_tokens})
     summary = {}
-    for first in (False, True):
-        r = [x for x in rows if x["question_first"] == first]
-        summary["question first" if first else "state first (default)"] = {
+    for layout in LAYOUTS:
+        r = [x for x in rows if x["layout"] == layout]
+        summary[layout] = {
             "calls": len(r), "wall_p50_s": float(np.median([x["wall_s"] for x in r])),
             "wall_p95_s": float(np.percentile([x["wall_s"] for x in r], 95)),
             "input_tokens": float(np.mean([x["input_tokens"] for x in r])),

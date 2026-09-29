@@ -91,3 +91,15 @@ def test_filler_combined_with_the_question_first():
     middle = payload("RQ-mid")["messages"][0]["content"]
     assert middle == (PREAMBLE + question + "\n" + json.dumps({"state": {"text": "state"}}) + "\n"
                       + ". . ." + "\n" + question)
+
+
+def test_all_questions_first_matches_the_library():
+    from bench.prefill import call_questions
+
+    library = engine()
+    if "lead" not in library._content.__code__.co_varnames:
+        pytest.skip("installed privatemode-decisions leads with one question only")
+    questions, _ = call_questions(QUESTION, 3)
+    block = "".join(Prefill._question_text(q) + "\n" for q in questions)
+    ours = payload("QA")["messages"][0]["content"]
+    assert library._content({"text": "state"}, QUESTION, question_first=True, lead=block) == ours
