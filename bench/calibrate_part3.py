@@ -527,14 +527,23 @@ def many_section(run, text, lodo, jev, rng) -> tuple[list[str], dict]:
                 _, j = common(run[n], jev[n])
                 shared[n] = c.Dataset(n, j.options, j.index, c.unzero(j.P), j.y)
         if shared:
-            jv = class_conditional(shared, {n: 1.0 for n in shared}, rng)
+            # Jev starts from its own zero-label default, as in section 1: the
+            # option formula fitted on its per-task temperatures, dataset left out.
+            own = {}
+            for n in text:
+                if n in jev:
+                    cal, _ = c.split(common(run[n], jev[n])[1])
+                    own[n] = c.fit_temperature([(c.unzero(cal.P), cal.y)])
+            jev_default = c.formula_lodo(own, {n: run[n].k for n in own})
+            jv = class_conditional(shared, {n: jev_default[n] for n in shared}, rng)
             gl = {n: glm[n] for n in shared}
             rows = []
             for label in methods:
                 rows.append([label] + [f"{mean(d[n][label][key] for n in shared):{f}}"
                                        for d in (gl, jv) for key, f in (("size", ".2f"), ("gap", ".3f"))])
             md.append(f"\n**Jev with the same cutoffs** ({', '.join(shared)}; zeros set to half a "
-                      f"rounding unit, then its own task temperature). GLM on all its rows, Jev on "
+                      f"rounding unit, starting from Jev's own default temperature, then its own "
+                      f"task temperature). GLM on all its rows, Jev on "
                       f"the rows it answered:\n")
             md.append(table(rows, ["cutoffs", "GLM set size", "GLM class gap", "Jev set size",
                                    "Jev class gap"]))
