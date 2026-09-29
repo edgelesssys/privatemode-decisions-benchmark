@@ -2,8 +2,11 @@
 
 The reports use fast numpy versions of what the library ships; these tests
 make sure they compute the same thing, on GLM-5.3-Flash probabilities from a
-real run (tests/fixtures). Skipped where the installed library predates
-calibrate().
+real run (tests/fixtures). They need the library with calibrate() and the
+bias; against an older one they fail rather than skip.
+
+The out-of-fold test reaches into the library's private ``_out_of_fold``,
+deliberately: it is the step whose parity matters, and it isn't API.
 """
 
 import json
@@ -14,14 +17,11 @@ import pytest
 
 from bench import calibration as c
 
-library = pytest.importorskip("decisions.calibration")
-if not hasattr(library, "evaluate"):
-    pytest.skip("installed privatemode-decisions has no calibration API yet", allow_module_level=True)
-
+import decisions.calibration as library
 from decisions.types import ChoiceAnswer
 
-#: The temperature-only path, for the tests that predate the bias.
-ALONE = {"bias": False} if "bias" in library.calibrate.__code__.co_varnames else {}
+#: The temperature-only path.
+ALONE = {"bias": False}
 
 FIXTURE = json.loads((Path(__file__).parent / "fixtures" / "glm-flash-probabilities.json").read_text())
 
@@ -88,8 +88,6 @@ def test_ece(data):
 
 def test_temperature_bias_fit(data):
     P, y, answers, labels = data
-    if not hasattr(library, "fit_temperature_bias"):
-        pytest.skip("installed privatemode-decisions has no bias yet")
     t, b = c.fit_temperature_bias(P, y, prior=1.0, shrinkage=library.SHRINKAGE,
                                   strength=library.BIAS_STRENGTH)
     t_lib, b_lib = library.fit_temperature_bias(answers, labels)
@@ -102,8 +100,6 @@ def test_bias_cutoffs_and_threshold_out_of_fold(data, max_error):
     from bench.calibrate_part3 import FOLDS, out_of_fold
 
     P, y, answers, labels = data
-    if not hasattr(library, "fit_temperature_bias"):
-        pytest.skip("installed privatemode-decisions has no bias yet")
     assert FOLDS == library.FOLDS
     from bench.calibrate_part3 import fold_order
     assert fold_order(len(y)) == library.fold_order(len(y))
@@ -119,3 +115,12 @@ def test_bias_cutoffs_and_threshold_out_of_fold(data, max_error):
     assert c.threshold(c.lac_scores(Pl, y), 0.9) == pytest.approx(fitted.cutoffs["*"], abs=1e-12)
     expected = c.automation_threshold(Pl.max(1), Pl.argmax(1) == y, max_error, 0.1)
     assert expected == pytest.approx(fitted.threshold, abs=1e-12)
+
+
+def test_the_fit_constants_match_the_library():
+    from bench import calibrate_part3
+
+    assert c.SHRINKAGE == library.SHRINKAGE
+    assert c.BIAS_STRENGTH == library.BIAS_STRENGTH
+    assert calibrate_part3.SHRINKAGE == library.SHRINKAGE
+    assert calibrate_part3.STRENGTH == library.BIAS_STRENGTH

@@ -30,9 +30,9 @@ from .calibrate_report import DOCUMENT, fmt, mean, table
 LABELS = (20, 50, 100, 250, 500)
 DRAWS = 20
 #: The bias's pull towards 0, in examples (``strength / n · |b|²``).
-STRENGTH = 2.0
+STRENGTH = c.BIAS_STRENGTH
 STRENGTHS = (0.5, 1.0, 2.0, 5.0, 10.0, 20.0)
-SHRINKAGE = 5.0
+SHRINKAGE = c.SHRINKAGE
 EPSILON = 0.10
 COVERAGE = 0.9
 MANY = ("banking77", "clinc150", "ledgar")

@@ -27,6 +27,11 @@ import numpy as np
 
 SEED = 0
 BINS = 15
+#: The library's pulls, in pseudo-examples (decisions.calibration.SHRINKAGE
+#: and BIAS_STRENGTH): the temperature towards the answers' current one, the
+#: bias per option towards 0. The parity tests check they match.
+SHRINKAGE = 5.0
+BIAS_STRENGTH = 2.0
 FLOOR = 1e-300   # probabilities are stored as floats; log(0) is not an option
 
 
@@ -238,7 +243,7 @@ def scale_bias(P: np.ndarray, temperature: float, bias: np.ndarray) -> np.ndarra
 
 
 def fit_temperature_bias(P: np.ndarray, y: np.ndarray, prior: float = 1.0,
-                         shrinkage: float = 0.0, strength: float = 5.0) -> tuple[float, np.ndarray]:
+                         shrinkage: float = 0.0, strength: float = BIAS_STRENGTH) -> tuple[float, np.ndarray]:
     """A temperature and a bias per option minimizing the mean NLL of
     ``softmax(log p / T + b)``, with pulls worth ``shrinkage`` examples
     (``log T`` towards ``log prior``) and ``strength`` examples (``b``

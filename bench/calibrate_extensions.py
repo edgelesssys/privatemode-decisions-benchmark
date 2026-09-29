@@ -125,7 +125,7 @@ def report(args) -> tuple[str, dict]:
         tg = formula_lodo[n]
         Pg_cal, Pg = c.scale(cal_g.P, tg), c.scale(test_g.P, tg)
         # With labels: each system's own temperature, fitted on the calibration half.
-        tg_own = c.fit_temperature([(Pg_cal, cal_g.y)], prior=1.0, shrinkage=5.0)
+        tg_own = c.fit_temperature([(Pg_cal, cal_g.y)], prior=1.0, shrinkage=c.SHRINKAGE)
         Pz_cal, Pz = unzero(cal_j.P), unzero(test_j.P)
         tj_own = c.fit_temperature([(Pz_cal, cal_j.y)])
         conf_j, right_j = top(test_j.P, test_j.y)
@@ -291,7 +291,7 @@ def report(args) -> tuple[str, dict]:
                 viol.append(bool(m.any()) and (~rt[m]).mean() > 0.10)
                 # What calibrate() does: fit the task temperature on these labels, then
                 # the cutoff and the threshold on the same labels.
-                tt = c.fit_temperature([(P_cal[pick], cal.y[pick])], prior=1.0, shrinkage=5.0)
+                tt = c.fit_temperature([(P_cal[pick], cal.y[pick])], prior=1.0, shrinkage=c.SHRINKAGE)
                 Pd, Pt = c.scale(P_cal[pick], tt), c.scale(P_test, tt)
                 c2, r2 = top(Pd, cal.y[pick])
                 c3, r3 = top(Pt, test.y)
@@ -303,7 +303,7 @@ def report(args) -> tuple[str, dict]:
                 same_cov.append(c.set_stats(c.lac_sets(Pt, q), test.y)["coverage"])
                 # The strictly valid alternative: temperature on one half, threshold on the other.
                 half = size // 2
-                ta = c.fit_temperature([(P_cal[pick[:half]], cal.y[pick[:half]])], prior=1.0, shrinkage=5.0)
+                ta = c.fit_temperature([(P_cal[pick[:half]], cal.y[pick[:half]])], prior=1.0, shrinkage=c.SHRINKAGE)
                 c4, r4 = top(c.scale(P_cal[pick[half:]], ta), cal.y[pick[half:]])
                 c5, r5 = top(c.scale(P_test, ta), test.y)
                 mh = c5 >= c.automation_threshold(c4, r4, 0.10, DELTA)
@@ -359,7 +359,7 @@ def report(args) -> tuple[str, dict]:
                 t = c.fit_temperature([(cal.P[pick], cal.y[pick])])
                 t_e.append(c.ece_top(*top(c.scale(test.P, t), test.y)))
                 t = c.fit_temperature([(cal.P[pick], cal.y[pick])], prior=formula_lodo[n],
-                                      shrinkage=5.0)
+                                      shrinkage=c.SHRINKAGE)
                 s_e.append(c.ece_top(*top(c.scale(test.P, t), test.y)))
                 cc, rc = top(cc_all[pick], cal.y[pick])
                 i_e.append(c.ece_top(c.apply_isotonic(c.fit_isotonic(cc, rc), ct), rt))
