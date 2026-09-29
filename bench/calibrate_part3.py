@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import random
 from collections import defaultdict
 from pathlib import Path
 
@@ -69,11 +70,19 @@ def out_of_fold(P: np.ndarray, y: np.ndarray, bias: bool, folds: int = FOLDS) ->
     cutoffs and the threshold are set on when the bias is fitted, so they
     don't see answers the fit has already bent towards their labels."""
     out = np.zeros_like(P)
-    rows = np.arange(len(y))
-    for part in np.array_split(rows, folds):
-        rest = np.setdiff1d(rows, part)
+    order = np.array(fold_order(len(y)))
+    for part in np.array_split(order, folds):
+        rest = np.setdiff1d(order, part)
         out[part] = fit(P[rest], y[rest], bias)(P[part])
     return out
+
+
+def fold_order(n: int, seed: int = 0) -> list[int]:
+    """The library's fold order (decisions.calibration.fold_order): a seeded
+    permutation, so folds don't depend on how the labels are sorted."""
+    order = list(range(n))
+    random.Random(seed).shuffle(order)
+    return order
 
 
 def evaluate_fit(apply, P_fit, y_fit, P_test, y_test, P_cut=None) -> dict:

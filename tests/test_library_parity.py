@@ -105,6 +105,8 @@ def test_bias_cutoffs_and_threshold_out_of_fold(data, max_error):
     if not hasattr(library, "fit_temperature_bias"):
         pytest.skip("installed privatemode-decisions has no bias yet")
     assert FOLDS == library.FOLDS
+    from bench.calibrate_part3 import fold_order
+    assert fold_order(len(y)) == library.fold_order(len(y))
     fitted = library.calibrate(answers, labels, coverage=0.9, max_error=max_error)
     # The out-of-fold probabilities agree between the two fits ...
     options = list(answers[0].probabilities)
