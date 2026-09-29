@@ -146,5 +146,5 @@ automates about the same share.
 
 ## Reproduce
 
-The commands are in each part. The raw runs of parts 1 and 2 are in the
-release `calibration-2026-09-26`.
+The commands are in each part. The raw runs will be in the release
+`calibration-2026-09-26` (not yet published), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.

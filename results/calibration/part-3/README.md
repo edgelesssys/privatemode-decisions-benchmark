@@ -253,5 +253,5 @@ python -m bench.label_page ../part-1/banking77-label-check.json <somewhere>/labe
 ```
 
 Then, in the library, `python scripts/update_calibration.py` with each
-`constants.json`. The raw runs of parts 1 and 2 are in the release
-`calibration-2026-09-26`; the two new model runs belong in the next one.
+`constants.json`. The raw runs will be in the release
+`calibration-2026-09-26` (not yet published), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.
