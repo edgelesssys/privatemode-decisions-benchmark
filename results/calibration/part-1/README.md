@@ -160,7 +160,7 @@ cases only are skewed toward hard ones and break the guarantee.
 ## Reproduce
 
 ```sh
-pip install -e '.[calibration]'
+pip install -e '.[privatemode,calibration]'
 python -m bench.suite -n 1000 --replicates 1 --arms privatemode --concurrency 4 --out runs/r1
 python -m bench.suite -n 1000 --replicates 1 --arms privatemode --concurrency 4 --out runs/r2
 python -m bench.neutral_priors --out neutral-priors.json
