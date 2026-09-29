@@ -441,7 +441,8 @@ def report(args) -> tuple[str, dict]:
 def load_rotations(path: Path) -> dict[str, list[dict]]:
     out = {}
     for f in sorted(Path(path).glob("*.jsonl")):
-        rows = [json.loads(line) for line in f.open()]
+        with f.open() as lines:
+            rows = [r for r in map(json.loads, lines) if r.get("kind") != "meta"]
         if rows:
             out[f.stem] = rows
     return out
