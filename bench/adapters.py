@@ -107,10 +107,12 @@ class PrivatemodeArm(Arm):
         #: declared parameter and the run records it.
         self.image_max_side = image_max_side
         self._client = TimedClient(base_url, api_key)
-        # Raw probabilities: calibration is measured from them, so the
-        # library's default temperature must not be baked into the runs.
+        #: Raw probabilities: calibration is measured from them, so the
+        #: library's default temperature must not be baked into the runs.
+        #: Part of the run identity, with the library's prefill.
+        self.temperature = 1.0
         self._engine = SystemOne(self._client, self.model,
-                                 permutations=permutations, temperature=1.0)
+                                 permutations=permutations, temperature=self.temperature)
 
     def ask(self, task: Task) -> Answer:
         response = self._engine.system_one(
@@ -137,7 +139,7 @@ class PrivatemodeArm(Arm):
                       input_tokens=usage.input_tokens,
                       output_tokens=usage.output_tokens,
                       cached_tokens=usage.cached_tokens,
-                      option_mass=getattr(answer, "option_mass", None),
+                      option_mass=answer.option_mass,
                       **self._client.last())
 
     def close(self) -> None:

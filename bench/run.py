@@ -44,6 +44,7 @@ from pathlib import Path
 from threading import Lock
 
 from decisions.client import APIError, set_max_in_flight
+from decisions.inference import PREFIX
 
 from .adapters import (ChainOfThoughtArm, EmbeddingArm, JevArm, LayaArm,
                        PrivatemodeArm)
@@ -146,6 +147,12 @@ def identity(args, arms) -> dict:
         "laya_shortlist": args.laya_shortlist,
         "cot_max_tokens": args.cot_max_tokens,
         "perturb": args.perturb,
+        # What the Privatemode arm asked: the library's prefill and the
+        # temperature it reports at. A run from another library version or
+        # setting must not resume into this one.
+        **({"prefill": PREFIX, "privatemode_temperature": next(
+            a.temperature for a in arms if a.name == "privatemode")}
+           if any(a.name == "privatemode" for a in arms) else {}),
     }
 
 
