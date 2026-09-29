@@ -396,7 +396,12 @@ def weighted_threshold(groups: list[np.ndarray], coverage: float) -> float:
 
 
 def lac_sets(P: np.ndarray, cutoff: float) -> np.ndarray:
-    return (1 - P) <= cutoff
+    """Options with ``1 - p <= cutoff``, and never an empty set: where no
+    option clears the cutoff, the most likely one, as the library's
+    ``Calibration.predict_set`` does."""
+    member = (1 - P) <= cutoff
+    member[np.arange(len(P)), P.argmax(axis=1)] = True
+    return member
 
 
 def aps_sets(P: np.ndarray, cutoff: float) -> np.ndarray:

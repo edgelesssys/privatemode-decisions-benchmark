@@ -124,3 +124,13 @@ def test_the_fit_constants_match_the_library():
     assert c.BIAS_STRENGTH == library.BIAS_STRENGTH
     assert calibrate_part3.SHRINKAGE == library.SHRINKAGE
     assert calibrate_part3.STRENGTH == library.BIAS_STRENGTH
+
+
+def test_prediction_sets_match_the_library(data):
+    P, y, answers, labels = data
+    fitted = library.calibrate(answers, labels, coverage=0.9, **ALONE)
+    Pt = scaled_by_library(answers, fitted.temperature)
+    ours = c.lac_sets(Pt, fitted.cutoffs["*"])
+    options = list(answers[0].probabilities)
+    theirs = np.array([[o in fitted.predict_set(a) for o in options] for a in answers])
+    assert (ours == theirs).all()
