@@ -174,4 +174,5 @@ python -m bench.calibrate_extensions --run runs/r1 --second runs/r2 \
 ```
 
 Run a rotation command twice to fill rows lost to the rate limit. The raw
-runs will be in the release `calibration-2026-09-26` (not yet published), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.
+runs are in the release
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.

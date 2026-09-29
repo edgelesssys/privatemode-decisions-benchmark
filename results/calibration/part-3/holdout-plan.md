@@ -1,7 +1,5 @@
 # A final test on untouched tasks: what will be measured
 
-Results: [../holdout/README.md](../holdout/README.md) (run 2026-09-29, all criteria passed).
-
 Written on 2026-09-26, before any held-out task was chosen, curated or run.
 Every method choice in parts 1 to 3 (the formula's form, the shrinkage, the
 prefill, the bias and its strength, out-of-fold cutoffs) was made on the

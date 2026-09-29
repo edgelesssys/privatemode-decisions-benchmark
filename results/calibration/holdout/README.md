@@ -3,10 +3,13 @@
 Every choice in parts 1–3 was made on the same 28 text datasets. This is
 the final test the plan fixed beforehand
 ([../part-3/holdout-plan.md](../part-3/holdout-plan.md)): the criteria were
-written on 2026-09-26 before any task was chosen. The five tasks were
-chosen, frozen and committed before the first request. They were run once
-on 2026-09-29 and are reported as they came out, with nothing tuned on
-them.
+written on 2026-09-26 before any task was chosen. On 2026-09-29 each task
+was frozen and committed before its own run (commits 019fa09, 103e3b8,
+9629da1; runs from 11:26Z to 11:57Z), not all of them before the first
+request: the GitHub and arXiv tasks were frozen while the others ran. The
+commits were pushed together with the results (12:02Z), so only their
+local timestamps attest to that order. Each task was run once and is
+reported as it came out, with nothing tuned on it.
 
 **Result: every criterion passes.** The zero-label default temperature
 recovers 77% of the per-task gain on the new tasks, against 71% on the
@@ -24,9 +27,10 @@ known ones.
 
 Sources, licences and selection rules are in the plan and in
 `bench/holdout_data.py`. `datasets/holdout/` holds the frozen ids, labels
-and text hashes. The arXiv, PubMed and GitHub tasks were published after
-GLM-5.3-Flash's training cutoff, and none of the families is in the
-benchmark. Each task is split 50/50 into calibration and test halves as
+and text hashes; the texts, with the licence of each, are in the release.
+The arXiv, PubMed and GitHub texts were first published in 2026. Finance,
+science, medicine and code are new domains to the benchmark; the kinds of
+question are not (topic and sentiment are benchmark families). Each task is split 50/50 into calibration and test halves as
 before; every number here is on the test halves, each dataset weighted
 equally.
 
@@ -35,7 +39,7 @@ equally.
 | measure | pass if | result | |
 |---|---|---|---|
 | excess ECE, no labels (default temperature) | mean ≤ 0.06 | 0.047 | pass |
-| | no dataset above 0.12 | highest 0.081 (arxiv_field, github_issue) | pass |
+| | no dataset above 0.12 | highest 0.081 (github_issue) | pass |
 | 90% sets, `calibrate()` on the calibration half | mean coverage 0.87–0.93 | 0.912 | pass |
 | automation at 10% error, 50 draws of 100 labels | ≤ 10% of draws over | 0.8% | pass |
 | automation at 10% error, 50 draws of all labels | ≤ 10% of draws over | 0.0% | pass |
@@ -84,12 +88,13 @@ the default temperature. Each row averages 50 draws per task:
   +3.3, arxiv_field +3.7, pubmed_study +0.9, github_issue +4.4.
 - **Coverage holds** at 0.90–0.93 on every task, with 1.0–2.2 options per
   set.
-- **The one bound violation is expected by design.** With the temperature
+- **One bound violation, outside the default.** With the temperature
   alone and all labels, arXiv automated 66% of its test half at 11.4% error.
-  Without a bias, the 50 draws of "all labels" are the same fit, so that is
-  one task out of five. The guarantee allows it for 10% of tasks
-  (`delta = 0.1`). The default (with the bias) stayed under the bound on
-  every task.
+  Without a bias, the 50 draws of "all labels" are the same fit, so this is
+  one observation, not 50: one task of five. The guarantee (`delta = 0.1`)
+  is a chance per task over the draw of labels, so a single miss among five
+  tasks is within what it allows but doesn't measure it. The default (with
+  the bias) stayed under the bound on every task.
 
 ## A finding: more labels can automate less
 
@@ -112,7 +117,8 @@ indexed only as "Review". So the first test fails and nothing is automated.
 
 The bound stays safe; this only costs automation. Per the plan, any fix
 (e.g. starting the sequence at a minimum share of the labels) has to be
-checked on a fresh set of held-out tasks, not on these.
+checked on a fresh set of held-out tasks, not on these. Filed as
+[privatemode-decisions#4](https://github.com/edgelesssys/privatemode-decisions/issues/4).
 
 ## Notes on the run
 
@@ -123,20 +129,22 @@ checked on a fresh set of held-out tasks, not on these.
 - 32 requests were throttled (HTTP 429) and asked again, into the same run
   file.
 - One resume was started by mistake with 2 requests in flight. That setting
-  is part of the run key, so it re-asked three tasks into separate files.
-  Those files were deleted unread, before the report existed: the plan
-  allows one run.
+  was then part of the run key, so it re-asked three tasks into separate
+  files. Those files were deleted unread, before the report existed: the
+  plan allows one run. Concurrency is no longer part of the key.
 - Jev was not run on these tasks.
 
 ## Reproduce
 
 ```sh
-python -m bench.holdout_data build          # refetch; texts are cached under .cache/holdout
+python -m bench.holdout_data fetch          # the texts, from the release, into .cache/holdout
 python -m bench.holdout_data check          # verify them against the frozen hashes
-python -m bench.holdout run --task fin_topic --out runs/holdout   # and the other four
-python -m bench.holdout report --run runs/holdout --out results/calibration/holdout
+python -m bench.holdout report --run <release>/holdout --out results/calibration/holdout
+python -m bench.holdout run --task fin_topic --out runs/holdout   # asking again, for all five
 ```
 
-`report.md` and `summary.json` are what `bench.holdout report` wrote; this
-README summarises them. The run files will join the release
-`calibration-2026-09-26` (not yet published).
+`report.md` and `summary.json` are what `bench.holdout report` wrote from
+the run files in the release `calibration-2026-09-26` (`holdout/`); this
+README summarises them. `summary.json` names the library commit that
+scored them. `bench.holdout_data build` chose the tasks from live sources
+and refuses to replace a frozen one: rebuilding gives a different test.

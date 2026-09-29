@@ -30,7 +30,7 @@ examples (about 0.05), so 0 means as calibrated as the sample can show.
 | Does one number fix it? | Yes, per task: a temperature fitted on the task brings ECE to the sampling floor. The best T (1.4–3.7) follows difficulty and is stable between runs. |
 | Without labels? | A temperature from the option count recovers 71% of the per-task gain on held-out datasets (excess ECE 0.129 → 0.032), and the same when related datasets or half of all tasks are held out; one from the task family 74%. It's the library's default. For a new kind of task, with its whole family held out, it recovers 45%. |
 | Better than Jev? | On these 28 datasets, yes, at the same accuracy; the method was tuned on them. On five untouched tasks it held up (next row); Jev wasn't run on those. With no labels, excess ECE 0.032 against Jev's 0.080 as returned, and 0.042 with a default temperature fitted for Jev the same way. With ~500 labels 0.006 against 0.021, even after fixing Jev's zeros so a temperature can be fitted. Jev rounds to 0.01 and prices the right answer at exactly 0 in 4.3% of examples. |
-| Does it hold on tasks nobody tuned on? | Yes. On five new tasks from new families, all pre-registered criteria pass ([holdout](holdout/README.md)). With no labels, the default T recovers 77% of the per-task gain (excess ECE 0.151 → 0.047). With 100 labels, `calibrate()` gains 2.7 points of accuracy, 90% sets cover 0.912, and 0.8% of draws exceed the 10% error bound. One finding: with the temperature alone, more labels can automate less, because confidently wrong answers (label noise) stop the test at its first level. |
+| Does it hold on tasks nobody tuned on? | Yes. On five new tasks from new domains, all pre-registered criteria pass ([holdout](holdout/README.md)). With no labels, the default T recovers 77% of the per-task gain (excess ECE 0.151 → 0.047). With 100 labels, `calibrate()` gains 2.7 points of accuracy, 90% sets cover 0.912, and 0.8% of draws exceed the 10% error bound. One finding: with the temperature alone, more labels can automate less, because confidently wrong answers (label noise) stop the test at its first level. |
 | With a few labels? | A task temperature pulled towards the default: ECE 0.066 from 20 labels, 0.052 from 500. Isotonic regression only catches up at about 500. |
 | Prediction sets? | 90% sets cover 90.8% with 1.8 options on average; 64% of answers are a single option. A cutoff per class restores a rare class from 70% to 97% coverage. |
 | Automation with an error bound? | Learn then Test kept a 10% bound in every test; the naive threshold broke it about 40% of the time. The price: 19% automated at ε = 5%, 42% at 10%. |
@@ -150,5 +150,7 @@ automates about the same share.
 
 ## Reproduce
 
-The commands are in each part. The raw runs will be in the release
-`calibration-2026-09-26` (not yet published), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.
+The commands are in each part. The raw runs are in the release
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26):
+every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs, the
+held-out runs, and the held-out tasks' texts (`holdout-texts.jsonl`).
