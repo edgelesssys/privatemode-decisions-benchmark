@@ -119,7 +119,8 @@ cases only are skewed toward hard ones and break the guarantee.
   Reading all 80 flagged banking77 examples found 31% clear label errors,
   50% where both answers are defensible, and 19% where the label is right
   ([banking77-label-check.json](banking77-label-check.json); read by Claude,
-  not yet by a person). Relabelling only the clear errors takes banking77's
+  not yet by a person, so these shares are provisional; `bench.label_page`
+  builds the page for a person's check). Relabelling only the clear errors takes banking77's
   overconfidence from +3.8 to +1.4 points, where removing every flag gives
   −1.5. Wrong labels explain part of the gap, not all of it.
 - **Contamination: no effect once difficulty is known.** Datasets whose
