@@ -115,7 +115,8 @@ def bias_section(run, halves, text, lodo, jev, figures, rng) -> tuple[list[str],
               f"the bias and sets the cutoff and the threshold on out-of-fold probabilities "
               f"({FOLDS} folds: each label's answer corrected by a fit on the other folds), then "
               f"fits the final correction on all labels. Excess ECE is ECE minus the sampling "
-              f"floor of the same probabilities.\n")
+              f"floor of the test half at the starting temperature (the floor barely moves "
+              f"with the fit).\n")
     per = {}   # (system, method, size) -> dataset -> mean metrics
     systems = {"glm": {n: halves[n] for n in text}}
     if jev:
@@ -151,8 +152,6 @@ def bias_section(run, halves, text, lodo, jev, figures, rng) -> tuple[list[str],
                     rows["T + b, same labels"].append(evaluate_fit(with_bias, Pp, yp, Pt, test.y))
                 for method, values in rows.items():
                     m = {key: float(np.mean([v[key] for v in values])) for key in values[0]}
-                    # Excess ECE from the mean fit's probabilities would need them; the floor
-                    # barely moves with the fit, so use the floor of the first draw's.
                     per.setdefault((system, method, size), {})[n] = m
     floors = {}
     for system, data in systems.items():
@@ -188,16 +187,18 @@ def bias_section(run, halves, text, lodo, jev, figures, rng) -> tuple[list[str],
                            "datasets better / worse", "worst dataset", "NLL", "excess ECE",
                            "90% set coverage", "90% set size", f"automated at ε = {EPSILON:.0%}",
                            "draws over ε"]))
+    most = max(size for size in LABELS if ("glm", "T", size) in per)
+    same = per[("glm", "T + b, same labels", most)]
+    broken = sum(v["violation"] > 0 for v in same.values())
     rows = []
     for size in LABELS:
         rows.append([size] + [f"{agg('glm', m, size, 'automated'):.0%} / {agg('glm', m, size, 'violation'):.1%}"
                               f" / {agg('glm', m, size, 'coverage'):.3f}"
                               for m in ("T", "T + b, same labels", "T + b")])
-    md.append("\n**Why out-of-fold.** With a bias per option, setting the cutoff and the threshold "
-              "on the same labels the bias was fitted on makes the answers look better than they "
-              "are, and the error bound starts to slip as the fit gets more room: at 500 labels "
-              "it was broken on 2 of 23 datasets. Automated share / share of draws over ε / 90% "
-              "coverage:\n")
+    md.append(f"\n**Why out-of-fold.** With a bias per option, setting the cutoff and the threshold "
+              f"on the same labels the bias was fitted on makes the answers look better than they "
+              f"are: at {most} labels the error bound was broken on {broken} of {len(same)} "
+              f"datasets that way. Automated share / share of draws over ε / 90% coverage:\n")
     md.append(table(rows, ["labels", "T, same labels (part 2)", "T + b, same labels",
                            "T + b, out-of-fold (shipped)"]))
     figures["bias_by_dataset"] = {size: {n: per[("glm", "T + b", size)][n]["accuracy"]
@@ -331,7 +332,7 @@ def best_automation(P: np.ndarray, y: np.ndarray, eps: float = EPSILON) -> float
     return (ok.max() + 1) / len(y) if len(ok) else 0.0
 
 
-def permutation_section(rot, text, shipped, figures) -> tuple[list[str], dict]:
+def permutation_section(rot, text, figures) -> tuple[list[str], dict]:
     md = ["\n## 2. Several option orders: their own temperature\n"]
     names = sorted((n for n in rot if n in text), key=lambda n: (len(rot[n][0]["options"]), n))
     options = {n: len(rot[n][0]["options"]) for n in names}
@@ -353,7 +354,7 @@ def permutation_section(rot, text, shipped, figures) -> tuple[list[str], dict]:
         for label, temps in (("one-order formula", lodo[1]),
                              ("own formula (LODO)", lodo[m]),
                              ("one-order formula × ratio", {n: lodo[1][n] * ratio[m] for n in names}),
-                             ("own T per dataset", oracle[m])):
+                             ("own T per dataset, in-sample", oracle[m])):
             if m == 1 and "ratio" in label:
                 continue
             Ps = {n: c.scale(P_by[m][n][0], temps[n]) for n in names}
@@ -366,10 +367,14 @@ def permutation_section(rot, text, shipped, figures) -> tuple[list[str], dict]:
         for label, (nll_, ex_, auto_, acc_) in cells.items():
             rows.append([m, label, f"{acc_:.2%}", f"{nll_:.3f}", f"{ex_:.3f}", f"{auto_:.0%}"])
     a1, b1 = formula[1]
-    md.append(f"`SystemOne(permutations=k)` averages k rotated option orders and then applied the "
+    stored = sorted({len(rot[n][0]["rotations"]) for n in names})
+    md.append(f"`SystemOne(permutations=k)` averages k rotated option orders and then applies the "
               f"one-order default temperature. From the rotation runs ({len(names)} text datasets, "
-              f"100 rows each, 4 orders), the orders the library would ask for k = 2 and 4. "
-              f"Temperatures fitted per dataset (*own T*) or by the option formula leaving the "
+              f"about {int(np.median([len(rot[n]) for n in names]))} rows each, up to "
+              f"{max(stored)} orders), the orders the library would ask for k = "
+              f"{' and '.join(str(m) for m in counts if m > 1)}. "
+              f"Temperatures fitted per dataset on the same rows they are scored on (*own T*, "
+              f"in-sample, a lower bound) or by the option formula leaving the "
               f"dataset out (*LODO*). Averaging softens, so the best temperature falls: the median "
               f"ratio to one order's is {ratio[2]:.2f} for 2 orders and {ratio[4]:.2f} for 4. "
               f"*Automatable* is the share of answers that can be automated at an observed error "
@@ -384,7 +389,7 @@ def permutation_section(rot, text, shipped, figures) -> tuple[list[str], dict]:
     md.append("\n**Re-reading only uncertain answers.** razorback16/openjev asks a question three "
               "more times when the entropy of its answer is above 0.1 nats and averages the four. "
               "The same with rotations: the first order's raw distribution decides, the answers "
-              "above the entropy threshold are asked in all 4 orders and averaged, and each kind "
+              f"above the entropy threshold are asked in all {max(counts)} orders and averaged, and each kind "
               "gets its own temperature (the LODO formulas above).\n")
     rows, reread = [], {}
     for tau in (None, 0.5, 0.3, 0.1, 0.05, 0.0):
@@ -404,7 +409,7 @@ def permutation_section(rot, text, shipped, figures) -> tuple[list[str], dict]:
             shares.append(pick.mean())
         extra = 3 * np.mean(shares)
         reread[tau] = (np.mean(shares), float(np.mean(accs)), float(np.mean(nlls)), float(np.mean(exs)))
-        rows.append(["never (one order)" if tau is None else "always (4 orders)" if tau == 0 else f"> {tau:g} nats",
+        rows.append(["never (one order)" if tau is None else f"always ({max(counts)} orders)" if tau == 0 else f"> {tau:g} nats",
                      f"{np.mean(shares):.0%}", f"+{extra:.0%}", f"{np.mean(accs):.2%}",
                      f"{np.mean(nlls):.3f}", f"{np.mean(exs):.3f}", f"{np.mean(autos):.0%}"])
     md.append(table(rows, ["re-read when entropy", "answers re-read", "extra requests", "accuracy",
@@ -620,8 +625,9 @@ def model_profile(run: dict[str, c.Dataset]) -> dict:
 
 def models_section(profiles: dict[str, dict]) -> list[str]:
     md = ["\n## 4. Other models\n"]
-    md.append("One run of each model on all 29 datasets (up to 1,000 examples, 4 in flight), the "
-              "same halves. *Served* is the model the endpoint reported answering, recorded in "
+    md.append("One run of each model on the benchmark's datasets (up to 1,000 examples each), "
+              "the same halves; the table gives the text datasets each run answered and its "
+              "scanned-document result where it has one. *Served* is the model the endpoint reported answering, recorded in "
               "every row. The formula is fitted on all text datasets; excess ECE after it is "
               "leave-one-dataset-out, as for GLM Flash in part 1.\n")
     rows = []
@@ -672,7 +678,7 @@ def plots(out: Path, figures: dict) -> None:
         ax.axhline(np.mean(list(flips.values())) * 100, color="#c0504d", lw=0.8, ls="--",
                    label="mean")
         ax.set_xticks(range(len(names)), names, rotation=70, fontsize=6.5)
-        ax.set(ylabel="% of rotations changing the answer", title="Order stability, GLM-5.3-Flash")
+        ax.set(ylabel="% of rotations changing the answer", title="Order stability, rotation runs")
         ax.legend(frameon=False, fontsize=7)
         fig.tight_layout()
         fig.savefig(out / "order_stability.png")
@@ -715,7 +721,7 @@ def main() -> None:
         md += part
     if "2" in sections and args.rotations:
         part, result["permutations"] = permutation_section(
-            load_rotations(Path(args.rotations)), text, summary["shipped"]["formula"], figures)
+            load_rotations(Path(args.rotations)), text, figures)
         md += part
     if "3" in sections:
         part, result["many"] = many_section(run, text, lodo, jev, rng)
@@ -733,9 +739,9 @@ def main() -> None:
     plots(out, figures)
     names = [p.stem for p in sorted(out.glob("*.png"))]
     md.append("\n## Figures\n\n" + "\n".join(f"![{n}]({n}.png)" for n in names))
-    (out / "report.md").write_text("\n".join(md) + "\n")
+    (out / "full-report.md").write_text("\n".join(md) + "\n")
     (out / "summary.json").write_text(json.dumps(result, indent=1, default=float) + "\n")
-    print(f"wrote {out / 'report.md'}")
+    print(f"wrote {out / 'full-report.md'}")
 
 
 if __name__ == "__main__":

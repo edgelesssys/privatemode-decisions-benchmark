@@ -106,8 +106,8 @@ def plots(out: Path, figures: dict) -> None:
                   xlim=(0.25, 1.01), title="Gap to the diagonal: below 0 is overconfident")
         right.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
         left.legend(frameon=False, loc="upper left", fontsize=7.5)
-        fig.suptitle("28 text datasets, test halves, every dataset weighted equally; "
-                     "15 equal-size bins", fontsize=8, color="#555")
+        fig.suptitle(f"{figures['n_text']} text datasets, test halves, every dataset weighted "
+                     "equally; 15 equal-size bins", fontsize=8, color="#555")
         fig.tight_layout()
         fig.savefig(out / "reliability.png")
         plt.close(fig)
@@ -118,7 +118,7 @@ def plots(out: Path, figures: dict) -> None:
             xs, ys, _ = zip(*curve)
             ax.plot(xs, ys, marker="o", ms=3, lw=1.5, label=label, color=colors.get(label))
         ax.set(xlabel="confidence", ylabel="accuracy", xlim=(0, 1.02), ylim=(0, 1.02),
-               title="Reliability, 28 text datasets weighted equally")
+               title=f"Reliability, {figures['n_text']} text datasets weighted equally")
         ax.legend(frameon=False, loc="upper left")
         fig.tight_layout()
         fig.savefig(out / "reliability.png")
@@ -347,7 +347,11 @@ def report(args) -> str:
     text_names = sorted((n for n in run if n != DOCUMENT), key=lambda n: (run[n].k, n))
     halves = {n: c.split(run[n]) for n in run}
     options = {n: run[n].k for n in run}
-    figures: dict = {}
+    # constants.json names one model; check before anything is written.
+    served = sorted({m for d in run.values() for m in d.meta.get("served_model", [])})
+    if len(served) > 1:
+        raise SystemExit(f"the run was answered by several models: {served}")
+    figures: dict = {"n_text": len(text_names)}
     md = [f"# Calibration report\n\nRun: `{Path(args.run).name}`, {len(text_names)} text datasets"
           + (" plus rvl_cdip (scanned documents), reported separately" if DOCUMENT in run else "")
           + f". Calibration/test halves are a fixed random split, seed {c.SEED}. "
@@ -495,14 +499,17 @@ def report(args) -> str:
                          f"{np.percentile(half_share, 95):.2f})"), ""]]
                     + [["per task (oracle)", fmt(mean(excesses["per task (oracle)"])), "1", "1"]],
                     ["method", "mean excess ECE", "ECE share", "NLL share (median)"]))
-    md.append("\nThe formula holds up under stricter hold-outs: leaving out related datasets "
-              "(the four MASSIVE sets, both TREC sets, MNLI and XNLI, the SST family, the two "
-              "TweetEval tasks) changes nothing, and fitting on half of the tasks gives the "
-              "same result with more spread. **A new kind of task is the realistic worst "
-              "case:** with no dataset of the same family in the fit, the default recovers "
-              "less of the per-task gain. The method itself (the formula's form, the shrinkage, "
-              "the prefill) was chosen on these datasets, which no split can undo; only "
-              "datasets kept out of the whole study can measure that.\n")
+    one, related = mean(excesses["formula (LODO)"]), mean(excesses["formula, related datasets held out"])
+    family_out, half = mean(excesses["formula, whole family held out"]), mean(half_excess)
+    md.append(f"\nStricter hold-outs for the formula: leaving out related datasets together "
+              f"(the four MASSIVE sets, both TREC sets, MNLI and XNLI, the SST family, the two "
+              f"TweetEval tasks) gives excess ECE {related:.3f}, fitting on half of the tasks "
+              f"{half:.3f}, against {one:.3f} leaving out one dataset; with the whole task "
+              f"family held out, {family_out:.3f}"
+              + (", the realistic worst case for a new kind of task" if family_out > max(one, related, half)
+                 else "") + ". The method itself (the formula's form, the shrinkage, the "
+              "prefill) was chosen on these datasets, which no split can undo; only datasets "
+              "kept out of the whole study can measure that.\n")
     summary_excess = {k: mean(v) for k, v in excesses.items()}
     md.append("\n`floor` is the ECE a perfectly calibrated model would show on this many "
               "examples (labels drawn from its own probabilities); values near it are as good "
@@ -530,13 +537,14 @@ def report(args) -> str:
         for n in text_names:
             if n not in second:
                 continue
-            _, test_b = c.split(second[n])
-            t_a, t_b = oracle[n], c.fit_temperature([(c.split(second[n])[0].P, c.split(second[n])[0].y)])
+            cal_b, test_b = c.split(second[n])
+            t_a, t_b = oracle[n], c.fit_temperature([(cal_b.P, cal_b.y)])
             e_ab = c.ece(c.scale(test_b.P, t_a), test_b.y)
             e_bb = c.ece(c.scale(test_b.P, t_b), test_b.y)
-            agree = float(np.mean(run[n].P.argmax(1)[np.argsort(run[n].index)]
-                                  == second[n].P.argmax(1)[np.argsort(second[n].index)])) \
-                if len(run[n].index) == len(second[n].index) else float("nan")
+            # The same examples in both runs, matched by index.
+            shared, ia, ib = np.intersect1d(run[n].index, second[n].index, return_indices=True)
+            agree = (float(np.mean(run[n].P[ia].argmax(1) == second[n].P[ib].argmax(1)))
+                     if len(shared) else float("nan"))
             jit.append(abs(math.log(t_a / t_b)))
             rows.append([n, fmt(t_a, 2), fmt(t_b, 2), fmt(e_ab), fmt(e_bb), fmt(agree, 3)])
         md.append("\n### Run jitter\n\nT fitted on run 1's calibration half, evaluated on run 2's "
@@ -628,6 +636,8 @@ def report(args) -> str:
     for cov in COVERAGES:
         misses = []
         for n in text_names:
+            # The other datasets' scores at the held-out dataset's temperature: the
+            # cutoff is then applied to answers scaled the same way.
             groups = [c.lac_scores(c.scale(halves[m][0].P, formula_lodo[n]), halves[m][0].y)
                       for m in text_names if m != n]
             q = c.weighted_threshold(groups, cov)
@@ -792,10 +802,13 @@ def report(args) -> str:
                   "few wrong answers.\n")
         md.append(table(rows, ["dataset", "wrong answers", "mass when right", "mass when wrong",
                                "AUROC confidence", "AUROC mass"]))
-        md.append("\nMass is significantly *inverted* (interval below 0.5) on: "
-                  + (", ".join(inverted) or "none")
-                  + ". There, answers the model is right about carry slightly less probability on "
-                  "the options, so low mass is not a usable error signal in either direction.\n")
+        if inverted:
+            md.append("\nMass is significantly *inverted* (interval below 0.5) on: "
+                      + ", ".join(inverted) + ". There, answers the model is right about carry "
+                      "slightly less probability on the options.\n")
+        else:
+            md.append("\nMass is not significantly inverted (interval below 0.5) on any "
+                      "dataset.\n")
         figures["mass"] = (np.concatenate(right_all), np.concatenate(wrong_all))
 
     md.append("\n## Figures\n")
@@ -815,9 +828,6 @@ def report(args) -> str:
     # What the library ships, for its scripts/update_calibration.py.
     meta = next(iter(run.values())).meta
     requested = (meta.get("arms") or {}).get("privatemode", "unknown")
-    served = sorted({m for d in run.values() for m in d.meta.get("served_model", [])})
-    if len(served) > 1:
-        raise SystemExit(f"the run was answered by several models: {served}")
     constants = {"model": served[0] if served else requested,
                  "formula": list(shipped["formula"]), "family": shipped["family"],
                  "source": (f"privatemode-decisions-benchmark, {args.source} "
@@ -873,8 +883,8 @@ def main() -> None:
                         help="where constants.json will be published, for the library's comment")
     args = parser.parse_args()
     text = report(args)
-    (Path(args.out) / "report.md").write_text(text)
-    print(f"wrote {Path(args.out) / 'report.md'}")
+    (Path(args.out) / "full-report.md").write_text(text)
+    print(f"wrote {Path(args.out) / 'full-report.md'}")
 
 
 if __name__ == "__main__":

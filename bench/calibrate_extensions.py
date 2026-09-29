@@ -216,7 +216,7 @@ def report(args) -> tuple[str, dict]:
             ["90% set: single-option share", fmt(m("glm single"), 2), fmt(m("jev single"), 2),
              fmt(m("jev own single"), 2)],
         ], ["", "GLM-5.3-Flash", "Jev, raw", "Jev, fairest fix"]))
-        md.append("\nJev rounds to 0.01, and 61% of its probabilities are exactly 0, sometimes "
+        md.append(f"\nJev rounds to 0.01, and {m('jev zero'):.0%} of its probabilities are exactly 0, sometimes "
                   "including the right answer. Setting those zeros to half a rounding unit makes "
                   "the likelihood finite, so a temperature can then be fitted: that is the "
                   "fairest fix, and any Jev user could apply it. Isotonic regression repairs only "
@@ -235,12 +235,14 @@ def report(args) -> tuple[str, dict]:
 
     # 2. Guaranteed automation ----------------------------------------------
     md.append("\n## 2. A guaranteed error rate on automated answers\n")
-    md.append(f"Learn then Test: from a task's calibration half, the lowest confidence "
-              f"threshold whose error among automated answers is at most ε, with probability "
-              f"{1 - DELTA:.0%} over the choice of labels. Evaluated on the test half. This table "
-              f"uses each dataset's whole calibration half, 500 labels for most and 138–436 for "
-              f"the smaller ones, so its rates differ from the fixed-size draws below.\n")
+    sizes = sorted(len(halves[n][0].y) for n in text)
+    md.append(f"Learn then Test style: from a task's calibration half, the lowest threshold on "
+              f"the top probability whose error among automated answers is at most ε, with "
+              f"probability {1 - DELTA:.0%} over the choice of labels. Evaluated on the test half. "
+              f"This table uses each dataset's whole calibration half, {sizes[0]} to {sizes[-1]} "
+              f"labels, so its rates differ from the fixed-size draws below.\n")
     rows, auto, best = [], defaultdict(list), defaultdict(list)
+    same_summary = []      # per label count: (violations, coverage, automated), calibrate() and split
     for n in text:
         cal, test = halves[n]
         cc, rc = top(c.scale(cal.P, formula_lodo[n]), cal.y)
@@ -317,6 +319,8 @@ def report(args) -> tuple[str, dict]:
                 mn = ct >= tn
                 naive_viol.append(bool(mn.any()) and (~rt[mn]).mean() > 0.10)
         need[size] = (float(np.mean(rates)), float(np.mean(viol)), float(np.mean(naive_viol)))
+        same_summary.append((float(np.mean(same_viol)), float(np.mean(same_cov)),
+                             float(np.mean(same_rates)), float(np.mean(split_rates))))
         rows.append([size, f"{np.mean(rates):.0%}", f"{np.mean(viol):.1%}",
                      f"{np.mean(same_rates):.0%}", f"{np.mean(same_viol):.1%}",
                      f"{np.mean(split_rates):.0%}", f"{np.mean(split_viol):.1%}",
@@ -334,9 +338,13 @@ def report(args) -> tuple[str, dict]:
     md.append(table(rows, ["labels", "automated, default T", "violations", "automated, calibrate()",
                            "violations", "automated, split", "violations",
                            "90% set coverage, calibrate()", "violations, naive threshold"]))
-    md.append("\nFitting one temperature on the same labels keeps both guarantees in practice: "
-              "violations stay well under 10% and coverage at 90%, while splitting the labels "
-              "costs automation. calibrate() therefore uses all labels for both steps.\n")
+    worst_viol = max(v for v, _, _, _ in same_summary)
+    covs = [cv for _, cv, _, _ in same_summary]
+    split_cost = mean(a - b for _, _, a, b in same_summary)
+    md.append(f"\nFitting one temperature on the same labels: at most {worst_viol:.1%} of draws "
+              f"over the bound ({DELTA:.0%} allowed) and 90% sets covering "
+              f"{min(covs):.3f}–{max(covs):.3f}; splitting the labels between the two steps "
+              f"automates {split_cost * 100:+.0f} points less on average.\n")
     figures["automation_labels"] = need
 
     # 3. Isotonic regression and task temperature from few labels -------------
@@ -369,12 +377,16 @@ def report(args) -> tuple[str, dict]:
                     ["labels", "task temperature", "task temperature, pulled to the formula",
                      "isotonic regression"]))
     floor = mean(c.ece_floor(c.scale(halves[n][1].P, formula_lodo[n]), draws=100) for n in text)
+    most = max(fit_fig)
     md.append(f"\nThe sampling floor of these test halves is about {floor:.3f}: a perfectly "
-              f"calibrated model would show that much ECE on them, so 0.052 is within a few "
-              f"thousandths of the best any method can show here.\n")
-    md.append("\nThe pull is worth 5 examples (`calibrate()` does the same, towards the "
-              "temperature the answers already have). Isotonic regression needs about 500 labels "
-              "to match a temperature, so the library fits temperature.\n")
+              f"calibrated model would show that much ECE on them. The pulled task temperature "
+              f"from {most} labels reaches {fit_fig[most][2]:.3f}.\n")
+    caught_up = [n for n in sorted(fit_fig) if fit_fig[n][1] <= fit_fig[n][2] + 0.002]
+    md.append(f"\nThe pull is worth {c.SHRINKAGE:g} examples (`calibrate()` does the same, "
+              f"towards the temperature the answers already have). Isotonic regression "
+              + (f"catches up with the temperature from {caught_up[0]} labels on."
+                 if caught_up else "stays behind the temperature at every label count here.")
+              + "\n")
     figures["fit_labels"] = (base, fit_fig)
 
     # 4. Coverage per class ---------------------------------------------------
@@ -521,7 +533,10 @@ def position_bias(args, run, formula_lodo, shipped, figures) -> list[str]:
                     + [fmt(float(np.exp(prior.max() - prior.min())), 2) if covered else "—"])
         if covered:
             deltas["_small"].append((cells["one order"][0], cells["all rotations"][0], cells["PriDe"][0]))
-    md.append("Every row asked in 4 rotated option orders (100 rows per text dataset). Compared "
+    counts = sorted({len(rot[n][0]["rotations"]) for n in rot})
+    per_set = int(np.median([len(rot[n]) for n in rot]))
+    md.append(f"Every row asked in {'/'.join(map(str, counts))} rotated option orders (about "
+              f"{per_set} rows per text dataset). Compared "
               "on the same rows, after the formula T: one order (the default), the average of "
               "all rotations (4× the cost; the strongest standard position fix), and PriDe "
               "(position prior estimated from 10% of the rows in all rotations, applied to the "
@@ -539,21 +554,22 @@ def position_bias(args, run, formula_lodo, shipped, figures) -> list[str]:
         rows_ = rng.integers(0, len(one), len(one))
         diffs.append(rot_all[rows_].mean() - one[rows_].mean())
     lo, hi = np.percentile(diffs, [2.5, 97.5])
-    md.append(f"\n**Gate: stop, no significant difference.** Over all {len(one)} rows, all "
+    verdict = ("**No significant difference.**" if lo <= 0 <= hi else
+               "**All rotations are significantly better.**" if lo > 0 else
+               "**All rotations are significantly worse.**")
+    md.append(f"\n{verdict} Over all {len(one)} rows, all "
               f"rotations minus one order is {(rot_all.mean() - one.mean()) * 100:+.2f} points of "
-              f"accuracy, 95% interval [{lo * 100:+.2f}, {hi * 100:+.2f}] (paired bootstrap): no "
-              f"evidence of a gain, and a gain of more than {hi * 100:.1f} points is unlikely. "
-              f"PriDe does no better. On the {len(small)} datasets with at most 4 options, where 4 "
-              f"rotations cover every position, accuracy is {mean(v[0] for v in small):.3f} for "
+              f"accuracy, 95% interval [{lo * 100:+.2f}, {hi * 100:+.2f}] (paired bootstrap)"
+              + (f": a gain of more than {hi * 100:.1f} points is unlikely" if lo <= 0 <= hi else "")
+              + f". PriDe: {mean(v[0] for v in deltas['PriDe']):.4f} mean accuracy. On the {len(small)} datasets with at most {max(counts)} options, where "
+              f"{max(counts)} rotations cover every position, accuracy is {mean(v[0] for v in small):.3f} for "
               f"one order, {mean(v[1] for v in small):.3f} for all rotations and "
               f"{mean(v[2] for v in small):.3f} for PriDe. Averaging also softens the "
-              f"distribution, but that isn't all of its lower NLL: with each method's own "
-              f"temperature, NLL is {mean(refit['one order']):.3f} for one order and "
-              f"{mean(refit['all rotations']):.3f} for all rotations. Four orders act as a small "
-              f"ensemble whose probabilities rank the right answer a little better, a real but "
-              f"small gain for four times the requests, without changing accuracy. With more "
-              f"options than rotations the position prior can't be separated from content, "
-              f"which hurts PriDe on the many-option sets.\n")
+              f"distribution; with each method's own temperature, which takes that out, NLL "
+              f"is {mean(refit['one order']):.3f} for one order and "
+              f"{mean(refit['all rotations']):.3f} for all rotations. With more options than "
+              f"rotations the position prior can't be separated from content, which limits "
+              f"PriDe on the many-option sets.\n")
     md.append("\nPer dataset, accuracy / NLL; the last column is how much more the model likes "
               "its favourite position than its least favourite, shown only where the rotations "
               "cover every position:\n")
@@ -568,7 +584,7 @@ def position_bias(args, run, formula_lodo, shipped, figures) -> list[str]:
         if not rr:
             continue
         P0, pos0, y = by_position(rr, 0)
-        rotations = len(rr[0]["rotations"])
+        rotations = boolq_rotations = len(rr[0]["rotations"])
         averaged = np.mean([by_position(rr, r)[0] for r in range(rotations)], axis=0)
         accs = []
         for fold in np.array_split(rng.permutation(len(rr)), 20):
@@ -579,13 +595,16 @@ def position_bias(args, run, formula_lodo, shipped, figures) -> list[str]:
     if "boolq" in figures:
         b = figures["boolq"]
         md.append(f"\n**boolq, renamed options** (`true`/`false` → `correct`/`wrong`, all rows, "
-                  f"{rotations} rotations each):\n")
+                  f"{boolq_rotations} rotations each):\n")
         md.append(table([[k, fmt(v[0], 3), fmt(v[1], 3), fmt(v[2], 3)] for k, v in b.items()],
                         ["options", "one order", "all rotations", "PriDe (5% to estimate)"]))
-        md.append("\nRotating the renamed options makes it worse: the drop comes from the option "
-                  "*names*, not their positions, so a position fix can't recover it. Dividing out "
-                  "the neutral-input prior, which is about names, recovered 1.9 of the 5.6 points "
-                  "(part 1).\n")
+        if "renamed" in b and "original" in b:
+            loss = b["original"][0] - b["renamed"][0]
+            helps = b["renamed"][1] - b["renamed"][0]
+            md.append(f"\nRenaming costs {loss * 100:.1f} points in one order; rotating the "
+                      f"renamed options changes that by {helps * 100:+.1f}. A drop that comes "
+                      f"from the option *names* rather than their positions is one a position "
+                      f"fix can't recover.\n")
     return md
 
 
@@ -700,8 +719,8 @@ def main() -> None:
     plots(out, figures)
     names = [p.stem for p in sorted(out.glob("*.png"))]
     text += "\n## Figures\n\n" + "\n".join(f"![{n}]({n}.png)" for n in names) + "\n"
-    (out / "report.md").write_text(text)
-    print(f"wrote {out / 'report.md'}")
+    (out / "full-report.md").write_text(text)
+    print(f"wrote {out / 'full-report.md'}")
 
 
 if __name__ == "__main__":
