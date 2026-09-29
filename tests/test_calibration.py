@@ -147,3 +147,25 @@ def test_automation_threshold_never_splits_tied_confidences():
     t = automation_threshold(conf, right, max_error=0.10, delta=0.1)
     assert t in (0.99, 0.90)
     assert (conf >= t).sum() in (40, 100)
+
+
+def test_published_runs_are_read_largest_first(tmp_path):
+    """Overlapping runs of one dataset: the 1,000-example run's answers win,
+    whatever order the filesystem lists the files in."""
+    import json
+
+    from bench.calibrate_extensions import load_arm
+    from bench.calibrate_report import published_runs
+
+    folder = tmp_path / "ag_news"
+    folder.mkdir()
+    for name, n, choice in (("aaa-r0.jsonl", 100, "Sports"), ("zzz-r0.jsonl", 1000, "World")):
+        rows = [{"kind": "meta", "n": n}] + [
+            {"kind": "row", "arm": "jev", "index": i, "gold": "World",
+             "probabilities": {"World": 0.9 if choice == "World" else 0.1,
+                               "Sports": 0.1 if choice == "World" else 0.9}}
+            for i in range(60)]
+        (folder / name).write_text("".join(json.dumps(r) + "\n" for r in rows))
+    assert [p.name for p in published_runs(folder)] == ["zzz-r0.jsonl", "aaa-r0.jsonl"]
+    data = load_arm(tmp_path, "jev")["ag_news"]
+    assert (data.P.argmax(1) == data.y).all()      # every answer from the n=1000 run

@@ -42,10 +42,6 @@ def band(k: int) -> str:
     return "2" if k == 2 else "3–6" if k <= 6 else "7–20" if k <= 20 else "21+"
 
 
-def excess(P: np.ndarray, y: np.ndarray) -> float:
-    return c.ece(P, y) - c.ece_floor(P, draws=50)
-
-
 def fit(P: np.ndarray, y: np.ndarray, bias: bool, strength: float = STRENGTH):
     """What calibrate() fits: a temperature pulled towards no change, and
     optionally a bias per option. Returns a function that applies it."""

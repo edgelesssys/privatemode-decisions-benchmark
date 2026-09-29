@@ -835,6 +835,17 @@ def report(args) -> str:
     return "\n".join(md) + "\n"
 
 
+def published_runs(directory: Path) -> list[Path]:
+    """A dataset's published run files, largest sample first, then by name.
+    Several runs overlap (the 1,000-example accuracy runs, the 100-example
+    latency run, the pilot's 300); readers keep the first answer they see
+    per example, so the order has to be fixed, not the filesystem's."""
+    def size(path: Path) -> int:
+        with path.open() as lines:
+            return int(json.loads(next(lines)).get("n") or 0)
+    return sorted(directory.glob("*-r0.jsonl"), key=lambda p: (-size(p), p.name))
+
+
 def label_consensus(published: Path, others=("jev", "laya", "glm-cot", "embed-nn"),
                     needed: int = 3) -> dict[str, dict[int, bool]]:
     """Per dataset and example: do most other arms agree on a non-gold answer?"""
@@ -842,7 +853,7 @@ def label_consensus(published: Path, others=("jev", "laya", "glm-cot", "embed-nn
     for directory in sorted(p for p in published.iterdir() if p.is_dir()):
         answers: dict[int, dict[str, str]] = defaultdict(dict)
         gold: dict[int, str] = {}
-        for path in directory.glob("*-r0.jsonl"):
+        for path in published_runs(directory):
             with path.open() as lines:
                 meta = json.loads(next(lines))
                 if meta.get("perturb") not in (None, "none"):
@@ -850,7 +861,7 @@ def label_consensus(published: Path, others=("jev", "laya", "glm-cot", "embed-nn
                 for line in lines:
                     r = json.loads(line)
                     if r.get("kind") == "row" and r.get("arm") in others and "choice" in r:
-                        answers[r["index"]][r["arm"]] = r["choice"]
+                        answers[r["index"]].setdefault(r["arm"], r["choice"])
                         gold[r["index"]] = r["gold"]
         flags = {}
         for i, by_arm in answers.items():

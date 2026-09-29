@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 
 from . import calibration as c
-from .calibrate_report import DOCUMENT, fmt, mean, table
+from .calibrate_report import DOCUMENT, fmt, mean, published_runs, table
 
 EPSILONS = (0.02, 0.05, 0.10)
 DELTA = 0.1
@@ -36,7 +36,7 @@ def load_arm(published: Path, arm: str) -> dict[str, c.Dataset]:
     out = {}
     for directory in sorted(p for p in published.iterdir() if p.is_dir()):
         rows = []
-        for path in directory.glob("*-r0.jsonl"):
+        for path in published_runs(directory):
             with path.open() as lines:
                 meta = json.loads(next(lines))
                 if meta.get("perturb") not in (None, "none"):
