@@ -28,11 +28,14 @@ a raw one. Measure it separately (``--permutations``) and say so.
 
 from __future__ import annotations
 
+import json
 import math
 import os
 import re
+import subprocess
 import time
 from dataclasses import dataclass
+from importlib import metadata
 from typing import Any
 
 from decisions import Choice, OpenAIClient, SystemOne
@@ -78,6 +81,25 @@ class Arm:
     def unsupported(self, task: Task) -> str | None:
         """Why this arm cannot take this task, or ``None`` if it can."""
         return None
+
+
+def library_version() -> str:
+    """The installed privatemode-decisions: its version and the commit it was
+    installed from (``+dirty`` for an editable checkout with changes). The
+    default temperatures and ``calibrate()`` come from a moving branch, so a
+    result names the one it used."""
+    dist = metadata.distribution("privatemode-decisions")
+    info = json.loads(dist.read_text("direct_url.json") or "{}")
+    commit = (info.get("vcs_info") or {}).get("commit_id")
+    url = info.get("url", "")
+    if not commit and url.startswith("file://"):
+        path = url.removeprefix("file://")
+        git = lambda *a: subprocess.run(["git", "-C", path, *a], capture_output=True,  # noqa: E731
+                                        text=True).stdout.strip()
+        commit = git("rev-parse", "HEAD")
+        if commit and git("status", "--porcelain", "--untracked-files=no"):
+            commit += "+dirty"
+    return f"{dist.version}+{commit}" if commit else dist.version
 
 
 class PrivatemodeArm(Arm):

@@ -1,7 +1,8 @@
 """The held-out tasks of results/calibration/part-3/holdout-plan.md.
 
-    python -m bench.holdout_data build [--only name,...]   # choose and freeze
-    python -m bench.holdout_data check                     # refetch, verify hashes
+    python -m bench.holdout_data fetch                     # the texts, from the release
+    python -m bench.holdout_data check                     # verify them against the hashes
+    python -m bench.holdout_data build --only name --force # choose anew (replaces a task)
 
 Five tasks nobody has looked at, built without asking any model:
 
@@ -23,8 +24,15 @@ Five tasks nobody has looked at, built without asking any model:
 
 ``datasets/holdout/<task>.json`` freezes each task: its question, options,
 and per example the source id, label and a SHA-256 of the text. The texts
-themselves are cached under ``.cache/holdout/`` (not committed) and
-refetched by ``check``/``load``, which fail if a text changed.
+are not in the repository. ``fetch`` downloads them, with the licence of
+each, from the release ``calibration-2026-09-26`` (``TEXTS_URL``) into
+``.cache/holdout/``; ``check`` and ``load`` read that cache and fail on a
+missing text or one whose hash differs. ``build`` chose the examples once,
+from live sources (arXiv, Europe PMC and GitHub searches return other
+results later), so it refuses to replace a frozen task without ``--force``:
+rebuilding makes a different test, not a reproduction. The two Hugging
+Face datasets were read at ``HF_REVISIONS``, their last commits before the
+build.
 """
 
 from __future__ import annotations
@@ -38,6 +46,7 @@ import re
 import subprocess
 import time
 import urllib.parse
+import urllib.request
 from pathlib import Path
 
 from . import hub
@@ -48,6 +57,14 @@ FROZEN = ROOT / "datasets" / "holdout"
 CACHE = ROOT / ".cache" / "holdout"
 SEED = 0
 MAX_CHARS = 4000
+#: The texts of every frozen task, one JSON line each: task, id, licence, text.
+TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
+             "calibration-2026-09-26/holdout-texts.jsonl")
+#: The Hugging Face datasets' commits at build time (unchanged since
+#: 2024-02-23). The datasets-server serves only the latest revision, so
+#: ``build_hf`` checks that it still is this one.
+HF_REVISIONS = {"zeroshot/twitter-financial-news-topic": "acbc8af2a35ccf0916124efcbe9e6cf25f191012",
+                "zeroshot/twitter-financial-news-sentiment": "ccbe24de388e287beb92dd393a335c376b350ac3"}
 
 FIN_TOPICS = ["Analyst Update", "Fed | Central Banks", "Company | Product News",
               "Treasuries | Corporate Debt", "Dividend", "Earnings", "Energy | Oil", "Financials",
@@ -113,6 +130,9 @@ def clean(text: str) -> str:
 # -- the sources --------------------------------------------------------------------
 
 def build_hf(name: str, dataset: str, n: int = 1000) -> list[dict]:
+    current = json.loads(get(f"https://huggingface.co/api/datasets/{dataset}"))["sha"]
+    if current != HF_REVISIONS[dataset]:
+        raise SystemExit(f"{dataset} is at {current}, not the pinned {HF_REVISIONS[dataset]}")
     total = hub.head(dataset, "default", "validation")["num_rows_total"]
     indexes = sorted(random.Random(SEED).sample(range(total), n))
     rows = hub.pages(dataset, "default", "validation", indexes)
@@ -305,7 +325,7 @@ def load(name: str) -> list[Task]:
     missing = [e for e in frozen["examples"] if e["id"] not in texts]
     if missing:
         raise SystemExit(f"{name}: {len(missing)} texts not cached; run `python -m bench.holdout_data "
-                         f"build --only {name}` on the same sources")
+                         f"fetch`")
     tasks = []
     for e in frozen["examples"]:
         text = texts[e["id"]]
@@ -317,13 +337,48 @@ def load(name: str) -> list[Task]:
     return tasks
 
 
+def fetch(url: str = TEXTS_URL) -> None:
+    """The released texts into the cache, one file per task."""
+    with urllib.request.urlopen(url, timeout=300) as response:
+        rows = [json.loads(line) for line in response.read().decode().splitlines() if line.strip()]
+    CACHE.mkdir(parents=True, exist_ok=True)
+    for name in TASKS:
+        (CACHE / f"{name}.jsonl").write_text("".join(
+            json.dumps({"id": r["id"], "text": r["text"]}) + "\n" for r in rows if r["task"] == name))
+
+
+def export(path: Path) -> None:
+    """The cached texts of every frozen task as one file for the release,
+    each checked against its hash and with the licence it was taken under."""
+    lines = []
+    for name in TASKS:
+        frozen = json.loads((FROZEN / f"{name}.json").read_text())
+        texts = {t.index: t.state for t in load(name)}
+        licence = "MIT (the Hugging Face dataset)" if name.startswith("fin_") else None
+        lines += [json.dumps({"task": name, "id": e["id"], "license": e.get("license", licence),
+                              "text": texts[e["index"]]}) + "\n" for e in frozen["examples"]]
+    path.write_text("".join(lines))
+    print(f"wrote {len(lines)} texts to {path}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("command", choices=("build", "check"))
+    parser.add_argument("command", choices=("fetch", "check", "build", "export"))
     parser.add_argument("--only", default=",".join(TASKS))
+    parser.add_argument("--force", action="store_true",
+                        help="build: replace a frozen task (a new test, not a reproduction)")
+    parser.add_argument("--out", type=Path, default=Path("holdout-texts.jsonl"), help="export: the file")
     args = parser.parse_args()
+    if args.command == "fetch":
+        fetch()
+    if args.command == "export":
+        export(args.out)
+        return
     for name in args.only.split(","):
         if args.command == "build":
+            if (FROZEN / f"{name}.json").exists() and not args.force:
+                raise SystemExit(f"{name} is frozen; `build --force` would replace it with a new "
+                                 "sample. To reproduce, `fetch` the released texts.")
             freeze(name, BUILDERS[name]())
         else:
             print(name, len(load(name)), "examples verified")

@@ -46,7 +46,7 @@ from threading import Lock
 from decisions.client import APIError, set_max_in_flight
 from decisions.inference import PREFIX
 
-from .adapters import (ChainOfThoughtArm, EmbeddingArm, JevArm, LayaArm,
+from .adapters import (ChainOfThoughtArm, EmbeddingArm, JevArm, LayaArm, library_version,
                        PrivatemodeArm)
 from .datasets import DEFAULT_MAX_CHARS, NAMES, Task, frozen_dir, has_images, load
 from .pricing import DEFAULT_EUR_PER_USD
@@ -151,7 +151,8 @@ def identity(args, arms) -> dict:
         # temperature it reports at. A run from another library version or
         # setting must not resume into this one.
         **({"prefill": PREFIX, "privatemode_temperature": next(
-            a.temperature for a in arms if a.name == "privatemode")}
+            a.temperature for a in arms if a.name == "privatemode"),
+            "library": library_version()}
            if any(a.name == "privatemode" for a in arms) else {}),
     }
 

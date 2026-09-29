@@ -30,7 +30,7 @@ from decisions.inference import PREFIX
 from decisions.types import ChoiceAnswer
 
 from . import calibration as c
-from .adapters import PrivatemodeArm
+from .adapters import PrivatemodeArm, library_version
 from .holdout_data import FROZEN, TASKS, load
 
 MODEL = "glm-5.3-flash"
@@ -56,9 +56,13 @@ def run(task: str, out: Path, concurrency: int) -> Path:
     tasks = load(task)
     arm = PrivatemodeArm(model=MODEL)
     frozen = (FROZEN / f"{task}.json").read_bytes()
+    # Concurrency changes no answer, and the plan allows one run: it goes in
+    # the meta block, not the key, so a resume at another setting continues
+    # the same file. The library does go in: the default temperatures and
+    # calibrate() the report scores come from it.
     identity = {"dataset": task, "frozen_sha1": hashlib.sha1(frozen).hexdigest()[:12],
-                "arms": {arm.name: arm.model}, "concurrency": concurrency,
-                "prefill": PREFIX, "privatemode_temperature": arm.temperature}
+                "arms": {arm.name: arm.model}, "prefill": PREFIX,
+                "privatemode_temperature": arm.temperature, "library": library_version()}
     key = hashlib.sha1(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:12]
     folder = out / task
     folder.mkdir(parents=True, exist_ok=True)
@@ -71,6 +75,7 @@ def run(task: str, out: Path, concurrency: int) -> Path:
     if not path.stat().st_size:
         handle.write(json.dumps({"kind": "meta", "identity": identity, "dataset": task,
                                  "n": len(tasks), "options": len(tasks[0].criteria),
+                                 "concurrency": concurrency,
                                  "started": datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")})
                      + "\n")
     lock = Lock()
@@ -297,11 +302,15 @@ def report(run_dir: Path, out: Path) -> None:
     if missing:
         raise SystemExit(f"no run for {sorted(missing)}")
     data = {n: data[n] for n in TASKS}
-    served = sorted({s for d in data.values() for s in d.meta.get("served_model", [])})
+    unrecorded = [n for n, d in data.items() if not d.meta.get("served_model")]
+    if unrecorded:
+        raise SystemExit(f"no served model recorded for {unrecorded}")
+    served = sorted({s for d in data.values() for s in d.meta["served_model"]})
     if any(MODEL not in s for s in served):
         raise SystemExit(f"served {served}, not {MODEL}")
     starts = sorted(d.meta.get("started", "") for d in data.values())
     meta = {"run": f"{starts[0]}–{starts[-1]}", "served": served, "model": MODEL,
+            "scored_with_library": library_version(),
             "global_t": GLOBAL_T, "families": FAMILY, "draws": DRAWS, "labels": LABELS}
     write_report(evaluate(data), meta, out)
     print((out / "report.md").read_text())
