@@ -27,7 +27,7 @@ DELTA = 0.1
 LABELS = (20, 50, 100, 250, 500)
 DRAWS = 200
 #: Jev's probabilities come in steps of 0.01.
-JEV_UNIT = 0.01
+JEV_UNIT = c.JEV_UNIT
 JEV_DATE = "2026-09-22"
 
 
@@ -37,12 +37,12 @@ def load_arm(published: Path, arm: str) -> dict[str, c.Dataset]:
     for directory in sorted(p for p in published.iterdir() if p.is_dir()):
         rows = []
         for path in directory.glob("*-r0.jsonl"):
-            lines = path.open()
-            meta = json.loads(next(lines))
-            if meta.get("perturb") not in (None, "none"):
-                continue
-            rows += [r for r in map(json.loads, lines) if r.get("kind") == "row"
-                     and r.get("arm") == arm and r.get("probabilities") and "error" not in r]
+            with path.open() as lines:
+                meta = json.loads(next(lines))
+                if meta.get("perturb") not in (None, "none"):
+                    continue
+                rows += [r for r in map(json.loads, lines) if r.get("kind") == "row"
+                         and r.get("arm") == arm and r.get("probabilities") and "error" not in r]
         if len(rows) < 50:
             continue
         seen, unique = set(), []
@@ -90,10 +90,7 @@ def report(args) -> tuple[str, dict]:
     oracle = summary["oracle"]
     text = sorted((n for n in run if n != DOCUMENT), key=lambda n: (run[n].k, n))
     options = {n: run[n].k for n in run}
-    formula_lodo = {}
-    for n in text:
-        a, b = c.fit_formula({m: oracle[m] for m in text if m != n}, options)
-        formula_lodo[n] = c.formula_temperature(a, b, options[n])
+    formula_lodo = c.formula_lodo({n: oracle[n] for n in text}, options)
     shipped = summary["shipped"]["formula"]
     halves = {n: c.split(run[n]) for n in run}
     figures: dict = {}
@@ -108,11 +105,6 @@ def report(args) -> tuple[str, dict]:
     systems = {"jev": load_arm(Path(args.published), "jev"),
                "laya": load_arm(Path(args.published), "laya")} if args.published else {}
 
-    def unzero(P):
-        """Jev rounds to 0.01: put half a rounding unit where it says 0."""
-        Q = np.where(P == 0, JEV_UNIT / 2, P)
-        return Q / Q.sum(axis=1, keepdims=True)
-
     def sets(P_cal, y_cal, P_test, y_test):
         return c.set_stats(c.lac_sets(P_test, c.threshold(c.lac_scores(P_cal, y_cal), 0.9)), y_test)
 
@@ -126,7 +118,7 @@ def report(args) -> tuple[str, dict]:
         Pg_cal, Pg = c.scale(cal_g.P, tg), c.scale(test_g.P, tg)
         # With labels: each system's own temperature, fitted on the calibration half.
         tg_own = c.fit_temperature([(Pg_cal, cal_g.y)], prior=1.0, shrinkage=c.SHRINKAGE)
-        Pz_cal, Pz = unzero(cal_j.P), unzero(test_j.P)
+        Pz_cal, Pz = c.unzero(cal_j.P), c.unzero(test_j.P)
         tj_own = c.fit_temperature([(Pz_cal, cal_j.y)])
         conf_j, right_j = top(test_j.P, test_j.y)
         iso = c.fit_isotonic(*top(cal_j.P, cal_j.y))

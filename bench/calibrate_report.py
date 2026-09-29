@@ -254,26 +254,21 @@ def compare_methods(args, run, text_names, temperatures, priors):
     """
     if not args.published:
         return None
-    from .calibrate_extensions import JEV_UNIT, common, load_arm
+    from .calibrate_extensions import common, load_arm
     jev = load_arm(Path(args.published), "jev")
-
-    def unzero(P):
-        Q = np.where(P == 0, JEV_UNIT / 2, P)
-        return Q / Q.sum(axis=1, keepdims=True)
+    unzero = c.unzero
 
     parts: dict[str, list] = defaultdict(list)   # method -> [(P, y), ...], one per dataset
     temps: dict[str, list] = defaultdict(list)
     names = [n for n in text_names if n in jev]
-    halves = {n: (c.split(common(run[n], jev[n])[0]), c.split(common(run[n], jev[n])[1]))
-              for n in names}
+    pairs = {n: common(run[n], jev[n]) for n in names}
+    halves = {n: (c.split(pairs[n][0]), c.split(pairs[n][1])) for n in names}
     # Jev's own temperatures, and from them its zero-label default: the
     # option-count formula refitted on Jev, each dataset left out of its own T.
     jev_own = {n: c.fit_temperature([(unzero(halves[n][1][0].P), halves[n][1][0].y)])
                for n in names}
     options = {n: run[n].k for n in names}
-    jev_default = {n: c.formula_temperature(
-        *c.fit_formula({m: jev_own[m] for m in names if m != n}, options), options[n])
-        for n in names}
+    jev_default = c.formula_lodo(jev_own, options)
     for n in names:
         (_, test_g), (cal_j, test_j) = halves[n]
         y = test_g.y
@@ -391,10 +386,7 @@ def report(args) -> str:
         families[SPEC[n].family].append(n)
     loto = {n: c.fit_temperature([cal_parts[m] for m in text_names
                                   if SPEC[m].family != SPEC[n].family]) for n in text_names}
-    formula_lodo = {}
-    for n in text_names:
-        a, b = c.fit_formula({m: oracle[m] for m in text_names if m != n}, options)
-        formula_lodo[n] = c.formula_temperature(a, b, options[n])
+    formula_lodo = c.formula_lodo({n: oracle[n] for n in text_names}, options)
     formula = c.fit_formula({m: oracle[m] for m in text_names}, options)
 
     def formula_without(held_out: set[str], n: str) -> float:
@@ -849,15 +841,15 @@ def label_consensus(published: Path, others=("jev", "laya", "glm-cot", "embed-nn
         answers: dict[int, dict[str, str]] = defaultdict(dict)
         gold: dict[int, str] = {}
         for path in directory.glob("*-r0.jsonl"):
-            lines = path.open()
-            meta = json.loads(next(lines))
-            if meta.get("perturb") not in (None, "none"):
-                continue    # renamed options: different names for the same answers
-            for line in lines:
-                r = json.loads(line)
-                if r.get("kind") == "row" and r.get("arm") in others and "choice" in r:
-                    answers[r["index"]][r["arm"]] = r["choice"]
-                    gold[r["index"]] = r["gold"]
+            with path.open() as lines:
+                meta = json.loads(next(lines))
+                if meta.get("perturb") not in (None, "none"):
+                    continue    # renamed options: different names for the same answers
+                for line in lines:
+                    r = json.loads(line)
+                    if r.get("kind") == "row" and r.get("arm") in others and "choice" in r:
+                        answers[r["index"]][r["arm"]] = r["choice"]
+                        gold[r["index"]] = r["gold"]
         flags = {}
         for i, by_arm in answers.items():
             votes = defaultdict(int)

@@ -24,7 +24,7 @@ from pathlib import Path
 import numpy as np
 
 from . import calibration as c
-from .calibrate_extensions import DELTA, JEV_UNIT, common, load_arm, load_rotations, top
+from .calibrate_extensions import DELTA, common, load_arm, load_rotations, top
 from .calibrate_report import DOCUMENT, fmt, mean, table
 
 LABELS = (20, 50, 100, 250, 500)
@@ -36,12 +36,6 @@ SHRINKAGE = c.SHRINKAGE
 EPSILON = 0.10
 COVERAGE = 0.9
 MANY = ("banking77", "clinc150", "ledgar")
-
-
-def unzero(P: np.ndarray) -> np.ndarray:
-    """Jev rounds to 0.01: put half a rounding unit where it says 0."""
-    Q = np.where(P == 0, JEV_UNIT / 2, P)
-    return Q / Q.sum(axis=1, keepdims=True)
 
 
 def band(k: int) -> str:
@@ -125,15 +119,13 @@ def bias_section(run, halves, text, lodo, jev, figures, rng) -> tuple[list[str],
             if n in jev:
                 g, j = common(run[n], jev[n])
                 systems["glm-jev"][n] = c.split(g)
-                systems["jev"][n] = tuple(c.Dataset(d.name, d.options, d.index, unzero(d.P), d.y)
+                systems["jev"][n] = tuple(c.Dataset(d.name, d.options, d.index, c.unzero(d.P), d.y)
                                           for d in c.split(j))
         # Jev's own zero-label default, as part 1's overview gives it: the
         # option formula fitted on Jev's per-task temperatures, leaving the
         # dataset out.
         own = {n: c.fit_temperature([(cal.P, cal.y)]) for n, (cal, _) in systems["jev"].items()}
-        k = {n: run[n].k for n in own}
-        jev_default = {n: c.formula_temperature(*c.fit_formula({m: own[m] for m in own if m != n}, k), k[n])
-                       for n in own}
+        jev_default = c.formula_lodo(own, {n: run[n].k for n in own})
     for system, data in systems.items():
         for size in LABELS:
             for n, (cal, test) in data.items():
@@ -533,7 +525,7 @@ def many_section(run, text, lodo, jev, rng) -> tuple[list[str], dict]:
         for n in wide:
             if n in jev:
                 _, j = common(run[n], jev[n])
-                shared[n] = c.Dataset(n, j.options, j.index, unzero(j.P), j.y)
+                shared[n] = c.Dataset(n, j.options, j.index, c.unzero(j.P), j.y)
         if shared:
             jv = class_conditional(shared, {n: 1.0 for n in shared}, rng)
             gl = {n: glm[n] for n in shared}
@@ -700,10 +692,7 @@ def main() -> None:
     oracle = summary["oracle"]
     text = sorted((n for n in run if n != DOCUMENT), key=lambda n: (run[n].k, n))
     options = {n: run[n].k for n in run}
-    lodo = {}
-    for n in text:
-        a, b = c.fit_formula({m: oracle[m] for m in text if m != n}, options)
-        lodo[n] = c.formula_temperature(a, b, options[n])
+    lodo = c.formula_lodo({n: oracle[n] for n in text}, options)
     halves = {n: c.split(run[n]) for n in run}
     jev = load_arm(Path(args.published), "jev") if args.published else {}
     rng = np.random.default_rng(c.SEED)

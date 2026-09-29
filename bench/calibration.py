@@ -345,6 +345,28 @@ def formula_temperature(a: float, b: float, options: int) -> float:
     return math.exp(a + b * math.log(options))
 
 
+def formula_lodo(temperatures: dict[str, float], options: dict[str, int]) -> dict[str, float]:
+    """Per dataset, the option formula fitted on the other datasets'
+    temperatures: the zero-label default as it would be for a dataset left
+    out of the fit."""
+    out = {}
+    for n in temperatures:
+        a, b = fit_formula({m: t for m, t in temperatures.items() if m != n}, options)
+        out[n] = formula_temperature(a, b, options[n])
+    return out
+
+
+#: Jev returns probabilities rounded to 0.01.
+JEV_UNIT = 0.01
+
+
+def unzero(P: np.ndarray) -> np.ndarray:
+    """Jev's fairest fix: half a rounding unit where it says 0, renormalized,
+    so the likelihood is finite and a temperature can be fitted."""
+    Q = np.where(P == 0, JEV_UNIT / 2, P)
+    return Q / Q.sum(axis=1, keepdims=True)
+
+
 # -- conformal prediction sets --------------------------------------------
 
 def lac_scores(P: np.ndarray, y: np.ndarray) -> np.ndarray:
