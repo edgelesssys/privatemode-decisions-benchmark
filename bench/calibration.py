@@ -57,34 +57,61 @@ class Dataset:
 # -- loading --------------------------------------------------------------
 
 def load_run(directory: Path, arm: str = "privatemode") -> dict[str, Dataset]:
-    """Every dataset in a suite output directory, rows of one arm only."""
+    """Every dataset in a single-run output directory, rows of one arm only.
+
+    One run file per dataset: a directory holding several (replicates, a
+    renamed-options run, another ``n``) raises ``ValueError`` instead of
+    silently keeping one. Rows are dropped when they failed and were never
+    answered, repeat an index, have a gold label outside the options or no
+    probability at all; ``meta["dropped"]`` counts them.
+    """
     out = {}
-    for path in sorted(Path(directory).glob("*/*.jsonl")):
-        meta, rows = None, []
-        for line in path.open():
-            record = json.loads(line)
-            if record.get("kind") == "meta":
-                meta = record
-            elif (record.get("kind") == "row" and record.get("arm") == arm
-                  and "error" not in record and record.get("probabilities")):
-                rows.append(record)
-        if not rows:
+    for folder in sorted(p for p in Path(directory).iterdir() if p.is_dir()):
+        runs = []
+        for path in sorted(folder.glob("*.jsonl")):
+            meta, rows, failed = None, [], set()
+            with path.open() as lines:
+                for line in lines:
+                    record = json.loads(line)
+                    if record.get("kind") == "meta":
+                        meta = record
+                    elif record.get("kind") == "row" and record.get("arm") == arm:
+                        if "error" in record or not record.get("probabilities"):
+                            failed.add(record["index"])
+                        else:
+                            rows.append(record)
+            if rows:
+                runs.append((path, meta, rows, failed))
+        if not runs:
             continue
-        options = list(rows[0]["probabilities"])
+        if len(runs) > 1:
+            raise ValueError(f"{folder}: {len(runs)} run files for {arm} "
+                             f"({', '.join(p.name for p, *_ in runs)}); point at one run")
+        path, meta, rows, failed = runs[0]
+        seen, unique = set(), []
+        for r in rows:
+            if r["index"] not in seen:
+                seen.add(r["index"])
+                unique.append(r)
+        options = list(unique[0]["probabilities"])
         position = {name: i for i, name in enumerate(options)}
-        rows = [r for r in rows if r["gold"] in position]
-        P = np.array([[r["probabilities"][o] for o in options] for r in rows], dtype=float)
-        mass = (np.array([r["option_mass"] for r in rows], dtype=float)
-                if all("option_mass" in r for r in rows) else None)
+        kept = [r for r in unique if r["gold"] in position
+                and sum(r["probabilities"].get(o, 0.0) for o in options) > 0]
+        dropped = {"failed": len(failed - seen), "repeated": len(rows) - len(unique),
+                   "gold not an option or no probability": len(unique) - len(kept)}
+        P = np.array([[r["probabilities"][o] for o in options] for r in kept], dtype=float)
+        mass = (np.array([r["option_mass"] for r in kept], dtype=float)
+                if all("option_mass" in r for r in kept) else None)
         meta = dict(meta or {})
+        meta["dropped"] = dropped
         # What the endpoint said answered, where the run recorded it.
-        served = sorted({r["served_model"] for r in rows if r.get("served_model")})
+        served = sorted({r["served_model"] for r in kept if r.get("served_model")})
         if served:
             meta["served_model"] = served
-            meta["fingerprint"] = sorted({r["fingerprint"] for r in rows if r.get("fingerprint")})
-        out[path.parent.name] = Dataset(
-            path.parent.name, options, np.array([r["index"] for r in rows]),
-            P / P.sum(axis=1, keepdims=True), np.array([position[r["gold"]] for r in rows]),
+            meta["fingerprint"] = sorted({r["fingerprint"] for r in kept if r.get("fingerprint")})
+        out[folder.name] = Dataset(
+            folder.name, options, np.array([r["index"] for r in kept]),
+            P / P.sum(axis=1, keepdims=True), np.array([position[r["gold"]] for r in kept]),
             mass, meta)
     return out
 

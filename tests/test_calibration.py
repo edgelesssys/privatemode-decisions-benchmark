@@ -82,3 +82,40 @@ def test_binomial_cdf():
     n, p = 40, 0.1
     exact = sum(math.comb(n, i) * p ** i * (1 - p) ** (n - i) for i in range(4))
     assert c.binomial_cdf(3, n, p) == pytest.approx(exact)
+
+
+def write_run(folder, rows, name="run-r0.jsonl"):
+    import json as _json
+    folder.mkdir(parents=True, exist_ok=True)
+    lines = [{"kind": "meta", "started": "t0"}] + [dict(kind="row", arm="privatemode", **r) for r in rows]
+    (folder / name).write_text("".join(_json.dumps(x) + "\n" for x in lines))
+
+
+def test_load_run_reads_one_run_and_counts_what_it_drops(tmp_path):
+    from bench.calibration import load_run
+
+    ok = lambda i, gold="a", **extra: dict(index=i, gold=gold, probabilities={"a": 0.7, "b": 0.3},
+                                           option_mass=0.99, **extra)
+    write_run(tmp_path / "set", [
+        ok(0, served_model="glm-5.3-flash", fingerprint="f1"), ok(1, "b"),
+        dict(index=2, gold="a", error="timeout"),            # never answered
+        dict(index=3, gold="a", error="timeout"), ok(3),       # answered on the retry
+        ok(1, "b"),                                            # a repeated row
+        ok(4, "zzz"),                                          # gold not an option
+    ])
+    data = load_run(tmp_path)["set"]
+    assert list(data.index) == [0, 1, 3]
+    assert list(data.y) == [0, 1, 0]
+    assert data.mass is not None and data.P.shape == (3, 2)
+    assert data.meta["dropped"] == {"failed": 1, "repeated": 1, "gold not an option or no probability": 1}
+    assert data.meta["served_model"] == ["glm-5.3-flash"]
+
+
+def test_load_run_refuses_several_runs_of_one_dataset(tmp_path):
+    from bench.calibration import load_run
+
+    row = dict(index=0, gold="a", probabilities={"a": 0.7, "b": 0.3})
+    write_run(tmp_path / "set", [row], "one-r0.jsonl")
+    write_run(tmp_path / "set", [row], "two-r1.jsonl")
+    with pytest.raises(ValueError, match="2 run files"):
+        load_run(tmp_path)
