@@ -54,15 +54,15 @@ on all labels:
 
 | labels | T only, same labels (part 2) | T + bias, same labels | **T + bias, out-of-fold (shipped)** |
 |---|---|---|---|
-| 50 | 25% automated / 0.9% over ε / coverage 0.900 | 29% / 1.8% / 0.893 | 20% / 0.7% / 0.908 |
-| 100 | 27% / 1.1% / 0.902 | 33% / 2.3% / 0.898 | 23% / 1.2% / 0.908 |
-| 250 | 38% / 0.6% / 0.901 | 43% / 4.4% / 0.899 | 32% / 1.3% / 0.906 |
-| 500 | 39% / 0.0% / 0.898 | 46% / 8.7% / 0.899 | 35% / 0.4% / 0.903 |
+| 50 | 25% automated / 0.9% over ε / coverage 0.908 | 29% / 1.8% / 0.903 | 21% / 0.9% / 0.915 |
+| 100 | 27% / 1.1% / 0.909 | 33% / 2.3% / 0.907 | 23% / 0.9% / 0.915 |
+| 250 | 38% / 0.6% / 0.907 | 43% / 4.4% / 0.907 | 31% / 1.1% / 0.912 |
+| 500 | 39% / 0.0% / 0.904 | 46% / 8.7% / 0.905 | 36% / 1.1% / 0.909 |
 
 Automated share at ε = 10%, share of draws whose automated error on the test
 half exceeded 10% (the guarantee allows 10%), and 90% set coverage. The
 out-of-fold path keeps both guarantees and makes 90% sets smaller (1.70
-options instead of 1.84 at 100 labels), at a price in automation: 23%
+options instead of 1.85 at 100 labels), at a price in automation: 23%
 instead of 27% at 100 labels. `calibrate(..., bias=False)` keeps part 2's
 behaviour for whoever needs the most automation more than accuracy. **Gate:
 passed** (more accuracy at 100 labels, coverage and error bound no worse).
@@ -75,15 +75,15 @@ same fit and the same out-of-fold cutoffs, on the same examples:
 
 | labels | | accuracy, T | accuracy, T + bias | excess ECE, T → T + bias | 90% set, T + bias | automated at ε = 10%, T + bias |
 |---|---|---|---|---|---|---|
-| 100 | GLM-5.3-Flash | 78.1% | **80.2%** | 0.008 → **0.005** | **1.70** | 23% |
-| 100 | Jev | 77.5% | 79.6% | 0.023 → 0.014 | 1.79 | 24% |
-| 500 | GLM-5.3-Flash | 76.1% | **79.1%** | 0.006 → **0.003** | **1.62** | 36% |
-| 500 | Jev | 75.1% | 78.7% | 0.022 → 0.007 | 1.67 | 35% |
+| 100 | GLM-5.3-Flash | 78.1% | **80.2%** | 0.008 → **0.005** | **1.71** | 23% |
+| 100 | Jev | 77.5% | 79.6% | 0.023 → 0.014 | 1.79 | 25% |
+| 500 | GLM-5.3-Flash | 76.1% | **79.1%** | 0.006 → **0.003** | **1.64** | 35% |
+| 500 | Jev | 75.1% | 78.7% | 0.022 → 0.007 | 1.67 | 36% |
 
 Both gain about 2 points at 100 labels and 3.5 at 500. After calibration GLM
 is 0.6 points ahead at 100 labels and 0.4 at 500, better calibrated (excess
 ECE 0.005 against 0.014), with smaller sets, and automates about the same
-share. Both kept the error bound (0.9% and 2.1% of draws over ε at 100
+share. Both kept the error bound (0.4% and 3.0% of draws over ε at 100
 labels).
 
 **4. Several option orders keep the one-order temperature.**

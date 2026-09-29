@@ -1,6 +1,6 @@
 # Calibration report
 
-Run: `glm-latest`, 28 text datasets. Calibration/test halves are a fixed random split, seed 0. ECE uses 15 equal-mass bins of top-label confidence; means over datasets weight every dataset equally.
+Run: `glm-5.3`, 28 text datasets. Calibration/test halves are a fixed random split, seed 0. ECE uses 15 equal-mass bins of top-label confidence; means over datasets weight every dataset equally.
 
 ## 1. Raw probabilities
 
@@ -55,7 +55,7 @@ How each zero-label method does on datasets left out of its fit. **Excess ECE** 
 | formula, fitted on half the tasks, tested on the other half (50 splits) | 0.054 | 0.52 (0.40–0.65) |  |
 | per task (oracle) | 0.011 | 1 | 1 |
 
-The formula holds up under stricter hold-outs: leaving out related datasets (the four MASSIVE sets, both TREC sets, MNLI and XNLI, the SST family, the two TweetEval tasks) changes nothing, and fitting on half of the tasks gives the same result with more spread. **A new kind of task is the realistic worst case:** with no dataset of the same family in the fit, the default recovers less of the per-task gain. The method itself (the formula's form, the shrinkage, the prefill) was chosen on these datasets, which no split can undo; only datasets kept out of the whole study can measure that.
+Stricter hold-outs for the formula: leaving out related datasets together (the four MASSIVE sets, both TREC sets, MNLI and XNLI, the SST family, the two TweetEval tasks) gives excess ECE 0.048, fitting on half of the tasks 0.054, against 0.049 leaving out one dataset; with the whole task family held out, 0.079, the realistic worst case for a new kind of task. The method itself (the formula's form, the shrinkage, the prefill) was chosen on these datasets, which no split can undo; only datasets kept out of the whole study can measure that.
 
 
 `floor` is the ECE a perfectly calibrated model would show on this many examples (labels drawn from its own probabilities); values near it are as good as the sample can show.
@@ -103,13 +103,13 @@ Split conformal on each dataset's calibration half, evaluated on its test half. 
 
 | target | probabilities | score | mean coverage | mean set size | single-option share |
 |---|---|---|---|---|---|
-| 90% | raw | LAC | 0.904 | 1.99 | 0.64 |
+| 90% | raw | LAC | 0.909 | 1.99 | 0.65 |
 | 90% | raw | APS | 0.969 | 8.74 | 0.23 |
-| 90% | T | LAC | 0.903 | 1.84 | 0.62 |
+| 90% | T | LAC | 0.909 | 1.85 | 0.62 |
 | 90% | T | APS | 0.959 | 7.92 | 0.26 |
-| 95% | raw | LAC | 0.950 | 3.45 | 0.49 |
+| 95% | raw | LAC | 0.951 | 3.45 | 0.49 |
 | 95% | raw | APS | 0.983 | 9.93 | 0.09 |
-| 95% | T | LAC | 0.951 | 3.28 | 0.46 |
+| 95% | T | LAC | 0.952 | 3.28 | 0.46 |
 | 95% | T | APS | 0.979 | 9.39 | 0.11 |
 
 Per dataset, LAC after the formula T:
@@ -117,33 +117,33 @@ Per dataset, LAC after the formula T:
 | dataset | options | coverage 90% | size 90% | single 90% | coverage 95% | size 95% | single 95% |
 |---|---|---|---|---|---|---|---|
 | boolq | 2 | 0.932 | 1.05 | 0.95 | 0.970 | 1.19 | 0.81 |
-| rotten_tomatoes | 2 | 0.922 | 0.96 | 0.96 | 0.962 | 1.06 | 0.94 |
+| rotten_tomatoes | 2 | 0.948 | 1.00 | 1.00 | 0.962 | 1.06 | 0.94 |
 | rte | 2 | 0.871 | 1.04 | 0.96 | 0.950 | 1.22 | 0.78 |
-| sst2 | 2 | 0.917 | 0.93 | 0.93 | 0.970 | 1.00 | 1.00 |
+| sst2 | 2 | 0.970 | 1.00 | 1.00 | 0.970 | 1.00 | 1.00 |
 | toxic_conversations | 2 | 0.880 | 1.44 | 0.56 | 0.932 | 1.59 | 0.41 |
 | tweet_offensive | 2 | 0.933 | 1.36 | 0.64 | 0.970 | 1.53 | 0.47 |
 | mnli | 3 | 0.908 | 1.20 | 0.80 | 0.950 | 1.46 | 0.59 |
 | tweet_sentiment | 3 | 0.894 | 1.87 | 0.42 | 0.936 | 2.18 | 0.29 |
 | xnli_de | 3 | 0.886 | 1.46 | 0.59 | 0.944 | 1.80 | 0.36 |
-| ag_news | 4 | 0.886 | 1.00 | 0.98 | 0.942 | 1.19 | 0.84 |
+| ag_news | 4 | 0.892 | 1.01 | 0.99 | 0.942 | 1.19 | 0.84 |
 | amazon_reviews_de | 5 | 0.914 | 2.25 | 0.28 | 0.954 | 2.64 | 0.17 |
 | sst5 | 5 | 0.910 | 2.86 | 0.15 | 0.926 | 3.27 | 0.10 |
 | emotion | 6 | 0.930 | 3.36 | 0.19 | 0.962 | 4.31 | 0.06 |
-| trec_coarse | 6 | 0.940 | 1.04 | 0.96 | 0.984 | 1.30 | 0.77 |
+| trec_coarse | 6 | 0.944 | 1.04 | 0.96 | 0.984 | 1.30 | 0.77 |
 | gnad10 | 9 | 0.908 | 2.49 | 0.35 | 0.946 | 3.67 | 0.21 |
 | patent | 9 | 0.894 | 4.26 | 0.03 | 0.932 | 6.03 | 0.00 |
 | yahoo_topics | 10 | 0.908 | 2.82 | 0.37 | 0.954 | 4.58 | 0.12 |
 | scotus | 13 | 0.876 | 2.63 | 0.32 | 0.944 | 5.14 | 0.07 |
-| dbpedia_14 | 14 | 0.914 | 0.92 | 0.92 | 0.952 | 0.96 | 0.96 |
+| dbpedia_14 | 14 | 0.984 | 1.00 | 1.00 | 0.984 | 1.00 | 1.00 |
 | massive_scenario_de | 18 | 0.902 | 1.67 | 0.58 | 0.960 | 2.66 | 0.46 |
-| massive_scenario_en | 18 | 0.862 | 1.40 | 0.69 | 0.924 | 1.79 | 0.56 |
+| massive_scenario_en | 18 | 0.862 | 1.41 | 0.70 | 0.924 | 1.79 | 0.56 |
 | newsgroups20 | 20 | 0.880 | 2.24 | 0.59 | 0.956 | 3.82 | 0.50 |
 | trec_fine | 42 | 0.920 | 1.55 | 0.62 | 0.964 | 2.42 | 0.41 |
 | massive_intent_de | 59 | 0.918 | 1.43 | 0.72 | 0.972 | 5.71 | 0.35 |
-| massive_intent_en | 59 | 0.878 | 1.10 | 0.90 | 0.948 | 2.19 | 0.61 |
+| massive_intent_en | 59 | 0.878 | 1.11 | 0.90 | 0.948 | 2.19 | 0.61 |
 | banking77 | 77 | 0.904 | 1.75 | 0.62 | 0.940 | 7.41 | 0.24 |
 | ledgar | 100 | 0.914 | 4.30 | 0.34 | 0.954 | 18.16 | 0.03 |
-| clinc150 | 151 | 0.892 | 1.15 | 0.84 | 0.936 | 1.57 | 0.65 |
+| clinc150 | 151 | 0.896 | 1.16 | 0.85 | 0.936 | 1.57 | 0.65 |
 
 **Global cutoff (zero labels, heuristic, no guarantee):** LAC cutoff pooled over the other datasets' calibration halves, applied to the held-out dataset.
 
@@ -156,10 +156,10 @@ Per dataset, LAC after the formula T:
 
 | labels | mean coverage | 5th percentile | 95th percentile | share of draws below 88% |
 |---|---|---|---|---|
-| 50 | 0.903 | 0.818 | 0.968 | 0.28 |
-| 100 | 0.902 | 0.834 | 0.952 | 0.25 |
-| 250 | 0.904 | 0.862 | 0.940 | 0.16 |
-| 500 | 0.901 | 0.876 | 0.930 | 0.13 |
+| 50 | 0.911 | 0.834 | 0.977 | 0.23 |
+| 100 | 0.909 | 0.852 | 0.970 | 0.22 |
+| 250 | 0.910 | 0.862 | 0.970 | 0.15 |
+| 500 | 0.905 | 0.876 | 0.948 | 0.13 |
 
 ## 5. Label noise, contamination, language
 
@@ -243,7 +243,7 @@ Probability the model put on the option tokens before the mask. AUROC for flaggi
 | clinc150 | 152 | 0.971 | 0.966 | 0.87 [0.84, 0.90] | 0.49 [0.44, 0.54] |
 | **pooled** (ranks within dataset) | 6215 |  |  | 0.74 [0.73, 0.75] | 0.52 [0.52, 0.53] |
 
-Mass is significantly *inverted* (interval below 0.5) on: tweet_sentiment. There, answers the model is right about carry slightly less probability on the options, so low mass is not a usable error signal in either direction.
+Mass is significantly *inverted* (interval below 0.5) on: tweet_sentiment. There, answers the model is right about carry slightly less probability on the options.
 
 
 ## Figures

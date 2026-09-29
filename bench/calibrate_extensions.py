@@ -336,7 +336,7 @@ def report(args) -> tuple[str, dict]:
     md.append(f"\nFitting one temperature on the same labels: at most {worst_viol:.1%} of draws "
               f"over the bound ({DELTA:.0%} allowed) and 90% sets covering "
               f"{min(covs):.3f}–{max(covs):.3f}; splitting the labels between the two steps "
-              f"automates {split_cost * 100:+.0f} points less on average.\n")
+              f"changes the share automated by {-split_cost * 100:+.0f} points on average.\n")
     figures["automation_labels"] = need
 
     # 3. Isotonic regression and task temperature from few labels -------------

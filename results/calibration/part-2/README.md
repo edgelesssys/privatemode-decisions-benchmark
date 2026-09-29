@@ -31,8 +31,8 @@ record which version that resolved to.
 | **~500 labels, task temperature:** ECE / excess | 0.053 / 0.006 | can't be fitted (zeros) | 0.070 / 0.021 |
 | lower ECE with labels, datasets | 18 | | 10 |
 | right answer priced at exactly 0 | never | 4.3% (up to 15%) | — |
-| 90% sets: options, mean / median | 1.77 / 1.36 | 7.62 / 1.46 | 2.48 / 1.46 |
-| 90% sets on clinc150 (151 options) | 1.05 | 151 | 18.4 |
+| 90% sets: options, mean / median | 1.78 / 1.36 | 7.63 / 1.46 | 2.49 / 1.46 |
+| 90% sets on clinc150 (151 options) | 1.07 | 151 | 18.4 |
 
 Jev rounds to 0.01, and 61% of its probabilities are exactly 0, sometimes
 including the right answer. A temperature can't move a 0, and the likelihood
@@ -44,7 +44,7 @@ makes Jev *worse* (0.128): every zero gets 0.005, which on a 77-option task
 moves up to 0.38 of probability away from the answer Jev chose. The
 rounding also inflates prediction sets where
 the right answer is priced at 0: on clinc150, 151 options raw and 18 fixed,
-against GLM's 1.05. Isotonic regression on Jev's top confidence reaches
+against GLM's 1.07. Isotonic regression on Jev's top confidence reaches
 0.064 with 500 labels, but it repairs only the stated confidence, not the
 distribution that sets are built from.
 
@@ -80,7 +80,7 @@ temperature and then the cutoffs and threshold on the same labels, which
 strictly speaking breaks the guarantees' assumptions: the temperature can
 change which answers count as most confident. Tested on exactly that path,
 with 50 to 500 labels: at most 1.4% of draws exceeded the 10% error bound
-(the guarantee allows 10%), and 90% sets covered 0.898–0.908. Splitting the
+(the guarantee allows 10%), and 90% sets covered 0.904–0.918. Splitting the
 labels between the two steps, which is strictly valid, cost automation: 11%
 instead of 25% at 50 labels, 34% instead of 39% at 500.
 

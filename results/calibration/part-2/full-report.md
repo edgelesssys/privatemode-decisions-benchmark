@@ -1,6 +1,6 @@
 # Calibration report, part 2
 
-Same runs, halves and temperatures as part 1 (`eq-r1`). GLM probabilities are softened with the option-count formula fitted without the dataset in question (the library's default); Jev and Laya are taken from the published runs on the same examples. Means weight every dataset equally.
+Same runs, halves and temperatures as part 1 (`r1`). GLM probabilities are softened with the option-count formula fitted without the dataset in question (the library's default); Jev and Laya are taken from the published runs on the same examples. Means weight every dataset equally.
 
 ## 1. Jev on the same examples
 
@@ -19,25 +19,25 @@ On the 28 text datasets both systems answer, same test halves. Jev is `jev-lates
 | lower ECE with labels, datasets | 18 |  | 10 |
 | probabilities exactly 0 | none | 61% |  |
 | right answer at exactly 0 | never | 4.3% (max 15.4%) |  |
-| 90% set: coverage | 0.901 | 0.920 | 0.904 |
-| 90% set: options, mean / median | 1.77 / 1.36 | 7.62 / 1.46 | 2.48 / 1.46 |
-| 90% set: options on clinc150 | 1.05 | 151.00 | 18.35 |
-| 90% set: single-option share | 0.63 | 0.57 | 0.60 |
+| 90% set: coverage | 0.908 | 0.926 | 0.910 |
+| 90% set: options, mean / median | 1.78 / 1.36 | 7.63 / 1.46 | 2.49 / 1.46 |
+| 90% set: options on clinc150 | 1.07 | 151.00 | 18.35 |
+| 90% set: single-option share | 0.64 | 0.58 | 0.61 |
 
 Jev rounds to 0.01, and 61% of its probabilities are exactly 0, sometimes including the right answer. Setting those zeros to half a rounding unit makes the likelihood finite, so a temperature can then be fitted: that is the fairest fix, and any Jev user could apply it. Isotonic regression repairs only the top answer's stated confidence, not the distribution that prediction sets are built from. Laya, for reference: overconfidence +17.6 points, ECE 0.204 on 27 datasets.
 
 | dataset | options | test n | GLM acc | Jev acc | GLM ECE, default T | Jev ECE, raw | Jev ECE, zeros fixed | GLM ECE, task T | Jev ECE, zeros fixed + task T | Jev: right answer at 0 | GLM 90% set | Jev 90% set | Jev 90% set, fixed |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| boolq | 2 | 500 | 0.91 | 0.93 | 0.075 | 0.027 | 0.027 | 0.037 | 0.028 | 0.010 | 0.96 | 0.97 | 0.97 |
-| rotten_tomatoes | 2 | 500 | 0.94 | 0.93 | 0.032 | 0.037 | 0.037 | 0.018 | 0.037 | 0.014 | 0.96 | 0.98 | 0.98 |
+| boolq | 2 | 500 | 0.91 | 0.93 | 0.075 | 0.027 | 0.027 | 0.037 | 0.028 | 0.010 | 1.00 | 1.00 | 1.00 |
+| rotten_tomatoes | 2 | 500 | 0.94 | 0.93 | 0.032 | 0.037 | 0.037 | 0.018 | 0.037 | 0.014 | 1.00 | 1.00 | 1.00 |
 | rte | 2 | 139 | 0.89 | 0.91 | 0.096 | 0.088 | 0.090 | 0.074 | 0.094 | 0.007 | 1.14 | 1.07 | 1.07 |
-| sst2 | 2 | 436 | 0.96 | 0.97 | 0.028 | 0.024 | 0.026 | 0.013 | 0.029 | 0.002 | 0.93 | 0.92 | 0.92 |
+| sst2 | 2 | 436 | 0.96 | 0.97 | 0.028 | 0.024 | 0.026 | 0.013 | 0.029 | 0.002 | 1.00 | 1.00 | 1.00 |
 | toxic_conversations | 2 | 500 | 0.78 | 0.76 | 0.058 | 0.103 | 0.103 | 0.057 | 0.066 | 0.006 | 1.24 | 1.30 | 1.30 |
 | tweet_offensive | 2 | 430 | 0.80 | 0.79 | 0.089 | 0.089 | 0.090 | 0.091 | 0.057 | 0.000 | 1.30 | 1.33 | 1.33 |
 | mnli | 3 | 500 | 0.88 | 0.84 | 0.088 | 0.053 | 0.051 | 0.053 | 0.044 | 0.008 | 1.11 | 1.11 | 1.11 |
 | tweet_sentiment | 3 | 500 | 0.68 | 0.66 | 0.087 | 0.212 | 0.209 | 0.040 | 0.084 | 0.046 | 1.94 | 1.75 | 1.73 |
 | xnli_de | 3 | 500 | 0.81 | 0.79 | 0.062 | 0.110 | 0.108 | 0.043 | 0.057 | 0.016 | 1.29 | 1.29 | 1.29 |
-| ag_news | 4 | 500 | 0.90 | 0.90 | 0.041 | 0.051 | 0.047 | 0.040 | 0.039 | 0.024 | 1.00 | 0.99 | 0.99 |
+| ag_news | 4 | 500 | 0.90 | 0.90 | 0.041 | 0.051 | 0.047 | 0.040 | 0.039 | 0.024 | 1.00 | 1.00 | 1.00 |
 | amazon_reviews_de | 5 | 500 | 0.59 | 0.57 | 0.136 | 0.209 | 0.202 | 0.116 | 0.078 | 0.044 | 2.17 | 2.41 | 2.21 |
 | sst5 | 5 | 500 | 0.48 | 0.57 | 0.123 | 0.178 | 0.170 | 0.086 | 0.070 | 0.030 | 2.37 | 2.33 | 2.21 |
 | emotion | 6 | 500 | 0.60 | 0.58 | 0.181 | 0.289 | 0.273 | 0.050 | 0.083 | 0.154 | 3.68 | 6.00 | 4.31 |
@@ -46,20 +46,20 @@ Jev rounds to 0.01, and 61% of its probabilities are exactly 0, sometimes includ
 | patent | 9 | 500 | 0.55 | 0.48 | 0.165 | 0.259 | 0.237 | 0.065 | 0.062 | 0.140 | 4.31 | 9.00 | 4.82 |
 | yahoo_topics | 10 | 500 | 0.76 | 0.75 | 0.082 | 0.137 | 0.114 | 0.050 | 0.079 | 0.106 | 2.89 | 10.00 | 5.97 |
 | scotus | 13 | 500 | 0.68 | 0.71 | 0.132 | 0.166 | 0.128 | 0.065 | 0.091 | 0.108 | 2.40 | 2.21 | 1.94 |
-| dbpedia_14 | 14 | 500 | 0.98 | 0.99 | 0.027 | 0.005 | 0.055 | 0.017 | 0.012 | 0.002 | 0.91 | 0.92 | 0.92 |
+| dbpedia_14 | 14 | 500 | 0.98 | 0.99 | 0.027 | 0.005 | 0.055 | 0.017 | 0.012 | 0.002 | 1.00 | 1.00 | 1.00 |
 | massive_scenario_de | 18 | 500 | 0.74 | 0.73 | 0.049 | 0.105 | 0.094 | 0.073 | 0.102 | 0.024 | 1.40 | 1.53 | 1.52 |
 | massive_scenario_en | 18 | 500 | 0.76 | 0.74 | 0.049 | 0.102 | 0.075 | 0.061 | 0.086 | 0.026 | 1.36 | 1.40 | 1.40 |
 | newsgroups20 | 20 | 500 | 0.73 | 0.72 | 0.061 | 0.081 | 0.093 | 0.057 | 0.093 | 0.024 | 2.49 | 2.67 | 2.52 |
-| trec_fine | 42 | 250 | 0.80 | 0.83 | 0.089 | 0.067 | 0.110 | 0.083 | 0.080 | 0.008 | 1.28 | 1.08 | 1.08 |
+| trec_fine | 42 | 250 | 0.80 | 0.83 | 0.089 | 0.067 | 0.110 | 0.083 | 0.080 | 0.008 | 1.28 | 1.09 | 1.08 |
 | massive_intent_de | 59 | 500 | 0.80 | 0.79 | 0.034 | 0.079 | 0.134 | 0.034 | 0.083 | 0.030 | 1.82 | 2.09 | 2.01 |
 | massive_intent_en | 59 | 500 | 0.82 | 0.83 | 0.040 | 0.057 | 0.141 | 0.025 | 0.058 | 0.042 | 1.35 | 1.26 | 1.25 |
 | banking77 | 77 | 500 | 0.81 | 0.80 | 0.057 | 0.090 | 0.166 | 0.050 | 0.091 | 0.058 | 1.79 | 1.65 | 1.62 |
 | ledgar | 100 | 500 | 0.77 | 0.78 | 0.085 | 0.078 | 0.206 | 0.061 | 0.051 | 0.056 | 1.98 | 2.17 | 2.01 |
-| clinc150 | 151 | 500 | 0.88 | 0.80 | 0.066 | 0.089 | 0.307 | 0.029 | 0.124 | 0.116 | 1.05 | 151.00 | 18.35 |
+| clinc150 | 151 | 500 | 0.88 | 0.80 | 0.066 | 0.089 | 0.307 | 0.029 | 0.124 | 0.116 | 1.07 | 151.00 | 18.35 |
 
 ## 2. A guaranteed error rate on automated answers
 
-Learn then Test: from a task's calibration half, the lowest confidence threshold whose error among automated answers is at most ε, with probability 90% over the choice of labels. Evaluated on the test half. This table uses each dataset's whole calibration half, 500 labels for most and 138–436 for the smaller ones, so its rates differ from the fixed-size draws below.
+Learn then Test style: from a task's calibration half, the lowest threshold on the top probability whose error among automated answers is at most ε, with probability 90% over the choice of labels. Evaluated on the test half. This table uses each dataset's whole calibration half, 138 to 500 labels, so its rates differ from the fixed-size draws below.
 
 | max error ε | mean share automated | best possible (knowing the test labels) | datasets automating anything | datasets over ε on the test half |
 |---|---|---|---|---|
@@ -107,13 +107,13 @@ Per dataset, share automated (error among automated on the test half):
 
 | labels | automated, default T | violations | automated, calibrate() | violations | automated, split | violations | 90% set coverage, calibrate() | violations, naive threshold |
 |---|---|---|---|---|---|---|---|---|
-| 20 | 0% | 0.0% | 0% | 0.0% | 0% | 0.0% | 0.908 | 40.1% |
-| 50 | 25% | 1.3% | 25% | 0.9% | 11% | 1.1% | 0.901 | 44.4% |
-| 100 | 27% | 1.5% | 27% | 1.4% | 23% | 1.4% | 0.903 | 41.6% |
-| 250 | 37% | 1.5% | 37% | 1.4% | 29% | 1.4% | 0.900 | 42.4% |
-| 500 | 39% | 0.0% | 39% | 0.0% | 34% | 1.3% | 0.898 | 39.1% |
+| 20 | 0% | 0.0% | 0% | 0.0% | 0% | 0.0% | 0.918 | 40.1% |
+| 50 | 25% | 1.3% | 25% | 0.9% | 11% | 1.1% | 0.909 | 44.4% |
+| 100 | 27% | 1.5% | 27% | 1.4% | 23% | 1.4% | 0.909 | 41.6% |
+| 250 | 37% | 1.5% | 37% | 1.4% | 29% | 1.4% | 0.906 | 42.4% |
+| 500 | 39% | 0.0% | 39% | 0.0% | 34% | 1.3% | 0.904 | 39.1% |
 
-Fitting one temperature on the same labels keeps both guarantees in practice: violations stay well under 10% and coverage at 90%, while splitting the labels costs automation. calibrate() therefore uses all labels for both steps.
+Fitting one temperature on the same labels: at most 1.4% of draws over the bound (10% allowed) and 90% sets covering 0.904–0.918; splitting the labels between the two steps changes the share automated by -6 points on average.
 
 
 ## 3. Fitting a task from a few labels: temperature or isotonic regression
@@ -129,10 +129,10 @@ Top-answer ECE on the test half, from n random labels of the calibration half (5
 | 250 | 0.054 | 0.054 | 0.059 |
 | 500 | 0.052 | 0.052 | 0.051 |
 
-The sampling floor of these test halves is about 0.049: a perfectly calibrated model would show that much ECE on them, so 0.052 is within a few thousandths of the best any method can show here.
+The sampling floor of these test halves is about 0.049: a perfectly calibrated model would show that much ECE on them. The pulled task temperature from 500 labels reaches 0.052.
 
 
-The pull is worth 5 examples (`calibrate()` does the same, towards the temperature the answers already have). Isotonic regression needs about 500 labels to match a temperature, so the library fits temperature.
+The pull is worth 5 examples (`calibrate()` does the same, towards the temperature the answers already have). Isotonic regression catches up with the temperature from 500 labels on.
 
 
 ## 4. Coverage per class on imbalanced tasks
@@ -157,7 +157,7 @@ rvl_cdip (16 options) was not used to fit the formula. Its own best T is 2.14, t
 
 ## 6. Position bias: rotations and PriDe
 
-Every row asked in 4 rotated option orders (100 rows per text dataset). Compared on the same rows, after the formula T: one order (the default), the average of all rotations (4× the cost; the strongest standard position fix), and PriDe (position prior estimated from 10% of the rows in all rotations, applied to the other 90% at the cost of one order).
+Every row asked in 2/3/4 rotated option orders (about 100 rows per text dataset). Compared on the same rows, after the formula T: one order (the default), the average of all rotations (4× the cost; the strongest standard position fix), and PriDe (position prior estimated from 10% of the rows in all rotations, applied to the other 90% at the cost of one order).
 
 | method | mean accuracy | points vs one order | mean NLL | mean ECE |
 |---|---|---|---|---|
@@ -165,7 +165,7 @@ Every row asked in 4 rotated option orders (100 rows per text dataset). Compared
 | all rotations | 0.7864 | -0.32 | 0.685 | 0.121 |
 | PriDe | 0.7890 | -0.06 | 0.705 | 0.124 |
 
-**Gate: stop, no significant difference.** Over all 2800 rows, all rotations minus one order is -0.32 points of accuracy, 95% interval [-1.07, +0.43] (paired bootstrap): no evidence of a gain, and a gain of more than 0.4 points is unlikely. PriDe does no better. On the 10 datasets with at most 4 options, where 4 rotations cover every position, accuracy is 0.852 for one order, 0.846 for all rotations and 0.851 for PriDe. Averaging also softens the distribution, but that isn't all of its lower NLL: with each method's own temperature, NLL is 0.672 for one order and 0.649 for all rotations. Four orders act as a small ensemble whose probabilities rank the right answer a little better, a real but small gain for four times the requests, without changing accuracy. With more options than rotations the position prior can't be separated from content, which hurts PriDe on the many-option sets.
+**No significant difference.** Over all 2800 rows, all rotations minus one order is -0.32 points of accuracy, 95% interval [-1.07, +0.43] (paired bootstrap): a gain of more than 0.4 points is unlikely. PriDe: 0.7890 mean accuracy. On the 10 datasets with at most 4 options, where 4 rotations cover every position, accuracy is 0.852 for one order, 0.846 for all rotations and 0.851 for PriDe. Averaging also softens the distribution; with each method's own temperature, which takes that out, NLL is 0.672 for one order and 0.649 for all rotations. With more options than rotations the position prior can't be separated from content, which limits PriDe on the many-option sets.
 
 
 Per dataset, accuracy / NLL; the last column is how much more the model likes its favourite position than its least favourite, shown only where the rotations cover every position:
@@ -208,7 +208,7 @@ Per dataset, accuracy / NLL; the last column is how much more the model likes it
 | original | 0.915 | 0.919 | 0.915 |
 | renamed | 0.850 | 0.829 | 0.818 |
 
-Rotating the renamed options makes it worse: the drop comes from the option *names*, not their positions, so a position fix can't recover it. Dividing out the neutral-input prior, which is about names, recovered 1.9 of the 5.6 points (part 1).
+Renaming costs 6.5 points in one order; rotating the renamed options changes that by -2.1. A drop that comes from the option *names* rather than their positions is one a position fix can't recover.
 
 
 ## Figures

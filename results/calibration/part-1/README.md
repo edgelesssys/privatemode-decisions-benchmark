@@ -92,14 +92,14 @@ Split conformal prediction on each task's calibration half:
 
 | target | coverage reached | mean options per set | single-option answers |
 |---|---|---|---|
-| 90% | 90.1% | 1.8 | 63% |
-| 95% | 95.4% | 3.1 | 45% |
+| 90% | 90.8% | 1.8 | 64% |
+| 95% | 95.5% | 3.1 | 46% |
 
 Single-option answers are the share that can be automated at that level. A
 zero-label cutoff pooled from other datasets hit 90% on average but fell
 more than 2 points short on 9 of 28 datasets (worst 72%), so it's a
-heuristic, not a guarantee. Temperature barely changes set sizes (1.83 →
-1.77 options at 90%): it improves the stated confidence, not which options
+heuristic, not a guarantee. Temperature barely changes set sizes (1.84 →
+1.78 options at 90%): it improves the stated confidence, not which options
 are plausible.
 
 ![Labels needed](labels_needed.png)

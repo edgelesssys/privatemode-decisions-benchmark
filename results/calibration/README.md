@@ -28,7 +28,7 @@ examples (about 0.05), so 0 means as calibrated as the sample can show.
 | Without labels? | A temperature from the option count recovers 71% of the per-task gain on held-out datasets (excess ECE 0.129 → 0.032), and the same when related datasets or half of all tasks are held out; one from the task family 74%. It's the library's default. For a new kind of task, with its whole family held out, it recovers 45%. |
 | Better than Jev? | Yes, at the same accuracy. With no labels, excess ECE 0.032 against Jev's 0.080 as returned, and 0.042 with a default temperature fitted for Jev the same way. With ~500 labels 0.006 against 0.021, even after fixing Jev's zeros so a temperature can be fitted. Jev rounds to 0.01 and prices the right answer at exactly 0 in 4.3% of examples. |
 | With a few labels? | A task temperature pulled towards the default: ECE 0.066 from 20 labels, 0.052 from 500. Isotonic regression only catches up at about 500. |
-| Prediction sets? | 90% sets cover 90.1% with 1.8 options on average; 63% of answers are a single option. A cutoff per class restores a rare class from 70% to 97% coverage. |
+| Prediction sets? | 90% sets cover 90.8% with 1.8 options on average; 64% of answers are a single option. A cutoff per class restores a rare class from 70% to 97% coverage. |
 | Automation with an error bound? | Learn then Test kept a 10% bound in every test; the naive threshold broke it about 40% of the time. The price: 19% automated at ε = 5%, 42% at 10%. |
 | Removing bias without labels? | Hurts or doesn't help. Neutral inputs cost up to 16 points of accuracy and batch calibration 0.5 on average; averaging option rotations changes accuracy by −0.3 points (not significant) for 4× the requests. The bias they remove is mostly real knowledge or the real class balance. |
 | Anything from option mass? | No. The model puts about 99% on the options, right or wrong. |
@@ -99,9 +99,9 @@ temperature is part 1's.
 | accuracy, 500 labels (23 datasets) | 76.1% | **79.1%** |
 | NLL, 100 labels | 0.683 | **0.631** |
 | excess ECE, 100 labels | 0.008 | **0.004** |
-| 90% sets, 100 labels: coverage / options | 0.902 / 1.84 | 0.908 / **1.70** |
+| 90% sets, 100 labels: coverage / options | 0.909 / 1.85 | 0.915 / **1.70** |
 | automated at a 10% error bound, 100 labels | **27%** | 23% |
-| draws over the bound, 100 / 500 labels (10% allowed) | 1.1% / 0.0% | 1.2% / 0.4% |
+| draws over the bound, 100 / 500 labels (10% allowed) | 1.1% / 0.0% | 0.9% / 1.1% |
 | models with a default temperature | GLM-5.3-Flash | GLM-5.3-Flash, Kimi K2.6, GLM-5.3 |
 
 The price of the accuracy is some automation at a fixed error bound, since
@@ -120,8 +120,8 @@ cutoffs. Same examples:
 | excess ECE, no labels (default T) | **0.032** | 0.042 |
 | accuracy, 100 labels (T + bias) | **80.2%** | 79.6% |
 | excess ECE, 100 labels (T + bias) | **0.005** | 0.014 |
-| 90% sets, 100 labels: options | **1.70** | 1.79 |
-| automated at a 10% error bound, 100 labels | 23% | 24% |
+| 90% sets, 100 labels: options | **1.71** | 1.79 |
+| automated at a 10% error bound, 100 labels | 23% | 25% |
 | accuracy, 500 labels (T + bias) | **79.1%** | 78.7% |
 | excess ECE, 500 labels (T + bias) | **0.003** | 0.007 |
 | 90% sets with more than 20 options, one cutoff | **1.60** | 3.53 |

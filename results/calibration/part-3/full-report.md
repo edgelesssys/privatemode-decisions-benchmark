@@ -1,30 +1,30 @@
 # Calibration report, part 3
 
-Same runs, halves and temperatures as parts 1 and 2 (`eq-r1`). GLM probabilities start from the library's default temperature (the option formula fitted without the dataset in question); Jev's come from the published runs on the same examples. Means weight every dataset equally.
+Same runs, halves and temperatures as parts 1 and 2 (`r1`). GLM probabilities start from the library's default temperature (the option formula fitted without the dataset in question); Jev's come from the published runs on the same examples. Means weight every dataset equally.
 
 ## 1. A bias per option
 
-`softmax(log p / T + b)`: a temperature and one bias per option, fitted together on n random labels of the calibration half (20 draws per dataset), with the temperature pulled towards the default (worth 5 examples, as before) and the bias towards 0 (worth 2 examples: `2 / n · |b|²`). Then, as `calibrate()` does, the 90% cutoff and the automation threshold (ε = 10%) on the same labels and the corrected probabilities. Evaluated on the test half. *T* is the temperature alone (what part 2 shipped), *T + b* adds the bias and sets the cutoff and the threshold on out-of-fold probabilities (5 folds: each label's answer corrected by a fit on the other folds), then fits the final correction on all labels. Excess ECE is ECE minus the sampling floor of the same probabilities.
+`softmax(log p / T + b)`: a temperature and one bias per option, fitted together on n random labels of the calibration half (20 draws per dataset), with the temperature pulled towards the default (worth 5 examples, as before) and the bias towards 0 (worth 2 examples: `2 / n · |b|²`). Then, as `calibrate()` does, the 90% cutoff and the automation threshold (ε = 10%) on the same labels and the corrected probabilities. Evaluated on the test half. *T* is the temperature alone (what part 2 shipped), *T + b* adds the bias and sets the cutoff and the threshold on out-of-fold probabilities (5 folds: each label's answer corrected by a fit on the other folds), then fits the final correction on all labels. Excess ECE is ECE minus the sampling floor of the test half at the starting temperature (the floor barely moves with the fit).
 
 **GLM-5.3-Flash**, mean over datasets (datasets whose calibration half has at least n examples):
 
 | labels | datasets | accuracy, T | accuracy, T + b | points | datasets better / worse | worst dataset | NLL | excess ECE | 90% set coverage | 90% set size | automated at ε = 10% | draws over ε |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 20 | 28 | 78.1% | 79.1% | +1.0 | 16 / 6 | -1.9 | 0.691 → 0.665 | 0.017 → 0.013 | 0.906 → 0.913 | 2.61 → 2.99 | 0% → 0% | 0.0% → 0.0% |
-| 50 | 28 | 78.1% | 79.6% | +1.5 | 17 / 7 | -1.2 | 0.686 → 0.648 | 0.013 → 0.007 | 0.900 → 0.908 | 1.98 → 1.93 | 25% → 20% | 0.9% → 0.7% |
-| 100 | 28 | 78.1% | 80.1% | +2.0 | 18 / 6 | -0.9 | 0.683 → 0.631 | 0.008 → 0.004 | 0.902 → 0.908 | 1.84 → 1.70 | 27% → 23% | 1.1% → 1.2% |
-| 250 | 27 | 77.7% | 80.2% | +2.5 | 20 / 4 | -1.3 | 0.694 → 0.625 | 0.006 → 0.005 | 0.901 → 0.906 | 1.80 → 1.59 | 38% → 32% | 0.6% → 1.3% |
-| 500 | 23 | 76.1% | 79.1% | +3.0 | 19 / 3 | -1.4 | 0.745 → 0.657 | 0.006 → 0.003 | 0.898 → 0.903 | 1.88 → 1.63 | 39% → 35% | 0.0% → 0.4% |
+| 20 | 28 | 78.1% | 79.1% | +1.0 | 16 / 6 | -1.9 | 0.691 → 0.665 | 0.017 → 0.013 | 0.918 → 0.924 | 2.63 → 2.90 | 0% → 0% | 0.0% → 0.0% |
+| 50 | 28 | 78.1% | 79.6% | +1.5 | 17 / 7 | -1.2 | 0.686 → 0.648 | 0.013 → 0.007 | 0.908 → 0.915 | 1.99 → 1.92 | 25% → 21% | 0.9% → 0.9% |
+| 100 | 28 | 78.1% | 80.1% | +2.0 | 18 / 6 | -0.9 | 0.683 → 0.631 | 0.008 → 0.004 | 0.909 → 0.915 | 1.85 → 1.70 | 27% → 23% | 1.1% → 0.9% |
+| 250 | 27 | 77.7% | 80.2% | +2.5 | 20 / 4 | -1.3 | 0.694 → 0.625 | 0.006 → 0.005 | 0.907 → 0.912 | 1.81 → 1.61 | 38% → 31% | 0.6% → 1.1% |
+| 500 | 23 | 76.1% | 79.1% | +3.0 | 19 / 3 | -1.4 | 0.745 → 0.657 | 0.006 → 0.003 | 0.904 → 0.909 | 1.89 → 1.64 | 39% → 36% | 0.0% → 1.1% |
 
-**Why out-of-fold.** With a bias per option, setting the cutoff and the threshold on the same labels the bias was fitted on makes the answers look better than they are, and the error bound starts to slip as the fit gets more room: at 500 labels it was broken on 2 of 23 datasets. Automated share / share of draws over ε / 90% coverage:
+**Why out-of-fold.** With a bias per option, setting the cutoff and the threshold on the same labels the bias was fitted on makes the answers look better than they are: at 500 labels the error bound was broken on 2 of 23 datasets that way. Automated share / share of draws over ε / 90% coverage:
 
 | labels | T, same labels (part 2) | T + b, same labels | T + b, out-of-fold (shipped) |
 |---|---|---|---|
-| 20 | 0% / 0.0% / 0.906 | 0% / 0.0% / 0.893 | 0% / 0.0% / 0.913 |
-| 50 | 25% / 0.9% / 0.900 | 29% / 1.8% / 0.893 | 20% / 0.7% / 0.908 |
-| 100 | 27% / 1.1% / 0.902 | 33% / 2.3% / 0.898 | 23% / 1.2% / 0.908 |
-| 250 | 38% / 0.6% / 0.901 | 43% / 4.4% / 0.899 | 32% / 1.3% / 0.906 |
-| 500 | 39% / 0.0% / 0.898 | 46% / 8.7% / 0.899 | 35% / 0.4% / 0.903 |
+| 20 | 0% / 0.0% / 0.918 | 0% / 0.0% / 0.908 | 0% / 0.0% / 0.924 |
+| 50 | 25% / 0.9% / 0.908 | 29% / 1.8% / 0.903 | 21% / 0.9% / 0.915 |
+| 100 | 27% / 1.1% / 0.909 | 33% / 2.3% / 0.907 | 23% / 0.9% / 0.915 |
+| 250 | 38% / 0.6% / 0.907 | 43% / 4.4% / 0.907 | 31% / 1.1% / 0.912 |
+| 500 | 39% / 0.0% / 0.904 | 46% / 8.7% / 0.905 | 36% / 1.1% / 0.909 |
 
 By option count, 100 labels (accuracy points, T + b minus T):
 
@@ -61,28 +61,28 @@ By option count, 100 labels (accuracy points, T + b minus T):
 
 | labels | system | accuracy, T | accuracy, T + b | excess ECE, T | excess ECE, T + b | 90% coverage, T + b | 90% set, T + b | automated, T | automated, T + b | draws over ε, T + b |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 100 | GLM-5.3-Flash | 78.1% | 80.2% | 0.008 | 0.005 | 0.906 | 1.70 | 28% | 23% | 0.9% |
-| 100 | Jev, zeros fixed | 77.5% | 79.6% | 0.023 | 0.014 | 0.910 | 1.79 | 32% | 24% | 2.1% |
-| 500 | GLM-5.3-Flash | 76.1% | 79.1% | 0.006 | 0.003 | 0.903 | 1.62 | 39% | 36% | 0.4% |
-| 500 | Jev, zeros fixed | 75.1% | 78.7% | 0.022 | 0.007 | 0.906 | 1.67 | 40% | 35% | 0.9% |
+| 100 | GLM-5.3-Flash | 78.1% | 80.2% | 0.008 | 0.005 | 0.915 | 1.71 | 28% | 23% | 0.4% |
+| 100 | Jev, zeros fixed | 77.5% | 79.6% | 0.023 | 0.014 | 0.916 | 1.79 | 32% | 25% | 3.0% |
+| 500 | GLM-5.3-Flash | 76.1% | 79.1% | 0.006 | 0.003 | 0.909 | 1.64 | 39% | 35% | 1.7% |
+| 500 | Jev, zeros fixed | 75.1% | 78.7% | 0.022 | 0.007 | 0.910 | 1.67 | 40% | 36% | 0.2% |
 
 ## 2. Several option orders: their own temperature
 
-`SystemOne(permutations=k)` averages k rotated option orders and then applied the one-order default temperature. From the rotation runs (28 text datasets, 100 rows each, 4 orders), the orders the library would ask for k = 2 and 4. Temperatures fitted per dataset (*own T*) or by the option formula leaving the dataset out (*LODO*). Averaging softens, so the best temperature falls: the median ratio to one order's is 0.95 for 2 orders and 0.91 for 4. *Automatable* is the share of answers that can be automated at an observed error of at most 10%, most confident first, knowing the labels: how well the confidence ranks answers.
+`SystemOne(permutations=k)` averages k rotated option orders and then applies the one-order default temperature. From the rotation runs (28 text datasets, about 100 rows each, up to 4 orders), the orders the library would ask for k = 2 and 4. Temperatures fitted per dataset on the same rows they are scored on (*own T*, in-sample, a lower bound) or by the option formula leaving the dataset out (*LODO*). Averaging softens, so the best temperature falls: the median ratio to one order's is 0.95 for 2 orders and 0.91 for 4. *Automatable* is the share of answers that can be automated at an observed error of at most 10%, most confident first, knowing the labels: how well the confidence ranks answers.
 
 | orders | temperature | accuracy | NLL | excess ECE | automatable |
 |---|---|---|---|---|---|
 | 1 | one-order formula | 78.96% | 0.703 | 0.016 | 61% |
 | 1 | own formula (LODO) | 78.96% | 0.703 | 0.016 | 61% |
-| 1 | own T per dataset | 78.96% | 0.672 | 0.003 | 61% |
+| 1 | own T per dataset, in-sample | 78.96% | 0.672 | 0.003 | 61% |
 | 2 | one-order formula | 78.93% | 0.690 | 0.016 | 63% |
 | 2 | own formula (LODO) | 78.93% | 0.712 | 0.032 | 63% |
 | 2 | one-order formula × ratio | 78.93% | 0.692 | 0.019 | 63% |
-| 2 | own T per dataset | 78.93% | 0.658 | 0.004 | 63% |
+| 2 | own T per dataset, in-sample | 78.93% | 0.658 | 0.004 | 63% |
 | 4 | one-order formula | 78.64% | 0.685 | 0.014 | 64% |
 | 4 | own formula (LODO) | 78.64% | 0.706 | 0.031 | 65% |
 | 4 | one-order formula × ratio | 78.64% | 0.686 | 0.021 | 65% |
-| 4 | own T per dataset | 78.64% | 0.649 | 0.000 | 65% |
+| 4 | own T per dataset, in-sample | 78.64% | 0.649 | 0.000 | 65% |
 
 Formulas `log T = a + b · log(options)` fitted on all datasets: 1 order: a = 0.986, b = -0.086; 2 orders: a = 0.871, b = -0.112; 4 orders: a = 0.887, b = -0.131.
 
@@ -171,14 +171,14 @@ Mean over these datasets:
 | clustered (Ding) | 0.907 | 1.78 | 0.115 | 14% |
 | grouped by answers | 0.905 | 2.68 | 0.107 | 15% |
 
-**Jev with the same cutoffs** (trec_fine, massive_intent_de, massive_intent_en, banking77, ledgar, clinc150; zeros set to half a rounding unit, then its own task temperature). GLM on all its rows, Jev on the rows it answered:
+**Jev with the same cutoffs** (trec_fine, massive_intent_de, massive_intent_en, banking77, ledgar, clinc150; zeros set to half a rounding unit, starting from Jev's own default temperature, then its own task temperature). GLM on all its rows, Jev on the rows it answered:
 
 | cutoffs | GLM set size | GLM class gap | Jev set size | Jev class gap |
 |---|---|---|---|---|
 | one cutoff | 1.60 | 0.120 | 3.53 | 0.120 |
 | per class | 70.04 | 0.089 | 70.81 | 0.089 |
 | clustered (Ding) | 1.78 | 0.115 | 3.66 | 0.113 |
-| grouped by answers | 2.68 | 0.107 | 4.14 | 0.111 |
+| grouped by answers | 2.68 | 0.107 | 4.16 | 0.111 |
 
 **Known class rates, from logs only.** `p′ ∝ p · π / π̂`: π are the class rates someone knows from logs, π̂ the mean answer over unlabelled traffic (the test half). The rates are the dataset's true ones, each multiplied by a random factor of up to ±25% or up to 2× either way, then renormalized; 20 draws. Text datasets with up to 20 options, accuracy points against the default temperature, and the bias from 50 and 100 labels (section 1) on the same datasets:
 
@@ -192,7 +192,7 @@ Mean over these datasets:
 
 ## 4. Other models
 
-One run of each model on all 29 datasets (up to 1,000 examples, 4 in flight), the same halves. *Served* is the model the endpoint reported answering, recorded in every row. The formula is fitted on all text datasets; excess ECE after it is leave-one-dataset-out, as for GLM Flash in part 1.
+One run of each model on the benchmark's datasets (up to 1,000 examples each), the same halves; the table gives the text datasets each run answered and its scanned-document result where it has one. *Served* is the model the endpoint reported answering, recorded in every row. The formula is fitted on all text datasets; excess ECE after it is leave-one-dataset-out, as for GLM Flash in part 1.
 
 | run | served | text datasets | accuracy | option mass | task T, median (range) | formula a, b | excess ECE raw | excess ECE, formula (LODO) | excess ECE, task T | rvl_cdip: accuracy, own vs formula T |
 |---|---|---|---|---|---|---|---|---|---|---|
