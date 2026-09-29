@@ -109,7 +109,7 @@ GLM-5.3-Flash, test halves, mean of two replicates per arm:
 | mean accuracy, 29 datasets | 0.776 | **0.793** |
 | wins / ties / losses, R-Q against today | | 15 / 12 / 2 |
 | by options: 2 / 3–6 / 7–20 / 21–80 / 81+ | 0.881 / 0.729 / 0.724 / 0.810 / 0.816 | 0.900 / 0.747 / 0.731 / 0.839 / 0.836 |
-| share of glm-cot's lead closed (16 datasets where it is > 2 points ahead) | | 44% (median) |
+| share of glm-cot's lead closed (14 datasets where it is > 2 points ahead) | | 57% (median) |
 | excess ECE with the shipped default temperature | 0.023 | 0.016 |
 | prompt tokens, EUR per 1,000 | 672, 0.135 | 1,113, 0.223 |
 | latency p50 at concurrency 1, up to 18 options / 77 / 151 | ~150 / 273 / 569 ms | ~150 / 386 / 900 ms |

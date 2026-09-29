@@ -39,12 +39,12 @@ Laya on the same examples from the published suite
 | | Privatemode | Jev | Laya |
 |---|---|---|---|
 | datasets it can answer | 29 | 28 | 27 |
-| normalised accuracy | **0.638** | 0.561 | 0.414 |
+| normalised accuracy | **0.638** | 0.560 | 0.414 |
 | mean accuracy, the 28 datasets Jev answers | **0.798** | 0.775 | |
-| against Jev (wins–ties–losses) | 16–8–3, Wilcoxon p < 0.001 | | |
+| against Jev (wins–ties–losses) | 16–8–3, Wilcoxon p = 0.001 | | |
 | latency p50, concurrency 1, from Germany | about 150 ms | 251 ms | runs locally |
 | EUR per 1,000 decisions, median | 0.095 | 0.016 | runs locally |
-| excess ECE without labels | **0.032** | 0.080 (0.042 with a default T) | |
+| excess ECE without labels | **0.032** | 0.080 (0.040 with a default T) | |
 | accuracy with 100 labels (`calibrate()`) | **80.2%** | 79.6% | |
 
 Normalised accuracy is 0 for always answering the majority class and 1 for
