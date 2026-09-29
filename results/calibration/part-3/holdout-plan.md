@@ -50,3 +50,36 @@ The thresholds come from what parts 1–3 found on the known tasks (excess
 ECE 0.032 by leave-one-dataset-out and 0.054 with a whole family held out;
 coverage 0.898–0.909; at most 2.1% of draws over the bound), with room for
 fewer datasets. Anything outside is a failure, reported as one.
+
+## The tasks chosen (added 2026-09-29, before any of them was run)
+
+Chosen and frozen by `bench.holdout_data` without asking any model, and
+committed before the first request. Up to 1,000 examples each; the input is
+the text or abstract alone, no titles or metadata.
+
+| task | family | source | licence | options | selection |
+|---|---|---|---|---|---|
+| `fin_topic` | finance | zeroshot/twitter-financial-news-topic, validation | MIT | 20 | 1,000 random rows (seed 0) |
+| `fin_sentiment` | finance | zeroshot/twitter-financial-news-sentiment, validation | MIT | 3 | 1,000 random rows (seed 0) |
+| `arxiv_field` | science | arXiv OAI-PMH, papers first submitted in 2026 | CC BY 4.0 or CC0 | 8 | primary category's top-level group, up to 125 per group |
+| `pubmed_study` | medical | Europe PMC, first published Jan–Jun 2026, open access | CC BY | 5 | study type from the indexed publication types, only where exactly one applies (a systematic review may also be indexed as a review), 200 per type |
+| `github_issue` | code | GitHub issues opened Jan–Jun 2026 in public MIT, Apache-2.0 or BSD repositories | the repository's | 4 | the one of bug, enhancement, documentation, question on it; template headings, checklists and title tags removed; at most 5 per repository, 250 per label |
+
+SEC EDGAR 8-K items were dropped: EDGAR requires a contact address in
+every request. The arXiv, Europe PMC and GitHub tasks postdate the model's
+training cutoff.
+
+Settings fixed with the tasks:
+
+- **Zero-label methods reported** besides the pass criterion's option
+  formula: raw, one global T (2.148, fitted on part 1's 28 datasets), the
+  family T, and the task's own T from its calibration half (the ceiling).
+  Family used: `fin_topic`, `arxiv_field` and `pubmed_study` topic,
+  `fin_sentiment` sentiment, `github_issue` intent.
+- **`calibrate()`** is the library's own, on answers at the default
+  temperature, with `bias=True` (the default) and `bias=False`. "All labels"
+  means the whole calibration half, drawn 50 times in a new order (which
+  moves the folds); the coverage criterion uses the half in its stored order
+  once.
+- **Run:** GLM-5.3-Flash through the production proxy, raw probabilities
+  (T = 1), at most 4 requests in flight per task.
