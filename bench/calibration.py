@@ -2,8 +2,8 @@
 
 Everything here works on the stored per-example distributions, so it needs
 no model: a run is loaded once and every metric, fit and prediction set is
-computed offline. Only :func:`neutral_priors` in ``calibrate_report`` asks
-the model anything.
+computed offline. The model is asked only by the runners (``bench.suite``,
+``bench.rotations``, ``bench.neutral_priors``, ``bench.off_option``).
 
 Conventions:
 

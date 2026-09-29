@@ -119,3 +119,31 @@ def test_load_run_refuses_several_runs_of_one_dataset(tmp_path):
     write_run(tmp_path / "set", [row], "two-r1.jsonl")
     with pytest.raises(ValueError, match="2 run files"):
         load_run(tmp_path)
+
+
+def test_common_aligns_two_systems_by_example_and_option():
+    from bench.calibrate_extensions import common
+    from bench.calibration import Dataset
+
+    a = Dataset("set", ["x", "y"], np.array([3, 1, 2]),
+                np.array([[0.9, 0.1], [0.2, 0.8], [0.6, 0.4]]), np.array([0, 1, 0]))
+    # b answered 1, 2 and 4, lists the options the other way round, in another order
+    b = Dataset("set", ["y", "x"], np.array([4, 2, 1]),
+                np.array([[0.5, 0.5], [0.3, 0.7], [0.9, 0.1]]), np.array([0, 1, 0]))
+    ga, gb = common(a, b)
+    assert list(ga.index) == list(gb.index) == [1, 2]
+    assert gb.options == ["x", "y"]
+    assert gb.P.tolist() == [[0.1, 0.9], [0.7, 0.3]]    # b's rows, reordered to a's options
+    assert list(gb.y) == list(ga.y) == [1, 0]            # gold from a
+
+
+def test_automation_threshold_never_splits_tied_confidences():
+    from bench.calibration import automation_threshold
+
+    # 40 answers at 0.99 (one wrong), then 60 at 0.90: a level cutting into a
+    # run of equal confidences extends to the whole run.
+    conf = np.array([0.99] * 40 + [0.90] * 60)
+    right = np.array([False] + [True] * 39 + [True] * 60)
+    t = automation_threshold(conf, right, max_error=0.10, delta=0.1)
+    assert t in (0.99, 0.90)
+    assert (conf >= t).sum() in (40, 100)
