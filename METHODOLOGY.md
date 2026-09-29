@@ -10,7 +10,14 @@ done. This describes the build-out to ~24 datasets.
 
 ## 0. The noise floor, measured first
 
-Every arm runs at `temperature=0`. Neither hosted arm is deterministic
+Every arm runs at `temperature=0`: the *sampling* temperature of the request,
+which picks the one generated token. It is a different thing from the
+*calibration* temperature the library divides log probabilities by before
+reporting them. The Privatemode arm reports raw probabilities (calibration
+temperature 1), because the calibration analysis measures them; the
+library's users get its default temperature on top, so the arm's ECE and
+Brier columns describe the raw model, not the library's default output.
+Neither hosted arm is deterministic
 anyway — servers batch, kernels reassociate, cache state differs. Two
 independent runs of the identical sample, same seed, same prompts:
 

@@ -139,8 +139,11 @@ memorisation.
 
 Whether the Privatemode arm's probabilities can be trusted, how a
 temperature fixes their overconfidence without labels, and what conformal
-prediction sets need, is a separate analysis of two further runs:
-[`results/calibration/`](results/calibration/README.md).
+prediction sets need, is a separate analysis: two further runs of all
+datasets, rotation runs, neutral inputs and runs of two other models, in
+[`results/calibration/`](results/calibration/README.md). The arm reports
+raw probabilities (calibration temperature 1) for it, so the ECE and Brier
+columns here describe the raw model; the library softens them by default.
 
 ### What is outside these columns
 
