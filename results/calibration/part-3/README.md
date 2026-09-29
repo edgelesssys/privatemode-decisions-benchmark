@@ -46,8 +46,8 @@ other binary tasks by less than a point either way.
 fitted the temperature on the same labels as the cutoffs and the automation
 threshold, and that held. A bias has one parameter per option, and on the
 labels it was fitted to the answers look better than they are: the error
-bound on automated answers broke on 2 of 23 datasets at 500 labels (8.7% of
-draws, against 0.0% for a temperature alone). `calibrate()` now sets the
+bound on automated answers broke on 2 of 23 datasets at 500 labels, against
+none for a temperature alone. `calibrate()` now sets the
 cutoffs and threshold on out-of-fold probabilities (each labelled answer
 corrected by a fit on the other four of five folds) and the final correction
 on all labels:
@@ -60,8 +60,12 @@ on all labels:
 | 500 | 39% / 0.0% / 0.904 | 46% / 8.7% / 0.905 | 36% / 1.1% / 0.909 |
 
 Automated share at ε = 10%, share of draws whose automated error on the test
-half exceeded 10% (the guarantee allows 10%), and 90% set coverage. The
-out-of-fold path keeps both guarantees and makes 90% sets smaller (1.70
+half exceeded 10% (the guarantee allows 10% per task), and 90% set coverage.
+At 500 labels the 23 datasets have exactly 500, so every draw is the whole
+calibration half in another order: the same-labels columns are one fit per
+dataset (8.7% is 2 of 23 datasets, 0.0% none), and only the out-of-fold
+folds vary (its 1.1% is 5 of scotus's 20 fold orders, 25% on that dataset).
+The out-of-fold path stays near 1% of draws overall and makes 90% sets smaller (1.70
 options instead of 1.85 at 100 labels), at a price in automation: 23%
 instead of 27% at 100 labels. `calibrate(..., bias=False)` keeps part 2's
 behaviour for whoever needs the most automation more than accuracy. **Gate:
@@ -76,9 +80,9 @@ same fit and the same out-of-fold cutoffs, on the same examples:
 | labels | | accuracy, T | accuracy, T + bias | excess ECE, T → T + bias | 90% set, T + bias | automated at ε = 10%, T + bias |
 |---|---|---|---|---|---|---|
 | 100 | GLM-5.3-Flash | 78.1% | **80.2%** | 0.008 → **0.005** | **1.71** | 23% |
-| 100 | Jev | 77.5% | 79.6% | 0.023 → 0.014 | 1.79 | 25% |
+| 100 | Jev | 77.5% | 79.6% | 0.021 → 0.014 | 1.80 | 26% |
 | 500 | GLM-5.3-Flash | 76.1% | **79.1%** | 0.006 → **0.003** | **1.64** | 35% |
-| 500 | Jev | 75.1% | 78.7% | 0.022 → 0.007 | 1.67 | 36% |
+| 500 | Jev | 75.1% | 78.7% | 0.020 → 0.008 | 1.68 | 36% |
 
 Both gain about 2 points at 100 labels and 3.5 at 500. After calibration GLM
 is 0.6 points ahead at 100 labels and 0.4 at 500, better calibrated (excess
@@ -139,13 +143,13 @@ describe a class; with 3–10 it barely differs from one cutoff. Grouping
 classes by the unlabelled answers instead uses every label for the cutoffs,
 but gains little. Neither ships. With many options and few labels, one
 cutoff is the practical choice; `per_class=True` is for a few options with a
-rare one. Jev with the same cutoffs: 3.5 options per set with one cutoff
+rare one. Jev with the same cutoffs: 3.6 options per set with one cutoff
 against GLM's 1.6, and the same class gap.
 
 **7. Known class rates without labels: not shipped.** Correcting answers by
 class rates known from logs (`p′ ∝ p · π / π̂`, π̂ the mean answer on
 unlabelled traffic) gains +2.5 points on datasets up to 20 options when the
-rates are within 25%, but only +1.8 with 8 of 20 datasets worse when they
+rates are within 25%, but only +1.8 with 8 of 22 datasets worse when they
 are up to 2× off. The bias from 100 labels gains +2.3 with 5 worse, and needs
 no rates. Anyone who can state the rates that precisely can label 100
 examples, so the library leaves it out.
@@ -225,10 +229,6 @@ and [glm-5.3/full-report.md](glm-5.3/full-report.md).
   verdicts.
 - **A second image dataset**: needs a document set with public labels and a
   license to use, which is a decision to make first.
-- **The final test on untouched tasks** runs once the calibration code and
-  constants are final, which includes the outcome of the accuracy plan.
-  What will be measured and what counts as a pass is written down in
-  [holdout-plan.md](holdout-plan.md), before any task was chosen.
 - **The prompt regression check** belongs to the accuracy plan: a prompt
   change needs part 1 rerun and the constants regenerated.
 

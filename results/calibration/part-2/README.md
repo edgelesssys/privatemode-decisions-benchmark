@@ -26,9 +26,9 @@ record which version that resolved to.
 | | GLM-5.3-Flash | Jev, raw | Jev, zeros set to 0.005 |
 |---|---|---|---|
 | accuracy | 78.1% | 77.5% | 77.5% |
-| **no labels:** ECE / floor / **excess** | 0.081 / 0.049 / **0.032** | 0.110 / 0.030 / **0.080** | 0.128 / 0.046 / **0.082** |
+| **no labels:** ECE / floor / **excess** | 0.081 / 0.049 / **0.032** | 0.109 / 0.030 / **0.080** | 0.127 / 0.046 / **0.082** |
 | lower ECE, datasets (GLM vs fixed Jev) | 23 | | 5 |
-| **~500 labels, task temperature:** ECE / excess | 0.053 / 0.006 | can't be fitted (zeros) | 0.070 / 0.021 |
+| **~500 labels, task temperature:** ECE / excess | 0.053 / 0.006 | can't be fitted (zeros) | 0.068 / 0.019 |
 | lower ECE with labels, datasets | 18 | | 10 |
 | right answer priced at exactly 0 | never | 4.3% (up to 15%) | — |
 | 90% sets: options, mean / median | 1.78 / 1.36 | 7.63 / 1.46 | 2.49 / 1.46 |
@@ -38,9 +38,9 @@ Jev rounds to 0.01, and 61% of its probabilities are exactly 0, sometimes
 including the right answer. A temperature can't move a 0, and the likelihood
 of those examples is infinitely bad, so raw Jev can't be temperature-scaled.
 The fix any Jev user could apply, setting zeros to half a rounding unit,
-makes a temperature fittable. With labels, that gets Jev from 0.110 to 0.070,
+makes a temperature fittable. With labels, that gets Jev from 0.109 to 0.068,
 still behind GLM's 0.053 with the same labels. Without labels the fix alone
-makes Jev *worse* (0.128): every zero gets 0.005, which on a 77-option task
+makes Jev *worse* (0.127): every zero gets 0.005, which on a 77-option task
 moves up to 0.38 of probability away from the answer Jev chose. The
 rounding also inflates prediction sets where
 the right answer is priced at 0: on clinc150, 151 options raw and 18 fixed,
@@ -78,8 +78,9 @@ the datasets that have 500). With 20 labels nothing can be certified: even
 **`calibrate()` uses the same labels twice, and it holds.** It fits the task
 temperature and then the cutoffs and threshold on the same labels, which
 strictly speaking breaks the guarantees' assumptions: the temperature can
-change which answers count as most confident. Tested on exactly that path,
-with 50 to 500 labels: at most 1.4% of draws exceeded the 10% error bound
+change which answers count as most confident. Tested on that path (the
+temperature alone, today's `bias=False`; part 3 tests the default with a
+bias), with 50 to 500 labels: at most 1.4% of draws exceeded the 10% error bound
 (the guarantee allows 10%), and 90% sets covered 0.904–0.918. Splitting the
 labels between the two steps, which is strictly valid, cost automation: 11%
 instead of 25% at 50 labels, 34% instead of 39% at 500.
@@ -87,7 +88,7 @@ instead of 25% at 50 labels, 34% instead of 39% at 500.
 ![Automation per dataset](automation.png)
 
 **3. A task temperature from 20 labels beats the zero-label default, if it's
-pulled towards it.** Top-answer ECE on the test half (floor ≈ 0.049):
+pulled towards it.** Top-answer ECE on the test half (floor ≈ 0.049 over all 28 datasets):
 
 | labels | own temperature | pulled to the default | isotonic regression |
 |---|---|---|---|
@@ -96,8 +97,8 @@ pulled towards it.** Top-answer ECE on the test half (floor ≈ 0.049):
 | 100 | 0.057 | 0.057 | 0.074 |
 | 500 | 0.052 | 0.052 | 0.051 |
 
-With 500 labels the task temperature is within a few thousandths of the
-floor. Pulling the fit towards the default (worth 5 examples) helps most
+With 500 labels the task temperature is about 0.006 above the floor of the
+23 datasets that have 500 (0.046). Pulling the fit towards the default (worth 5 examples) helps most
 with 20 labels and costs nothing later; `calibrate()` does it. Isotonic
 regression needs about 500 labels to catch up, so the library stays with
 temperature.
@@ -119,12 +120,12 @@ ECE falls from 0.25 to 0.096 on the test half and to 0.089 on the second run.
 One image dataset is thin evidence, but there's nothing to fix yet.
 
 **6. Position bias: no significant effect.** Every text dataset, 100 rows
-each, in 4 rotated option orders:
+each, in 4 rotated option orders (2 or 3 for datasets with fewer options):
 
 | | accuracy | NLL, formula T | NLL, own T |
 |---|---|---|---|
 | one order (default) | 78.96% | 0.703 | 0.672 |
-| average of all rotations (4× the cost) | 78.64% | 0.685 | 0.649 |
+| average of all rotations (up to 4× the cost) | 78.64% | 0.685 | 0.649 |
 | PriDe (prior from 10% of rows) | 78.90% | 0.705 | |
 
 Averaging all rotations is the strongest standard position fix. Over all

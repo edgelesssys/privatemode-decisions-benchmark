@@ -180,10 +180,10 @@ All methods on the same 13,005 examples: the test halves of the 28 text datasets
 | T from the task family | one temperature per kind of task (sentiment, intent, …), fitted on the other datasets of that family | none | 2.50 | 78.1% | 78.9% | +0.8 | 0.079 | 0.029 | 74% |
 | neutral-input correction + T | divide out the answer to empty or `N/A` input, then a temperature | none | 2.33 | 75.0% | 76.0% | +1.0 | 0.111 | 0.059 | 40% |
 | T per task | a temperature fitted on this task's calibration half | ~500 | 2.03 | 78.1% | 79.3% | +1.2 | 0.054 | 0.006 | 100% |
-| Jev, as returned | `jev-latest`'s probabilities, rounded to 0.01 | none | 1 | 77.5% | 87.5% | +10.0 | 0.110 | 0.080 | — |
-| Jev, zeros set to 0.005 | half a rounding unit where Jev says 0, so a temperature can be fitted | none | 1 | 77.5% | 80.8% | +3.3 | 0.128 | 0.082 | — |
-| Jev, zeros set + default T | the same recipe as GLM's default: log T = a + b·log(options), fitted on Jev's other datasets | none | 1.25 | 77.5% | 80.0% | +2.5 | 0.094 | **0.042** | 40% |
-| Jev, zeros set + T per task | zeros set, then a temperature fitted on this task's calibration half | ~500 | 1.19 | 77.5% | 78.8% | +1.3 | 0.070 | 0.021 | 100% |
+| Jev, as returned | `jev-latest`'s probabilities, rounded to 0.01 | none | 1 | 77.5% | 87.5% | +10.0 | 0.109 | 0.080 | — |
+| Jev, zeros set to 0.005 | half a rounding unit where Jev says 0, so a temperature can be fitted | none | 1 | 77.5% | 80.8% | +3.2 | 0.127 | 0.082 | — |
+| Jev, zeros set + default T | the same recipe as GLM's default: log T = a + b·log(options), fitted on Jev's other datasets | none | 1.25 | 77.5% | 80.0% | +2.5 | 0.092 | **0.040** | 43% |
+| Jev, zeros set + T per task | zeros set, then a temperature fitted on this task's calibration half | ~500 | 1.19 | 77.5% | 78.8% | +1.3 | 0.068 | 0.019 | 100% |
 
 ## 4. Conformal prediction sets
 
@@ -256,34 +256,34 @@ Examples where at least three of the four other published arms (Jev, Laya, reaso
 
 | dataset | removed share | overconfidence, all | overconfidence, cleaned | ECE, all | ECE, cleaned | accuracy, cleaned |
 |---|---|---|---|---|---|---|
-| boolq | 0.038 | -0.054 | -0.075 | 0.075 | 0.094 | 0.933 |
+| boolq | 0.040 | -0.054 | -0.076 | 0.075 | 0.098 | 0.935 |
 | rotten_tomatoes | 0.044 | -0.031 | -0.060 | 0.032 | 0.060 | 0.973 |
-| rte | 0.058 | -0.071 | -0.082 | 0.096 | 0.109 | 0.916 |
+| rte | 0.043 | -0.071 | -0.079 | 0.096 | 0.096 | 0.910 |
 | sst2 | 0.023 | -0.028 | -0.046 | 0.028 | 0.046 | 0.977 |
-| toxic_conversations | 0.060 | 0.024 | -0.018 | 0.058 | 0.063 | 0.826 |
+| toxic_conversations | 0.064 | 0.024 | -0.018 | 0.058 | 0.059 | 0.827 |
 | tweet_offensive | 0.114 | 0.038 | -0.031 | 0.089 | 0.050 | 0.879 |
-| mnli | 0.040 | -0.080 | -0.102 | 0.088 | 0.102 | 0.902 |
+| mnli | 0.038 | -0.080 | -0.103 | 0.088 | 0.103 | 0.902 |
 | tweet_sentiment | 0.136 | 0.081 | 0.002 | 0.087 | 0.051 | 0.759 |
-| xnli_de | 0.084 | -0.057 | -0.102 | 0.062 | 0.102 | 0.865 |
+| xnli_de | 0.080 | -0.057 | -0.102 | 0.062 | 0.102 | 0.863 |
 | ag_news | 0.062 | 0.016 | -0.034 | 0.041 | 0.034 | 0.951 |
-| amazon_reviews_de | 0.176 | 0.081 | -0.009 | 0.136 | 0.087 | 0.689 |
-| sst5 | 0.168 | 0.121 | 0.066 | 0.123 | 0.094 | 0.529 |
-| emotion | 0.252 | 0.180 | -0.002 | 0.181 | 0.044 | 0.794 |
+| amazon_reviews_de | 0.178 | 0.081 | -0.010 | 0.136 | 0.089 | 0.691 |
+| sst5 | 0.166 | 0.121 | 0.067 | 0.123 | 0.095 | 0.528 |
+| emotion | 0.252 | 0.180 | -0.000 | 0.181 | 0.046 | 0.791 |
 | trec_coarse | 0.020 | -0.072 | -0.086 | 0.073 | 0.093 | 0.922 |
-| gnad10 | 0.088 | 0.159 | 0.104 | 0.162 | 0.106 | 0.730 |
-| patent | 0.116 | 0.165 | 0.097 | 0.165 | 0.097 | 0.611 |
+| gnad10 | 0.090 | 0.159 | 0.103 | 0.162 | 0.105 | 0.732 |
+| patent | 0.112 | 0.165 | 0.100 | 0.165 | 0.100 | 0.608 |
 | yahoo_topics | 0.128 | 0.081 | -0.014 | 0.082 | 0.053 | 0.867 |
 | scotus | 0.108 | 0.132 | 0.063 | 0.132 | 0.072 | 0.749 |
 | dbpedia_14 | 0.012 | -0.020 | -0.031 | 0.027 | 0.031 | 0.992 |
 | massive_scenario_de | 0.062 | 0.004 | -0.028 | 0.049 | 0.055 | 0.778 |
-| massive_scenario_en | 0.088 | -0.017 | -0.071 | 0.049 | 0.074 | 0.822 |
-| newsgroups20 | 0.104 | 0.048 | -0.002 | 0.061 | 0.052 | 0.797 |
+| massive_scenario_en | 0.092 | -0.017 | -0.074 | 0.049 | 0.077 | 0.826 |
+| newsgroups20 | 0.090 | 0.048 | 0.003 | 0.061 | 0.054 | 0.785 |
 | trec_fine | 0.076 | -0.056 | -0.089 | 0.089 | 0.116 | 0.840 |
 | massive_intent_de | 0.060 | -0.005 | -0.037 | 0.034 | 0.040 | 0.838 |
-| massive_intent_en | 0.062 | -0.013 | -0.057 | 0.040 | 0.069 | 0.876 |
+| massive_intent_en | 0.068 | -0.013 | -0.060 | 0.040 | 0.066 | 0.882 |
 | banking77 | 0.082 | 0.032 | -0.026 | 0.057 | 0.035 | 0.871 |
 | ledgar | 0.076 | 0.056 | 0.005 | 0.085 | 0.063 | 0.827 |
-| clinc150 | 0.028 | -0.060 | -0.078 | 0.066 | 0.083 | 0.899 |
+| clinc150 | 0.026 | -0.060 | -0.079 | 0.066 | 0.084 | 0.899 |
 
 **Checking the flags on banking77.** All 80 flagged examples were read against both labels, by Claude, an LLM that is not one of the four voting systems, reading each text against both labels (not yet checked by a person). Label right 15, label wrong 25, both defensible 40. So only 31% of flags are clear label errors. Correcting just those, on all examples after the formula T:
 

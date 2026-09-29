@@ -62,9 +62,9 @@ By option count, 100 labels (accuracy points, T + b minus T):
 | labels | system | accuracy, T | accuracy, T + b | excess ECE, T | excess ECE, T + b | 90% coverage, T + b | 90% set, T + b | automated, T | automated, T + b | draws over ε, T + b |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 100 | GLM-5.3-Flash | 78.1% | 80.2% | 0.008 | 0.005 | 0.915 | 1.71 | 28% | 23% | 0.4% |
-| 100 | Jev, zeros fixed | 77.5% | 79.6% | 0.023 | 0.014 | 0.916 | 1.79 | 32% | 25% | 3.0% |
+| 100 | Jev, zeros fixed | 77.5% | 79.6% | 0.021 | 0.014 | 0.916 | 1.80 | 32% | 26% | 2.5% |
 | 500 | GLM-5.3-Flash | 76.1% | 79.1% | 0.006 | 0.003 | 0.909 | 1.64 | 39% | 35% | 1.7% |
-| 500 | Jev, zeros fixed | 75.1% | 78.7% | 0.022 | 0.007 | 0.910 | 1.67 | 40% | 36% | 0.2% |
+| 500 | Jev, zeros fixed | 75.1% | 78.7% | 0.020 | 0.008 | 0.911 | 1.68 | 38% | 36% | 0.2% |
 
 ## 2. Several option orders: their own temperature
 
@@ -175,10 +175,10 @@ Mean over these datasets:
 
 | cutoffs | GLM set size | GLM class gap | Jev set size | Jev class gap |
 |---|---|---|---|---|
-| one cutoff | 1.60 | 0.120 | 3.53 | 0.120 |
+| one cutoff | 1.60 | 0.120 | 3.58 | 0.119 |
 | per class | 70.04 | 0.089 | 70.81 | 0.089 |
-| clustered (Ding) | 1.78 | 0.115 | 3.66 | 0.113 |
-| grouped by answers | 2.68 | 0.107 | 4.16 | 0.111 |
+| clustered (Ding) | 1.78 | 0.115 | 3.72 | 0.113 |
+| grouped by answers | 2.68 | 0.107 | 4.19 | 0.109 |
 
 **Known class rates, from logs only.** `p′ ∝ p · π / π̂`: π are the class rates someone knows from logs, π̂ the mean answer over unlabelled traffic (the test half). The rates are the dataset's true ones, each multiplied by a random factor of up to ±25% or up to 2× either way, then renormalized; 20 draws. Text datasets with up to 20 options, accuracy points against the default temperature, and the bias from 50 and 100 labels (section 1) on the same datasets:
 

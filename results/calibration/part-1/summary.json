@@ -136,8 +136,8 @@
   ]
  },
  "half_split": {
-  "excess_ece": 0.034720704415379125,
-  "share": 0.6849295585399169
+  "excess_ece": 0.03472060809424238,
+  "share": 0.684929558539917
  },
  "methods": {
   "raw": {
@@ -211,10 +211,10 @@
    "how": "`jev-latest`'s probabilities, rounded to 0.01",
    "labels": "none",
    "t": 1.0,
-   "accuracy": 0.775263856579097,
-   "confidence": 0.8751923915863307,
-   "ece": 0.11024147740282306,
-   "excess": 0.08047422481372848,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.8752002173776454,
+   "ece": 0.10926457326379661,
+   "excess": 0.07954487855878441,
    "share": null
   },
   "jev unzero": {
@@ -222,32 +222,32 @@
    "how": "half a rounding unit where Jev says 0, so a temperature can be fitted",
    "labels": "none",
    "t": 1.0,
-   "accuracy": 0.775263856579097,
-   "confidence": 0.8077863228850379,
-   "ece": 0.12769137992268922,
-   "excess": 0.08210701976767988,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.8077946370652483,
+   "ece": 0.12729997483486297,
+   "excess": 0.08173558115701243,
    "share": null
   },
   "jev default": {
    "name": "Jev, zeros set + default T",
    "how": "the same recipe as GLM's default: log T = a + b\u00b7log(options), fitted on Jev's other datasets",
    "labels": "none",
-   "t": 1.250170058082941,
-   "accuracy": 0.775263856579097,
-   "confidence": 0.8000252968453502,
-   "ece": 0.09388173066912134,
-   "excess": 0.04208691266332425,
-   "share": 0.403563895013399
+   "t": 1.2497522737801423,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.8000336509072744,
+   "ece": 0.09185008387196814,
+   "excess": 0.04009563533388461,
+   "share": 0.425144278075689
   },
   "jev own": {
    "name": "Jev, zeros set + T per task",
    "how": "zeros set, then a temperature fitted on this task's calibration half",
    "labels": "~500",
-   "t": 1.1938435279333435,
-   "accuracy": 0.775263856579097,
-   "confidence": 0.7882989858215037,
-   "ece": 0.06970329513268082,
-   "excess": 0.020979947876002634,
+   "t": 1.1931637222431626,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.7883000815650486,
+   "ece": 0.06830320958121133,
+   "excess": 0.019461953868680566,
    "share": 1.0
   }
  }

@@ -51,10 +51,11 @@ ECE 0.032 by leave-one-dataset-out and 0.054 with a whole family held out;
 coverage 0.898–0.909; at most 2.1% of draws over the bound), with room for
 fewer datasets. Anything outside is a failure, reported as one.
 
-## The tasks chosen (added 2026-09-29, before any of them was run)
+## The tasks chosen (added 2026-09-29, each before its own run)
 
-Chosen and frozen by `bench.holdout_data` without asking any model, and
-committed before the first request. Up to 1,000 examples each; the input is
+Chosen and frozen by `bench.holdout_data` without asking any model, each
+committed before its own run (not all before the first request: GitHub and
+arXiv were frozen while the others ran; corrected after the run). Up to 1,000 examples each; the input is
 the text or abstract alone, no titles or metadata.
 
 | task | family | source | licence | options | selection |

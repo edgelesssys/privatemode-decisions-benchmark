@@ -88,13 +88,14 @@ the default temperature. Each row averages 50 draws per task:
   +3.3, arxiv_field +3.7, pubmed_study +0.9, github_issue +4.4.
 - **Coverage holds** at 0.90–0.93 on every task, with 1.0–2.2 options per
   set.
-- **One bound violation, outside the default.** With the temperature
-  alone and all labels, arXiv automated 66% of its test half at 11.4% error.
-  Without a bias, the 50 draws of "all labels" are the same fit, so this is
-  one observation, not 50: one task of five. The guarantee (`delta = 0.1`)
-  is a chance per task over the draw of labels, so a single miss among five
-  tasks is within what it allows but doesn't measure it. The default (with
-  the bias) stayed under the bound on every task.
+- **Every draw over the bound was on arXiv.** The default (T + bias, 100
+  labels) went over in 2 of its 50 draws, the temperature alone in 6 of 50
+  at 100 labels (12%, above `delta = 0.1` for that task, though 50 draws
+  can't tell 12% from 10%) and in all 50 with all labels. Without a bias
+  the 50 "all labels" draws are one fit, so that is a single observation:
+  arXiv automated 66% of its test half at 11.4% error. The guarantee is a
+  chance per task over the draw of labels; the other four tasks never went
+  over.
 
 ## A finding: more labels can automate less
 
@@ -110,8 +111,9 @@ or the smallest count that could pass (22 at ε = 10%):
 - With 500 labels, it also starts at the top 25, which is now only the
   first 5%.
 
-On these tasks the 25 most confident answers already contain errors: 2 on
-pubmed_study, 1 on fin_sentiment, 4 on github_issue. They look like label
+On these tasks the 25 most confident answers already contain errors: 3 on
+pubmed_study (two of the 25 tie at the boundary), 1 on fin_sentiment, 4 on
+github_issue. They look like label
 noise, for example abstracts that read as systematic reviews but are
 indexed only as "Review". So the first test fails and nothing is automated.
 
