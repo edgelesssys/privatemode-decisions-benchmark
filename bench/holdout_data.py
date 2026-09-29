@@ -38,7 +38,6 @@ import re
 import subprocess
 import time
 import urllib.parse
-import urllib.request
 from pathlib import Path
 
 from . import hub
@@ -96,16 +95,14 @@ def sha(text: str) -> str:
 
 
 def get(url: str, attempts: int = 5) -> bytes:
+    """curl rather than urllib: arXiv's CDN refuses urllib's requests."""
     for attempt in range(attempts):
-        try:
-            with urllib.request.urlopen(urllib.request.Request(
-                    url, headers={"User-Agent": "privatemode-decisions-benchmark", "Accept": "*/*"}), timeout=120) as r:
-                return r.read()
-        except Exception:   # noqa: BLE001 - retried
-            if attempt == attempts - 1:
-                raise
-            time.sleep(5 * (attempt + 1))
-    raise RuntimeError("unreachable")
+        done = subprocess.run(["curl", "-sfL", "--max-time", "120", "-A",
+                               "privatemode-decisions-benchmark", url], capture_output=True)
+        if done.returncode == 0:
+            return done.stdout
+        time.sleep(10 * (attempt + 1))
+    raise RuntimeError(f"{url}: curl exit {done.returncode}")
 
 
 def clean(text: str) -> str:
@@ -125,12 +122,23 @@ def build_hf(name: str, dataset: str, n: int = 1000) -> list[dict]:
 
 
 def arxiv_records(day: str) -> list[dict]:
-    """Papers whose metadata changed on ``day``, with the fields we need."""
+    """Papers whose metadata changed on ``day``, with the fields we need.
+    Cached per day: arXiv's endpoint refuses requests now and then."""
+    cached = CACHE / "arxiv" / f"{day}.json"
+    if cached.exists():
+        return json.loads(cached.read_text())
+    out = arxiv_fetch(day)
+    cached.parent.mkdir(parents=True, exist_ok=True)
+    cached.write_text(json.dumps(out))
+    return out
+
+
+def arxiv_fetch(day: str) -> list[dict]:
     out, token = [], None
     while True:
         query = ({"verb": "ListRecords", "resumptionToken": token} if token else
                  {"verb": "ListRecords", "metadataPrefix": "arXiv", "from": day, "until": day})
-        xml = get("https://oaipmh.arxiv.org/oai?" + urllib.parse.urlencode(query)).decode()
+        xml = get("https://oaipmh.arxiv.org/oai?" + urllib.parse.urlencode(query), attempts=10).decode()
         for record in xml.split("<record>")[1:]:
             field = lambda tag: (re.findall(rf"<{tag}>(.*?)</{tag}>", record, re.S) or [""])[0]
             out.append({"id": field("id"), "created": field("created"),
