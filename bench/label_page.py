@@ -81,7 +81,8 @@ function render() {
     }
     items.appendChild(div);
   }
-  document.getElementById("done").textContent = `${Object.keys(state).length} of ${ROWS.length} done`;
+  const answered = Object.keys(state).filter(k => !k.startsWith("__")).length;
+  document.getElementById("done").textContent = `${answered} of ${ROWS.length} done`;
 }
 document.getElementById("who").value = state.__who || "";
 document.getElementById("who").oninput = (e) => { state.__who = e.target.value; save(); };

@@ -714,7 +714,9 @@ def report(args) -> str:
             md.append(f"\n**Checking the flags on banking77.** All {len(check['rows'])} flagged "
                       f"examples were read against both labels, by {check['checked_by']}. Label "
                       f"right {counts['gold right']}, label wrong {counts['consensus right']}, "
-                      f"both defensible {counts['both defensible']}. So only "
+                      f"both defensible {counts['both defensible']}"
+                      + (f", neither label right {counts['neither']}" if counts["neither"] else "")
+                      + f". So only "
                       f"{counts['consensus right'] / len(check['rows']):.0%} of flags are clear "
                       f"label errors. Correcting just those, on all examples after the formula T:\n")
             md.append(table([[k, len(y), fmt(c.accuracy(Pv, y), 3), fmt(c.overconfidence(Pv, y)),
