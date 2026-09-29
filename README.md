@@ -20,28 +20,75 @@ what is behind the call.
   421M parameters, Apache 2.0, running on the laptop. A ModernBERT-large
   encoder with a decision head, so "one forward pass" is literal.
 
+## JevBench
+
+The 231 public items of [JevBench](https://github.com/fstandhartinger/jevbench)
+(MIT, commit `1bcc55e`), against Jev's published scores. For comparison
+only: nothing was chosen, fitted or tuned on them.
+
+| system | output tokens | public items | public hard items |
+|---|---:|---:|---:|
+| **Privatemode** (GLM-5.3-Flash, one pass, the library's prompt) | 1 | **0.894** | **0.779** |
+| Jev 1.13.0, published | 45 | 0.866 | 0.741 (220) |
+| GLM-5.3-Flash, structured output + thinking (JevBench's runner) | 518 | 0.983 | 0.964 |
+
+Jev's hard score includes the 109 sealed items; ours is on the 111 public
+ones. Thinking first is the ceiling, at seconds per decision. On MMLU-Pro,
+a knowledge test rather than a decision benchmark, one pass scores 61.9%
+against Jev's published 82.9% on the same 1,000 questions. All of it, with
+ECE and more published systems, is in
+[`results/prefill/`](results/prefill/README.md#jevbench).
+
 ## Results
 
+### The library as it ships
+
+The 29 datasets' test halves (up to 500 examples each), the Privatemode
+arm with the library's current prompt, which asks the question before the
+state as well, in two replicates; Jev and Laya on the same examples from
+the published suite. From
+[`results/prefill/confirmation.md`](results/prefill/confirmation.md) and
+the [calibration report](results/calibration/README.md):
+
+| | Privatemode | Jev | Laya |
+|---|---|---|---|
+| datasets it can answer | 29 | 28 | 27 |
+| normalised accuracy | **0.638** | 0.561 | 0.414 |
+| mean accuracy, the 28 datasets Jev answers | **0.798** | 0.775 | |
+| against Jev (wins–ties–losses) | 16–8–3, Wilcoxon p < 0.001 | | |
+| latency p50, concurrency 1, from Germany | about 150 ms | 251 ms | runs locally |
+| EUR per 1,000 decisions, median | 0.095 | 0.016 | runs locally |
+| excess ECE without labels | **0.032** | 0.080 as returned, 0.042 with a default T | |
+| accuracy with 100 labels (`calibrate()`) | **80.2%** | 79.6% | |
+
+Normalised accuracy is 0 for always answering a dataset's majority class
+and 1 for all right, averaged over the datasets an arm answers. The prompt
+layout was chosen on the other halves of these datasets. Latency is the
+concurrency-1 check on six datasets, flat up to 18 options; long option
+lists are sent twice, 386 ms at 77 options and 900 ms at 151, where Jev
+takes about 250 ms. The price is the median prompt length at list price.
+The calibration rows come from the state-first runs below, on all test
+halves; on the current prompt the default temperature fits at least as
+well (excess ECE 0.016 against 0.023 on the same examples), and Jev is
+calibrated the same way as GLM, zeros patched.
+
+### The published suite
+
 29 labelled datasets, 1000 examples each where the split allows, two
-replicates, seed 0. Everything below is recomputed from the runs by
+replicates, seed 0, with the library's earlier prompt (state first).
+Everything below is recomputed from the runs by
 `python -m bench.aggregate`; the full tables, with the spread between
 replicates on every figure, are in [`results/suite.md`](results/suite.md).
 The raw runs are in the release
 [`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24);
 [`results/README.md`](results/README.md) shows how to rebuild the report
-from them.
+from them. `bench.suite --state-first` reproduces them.
 The first three-dataset pilot is kept in [`results/pilot/`](results/pilot/).
 
-These runs used the library's earlier prompt, with the state before the
-question. The library now asks the questions before the state as well,
-which gained 1.6 points on average on the test halves
-([`results/prefill/`](results/prefill/README.md)); `bench.suite
---state-first` reproduces the runs above.
+#### Accuracy
 
-### Accuracy
-
-On the 28 datasets both can answer, Jev and Privatemode are
-indistinguishable: 10 wins, 8 ties and 10 losses, median difference +0.007,
+With the state-first prompt, on the 28 datasets both can answer, Jev and
+Privatemode are indistinguishable: 10 wins, 8 ties and 10 losses, median difference +0.007,
 Wilcoxon signed-rank p = 0.64. Normalised against each dataset's
 majority-class baseline, the means are 0.574 (Jev, 28 datasets), 0.585
 (Privatemode, 29) and 0.422 (Laya, 27); Laya is behind both at p < 0.001.
@@ -57,7 +104,7 @@ answered, so every column covers the same questions:
 | 21–80 | 4 | 0.818 | 0.792 | 0.389 |
 | 81+ | 1 | 0.749 | 0.742 | 0.210 |
 
-### Latency and cost
+#### Latency and cost
 
 Latency from concurrency-1 runs only, cost from the billed usage of run A;
 medians over the 28 datasets both answer:
@@ -93,7 +140,7 @@ output / cached tokens), and Jev's from
 [docs.typesafe.ai/models](https://docs.typesafe.ai/models), read 2026-09-21,
 converted at EUR 0.92 per USD.
 
-### Capability limits
+#### Capability limits
 
 | | privatemode | jev | laya |
 |---|---|---|---|
@@ -111,7 +158,7 @@ the median on clinc150 against Jev's 249 ms, and twice the input tokens.
 The two go out in parallel; one after the other took 846 ms in a separate
 check. The limit is then the model's 191 single-token indexes.
 
-### Controls and perturbations
+#### Controls and perturbations
 
 Two controls ran on all 29 datasets, zero-shot like the products:
 `glm-cot`, the same GLM-5.3-Flash asked normally and allowed to reason
@@ -144,22 +191,28 @@ memorisation.
 ### Calibration
 
 Whether the Privatemode arm's probabilities can be trusted, how a
-temperature fixes their overconfidence without labels, and what conformal
-prediction sets need, is a separate analysis: two further runs of all
+temperature fixes their overconfidence without labels, and what labels add
+(a bias per option, conformal prediction sets, an error bound for
+automated answers), is a separate analysis: two further runs of all
 datasets, rotation runs, neutral inputs and runs of two other models, in
-[`results/calibration/`](results/calibration/README.md). The arm reports
-raw probabilities (calibration temperature 1) for it, so the ECE and Brier
-columns here describe the raw model; the library softens them by default.
+[`results/calibration/`](results/calibration/README.md). Raw, GLM-5.3-Flash
+is 14.6 points overconfident; the library's default temperature leaves
+0.032 excess ECE without labels, and `calibrate()` with 100 labels adds 2
+points of accuracy. The arm reports raw probabilities (calibration
+temperature 1), so the ECE and Brier columns of the suite describe the raw
+model; the library softens them by default.
 
 ### A longer prompt, one read
 
 Whether GLM-5.3-Flash answers better in the same single read when the
 prompt repeats the question before the state, adds filler, or lets the
-model think briefly first, and how it then compares with Jev on MMLU-Pro
-and JevBench's public items: [`results/prefill/`](results/prefill/README.md).
-Asking the question first gains 1.6 points across the 29 datasets; filler
-gains at most a point, and only when long (1,024 tokens), and nothing on top
-of asking the question first.
+model think briefly first: [`results/prefill/`](results/prefill/README.md).
+Asking the question first gains 1.6 points across the 29 datasets (15
+better, 12 tied, 2 worse; the library's default since then); filler gains
+at most a point, and only when long (1,024 tokens), and nothing on top of
+asking the question first. With several questions about one state, the
+library leads every request with all of them, which keeps a cacheable
+prefix but less of the gain (+0.9 points with five questions).
 
 ### What is outside these columns
 
@@ -396,6 +449,8 @@ bench/suite.py      the registry under filters, with a budget guard
 bench/report.py     one run -> markdown
 bench/aggregate.py  a suite -> one result
 bench/latency_probe.py  the latency runs from another place, for comparison
+bench/calibrat*.py  the calibration analysis (results/calibration/)
+bench/prefill*.py   prompt variants in one read, and their confirmation (results/prefill/)
 .github/workflows/  CI, and the latency probe from a US runner
 datasets/           the frozen option sets and validation statistics
 results/            the aggregated results; the raw runs are in the release

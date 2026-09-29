@@ -10,8 +10,10 @@
   ties and losses against the baseline (ties within ±0.01, the suite's
   rule), the Wilcoxon signed-rank test across datasets, and the option-count
   bands;
-* the headroom closed, ``(variant − B) / (glm-cot − B)``, and Jev on the
-  same examples, from the published runs;
+* the headroom closed, ``(variant − B) / (glm-cot − B)``, and Jev and Laya
+  on the same examples, from the published runs: accuracy normalised
+  against the majority class of the rows scored, wins, ties and losses
+  against Jev with the Wilcoxon test, and the median price per decision;
 * cost and latency against the baseline and ``glm-cot``;
 * whether the shipped default temperature still fits the variant's
   probabilities: excess ECE with the shipped formula against a formula
@@ -33,7 +35,7 @@ import numpy as np
 from . import calibration as c
 from .aggregate import TIE
 from .calibrate_report import fmt, table
-from .metrics import wilcoxon
+from .metrics import normalised, wilcoxon
 from .prefill_report import EUR_IN, EUR_OUT, load, matrix
 
 BANDS = ((2, 2, "2"), (3, 6, "3–6"), (7, 20, "7–20"), (21, 80, "21–80"), (81, 10_000, "81+"))
@@ -127,6 +129,40 @@ def jevbench_section(args, runs, arms, result) -> list[str]:
                          "ECE, public hard", "latency p50"])]
 
 
+def products_section(per, text, shared, v, wtl) -> tuple[list[str], dict]:
+    """The suite's headline on the test halves: every arm on the same
+    examples, normalised against the majority class of the rows scored,
+    wins, ties and losses against Jev, and the median price over the
+    datasets Jev answers (prompt tokens at list price)."""
+    columns = {"B": "B", v: "variant", "Jev": "Jev", "Laya": "Laya"}
+    rows, summary = [], {}
+    for label, key in columns.items():
+        present = [n for n in text if key in per[n]]
+        if not present:
+            continue
+        summary[label] = {"datasets": len(present), "normalised": float(np.mean(
+            [normalised(per[n][key], per[n]["majority"]) for n in present]))}
+        cells = [label, len(present), f"{summary[label]['normalised']:.3f}",
+                 f"{np.mean([per[n][key] for n in shared]):.3f}" if all(key in per[n] for n in shared) else "—"]
+        if key in ("B", "variant") and shared:
+            tokens = "tokens_B" if key == "B" else "tokens_v"
+            diffs = [per[n][key] - per[n]["Jev"] for n in shared]
+            test = wilcoxon(diffs)
+            cells += ["–".join(map(str, wtl(key))), f"{test['p']:.2g}",
+                      f"{(np.median([per[n][tokens] for n in shared]) * EUR_IN + EUR_OUT) * 1000:.4f}"]
+            summary[label]["p_vs_jev"] = test["p"]
+        else:
+            cells += ["", "", ""]
+        rows.append(cells)
+    return ["\n**Against Jev and Laya** on the same examples. Normalised accuracy is 0 for "
+            "always answering the majority class of the rows scored and 1 for all right, "
+            "averaged over the datasets an arm answers; the mean accuracy and the "
+            "wins–ties–losses are over the datasets Jev answers, and so is the median price "
+            "(prompt tokens at list price):\n",
+            table(rows, ["arm", "datasets", "normalised accuracy", "mean accuracy, Jev's datasets",
+                         "against Jev", "Wilcoxon p", "EUR / 1000, median"])], summary
+
+
 def report(args) -> tuple[str, dict]:
     runs = load(Path(args.runs))
     v = args.variant
@@ -138,14 +174,17 @@ def report(args) -> tuple[str, dict]:
     if args.published:
         from .calibrate_extensions import load_arm
         published = {"Jev": load_arm(Path(args.published), "jev"),
-                     "glm-cot": load_arm(Path(args.published), "glm-cot")}
+                     "glm-cot": load_arm(Path(args.published), "glm-cot"),
+                     "Laya": load_arm(Path(args.published), "laya")}
     per, rows = {}, []
     for n in text:
         order = sorted(set.intersection(*(set(run[n]) for reps in arms.values() for run in reps)))
         accs = {a: [accuracy_of(run[n], order) for run in reps] for a, reps in arms.items()}
         first = arms["B"][0][n]
         k = len(first[order[0]]["probabilities"])
+        golds = [first[i]["gold"] for i in order]
         entry = {"options": k, "rows": len(order),
+                 "majority": max(golds.count(g) for g in set(golds)) / len(golds),
                  "B": float(np.mean(accs["B"])), "variant": float(np.mean(accs[v])),
                  "spread": float(max(np.ptp(accs["B"]), np.ptp(accs[v]))),
                  "tokens_B": float(np.mean([first[i]["prompt_tokens"] for i in order])),
@@ -162,7 +201,7 @@ def report(args) -> tuple[str, dict]:
         diff = entry["variant"] - entry["B"]
         rows.append([n, k, entry["rows"], f"{entry['B']:.3f}", f"{entry['variant']:.3f}",
                      f"{diff * 100:+.1f}", f"{entry['spread'] * 100:.1f}",
-                     fmt(entry.get("Jev"), 3), fmt(entry.get("glm-cot"), 3)])
+                     fmt(entry.get("Jev"), 3), fmt(entry.get("Laya"), 3), fmt(entry.get("glm-cot"), 3)])
     diffs = [per[n]["variant"] - per[n]["B"] for n in text]
     wins = sum(d > TIE for d in diffs)
     losses = sum(d < -TIE for d in diffs)
@@ -174,7 +213,7 @@ def report(args) -> tuple[str, dict]:
           f"±{TIE:.2f}); median difference {np.median(diffs) * 100:+.1f} points, mean "
           f"{np.mean(diffs) * 100:+.2f}; Wilcoxon signed-rank p = {test['p']:.3g}.\n"]
     md.append(table(rows, ["dataset", "options", "rows", "B", v, "points", "replicate spread",
-                           "Jev", "glm-cot"]))
+                           "Jev", "Laya", "glm-cot"]))
 
     # Bands.
     band_rows = []
@@ -197,6 +236,7 @@ def report(args) -> tuple[str, dict]:
     eur_v = np.mean([per[n]["tokens_v"] * EUR_IN + EUR_OUT for n in text]) * 1000
     md.append(f"\n**Headroom closed** on the {len(closed)} datasets where glm-cot is more than 2 "
               f"points ahead of the baseline: median {np.median(closed):.0%}.\n" if closed else "")
+    products = {}
     if shared:
         wtl = lambda key: (sum(per[n][key] > per[n]["Jev"] + TIE for n in shared),
                            sum(abs(per[n][key] - per[n]["Jev"]) <= TIE for n in shared),
@@ -207,6 +247,8 @@ def report(args) -> tuple[str, dict]:
                   f"{np.mean([per[n]['B'] for n in shared]):.3f} and "
                   f"{np.mean([per[n]['variant'] for n in shared]):.3f} against Jev's "
                   f"{np.mean([per[n]['Jev'] for n in shared]):.3f}.\n")
+        products_md, products = products_section(per, text, shared, v, wtl)
+        md += products_md
     md.append(f"\n**Cost and latency.** Prompt tokens {np.mean([per[n]['tokens_B'] for n in text]):.0f} → "
               f"{np.mean([per[n]['tokens_v'] for n in text]):.0f} on average, EUR {eur_b:.3f} → "
               f"{eur_v:.3f} per 1,000 decisions (glm-cot: about 0.35). Median latency "
@@ -268,7 +310,7 @@ def report(args) -> tuple[str, dict]:
     result = {"per": per, "wins": wins, "losses": losses, "p": test["p"],
               "median": float(np.median(diffs)), "mean": float(np.mean(diffs)),
               "closed": float(np.median(closed)) if closed else None, "calibration": calib,
-              "eur": (float(eur_b), float(eur_v))}
+              "eur": (float(eur_b), float(eur_v)), "products": products}
     if args.renamed:
         renamed = load(Path(args.renamed))
         rows, drops = [], {}
