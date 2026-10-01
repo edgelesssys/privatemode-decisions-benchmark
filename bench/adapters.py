@@ -34,8 +34,10 @@ import os
 import re
 import subprocess
 import time
+import urllib.parse
 from dataclasses import dataclass
 from importlib import metadata
+from pathlib import Path
 from typing import Any
 
 from decisions import Choice, OpenAIClient, SystemOne
@@ -85,20 +87,23 @@ class Arm:
 
 def library_version() -> str:
     """The installed privatemode-decisions: its version and the commit it was
-    installed from (``+dirty`` for an editable checkout with changes). The
-    default temperatures and ``calibrate()`` come from a moving branch, so a
-    result names the one it used."""
+    installed from: for a git install the commit, for a local git checkout
+    its HEAD (``+dirty`` if the library's own files changed, untracked ones
+    included), else the version alone. The default temperatures and
+    ``calibrate()`` come from a moving branch, so a result names the one it
+    used."""
     dist = metadata.distribution("privatemode-decisions")
     info = json.loads(dist.read_text("direct_url.json") or "{}")
     commit = (info.get("vcs_info") or {}).get("commit_id")
     url = info.get("url", "")
     if not commit and url.startswith("file://"):
-        path = url.removeprefix("file://")
-        git = lambda *a: subprocess.run(["git", "-C", path, *a], capture_output=True,  # noqa: E731
-                                        text=True).stdout.strip()
-        commit = git("rev-parse", "HEAD")
-        if commit and git("status", "--porcelain", "--untracked-files=no"):
-            commit += "+dirty"
+        path = Path(urllib.parse.unquote(urllib.parse.urlparse(url).path))
+        if (path / ".git").exists():
+            git = lambda *a: subprocess.run(["git", "-C", str(path), *a],  # noqa: E731
+                                            capture_output=True, text=True).stdout.strip()
+            commit = git("rev-parse", "HEAD")
+            if commit and git("status", "--porcelain", "--", "decisions"):
+                commit += "+dirty"
     return f"{dist.version}+{commit}" if commit else dist.version
 
 

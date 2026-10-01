@@ -99,7 +99,7 @@ def load_run(directory: Path, arm: str = "privatemode") -> dict[str, Dataset]:
                 and sum(r["probabilities"].get(o, 0.0) for o in options) > 0]
         dropped = {"failed": len(failed - seen), "repeated": len(rows) - len(unique),
                    "gold not an option or no probability": len(unique) - len(kept)}
-        P = np.array([[r["probabilities"][o] for o in options] for r in kept], dtype=float)
+        P = np.array([[r["probabilities"].get(o, 0.0) for o in options] for r in kept], dtype=float)
         mass = (np.array([r["option_mass"] for r in kept], dtype=float)
                 if all("option_mass" in r for r in kept) else None)
         meta = dict(meta or {})

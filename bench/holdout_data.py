@@ -24,10 +24,14 @@ Five tasks nobody has looked at, built without asking any model:
 
 ``datasets/holdout/<task>.json`` freezes each task: its question, options,
 and per example the source id, label and a SHA-256 of the text. The texts
-are not in the repository. ``fetch`` downloads them, with the licence of
-each, from the release ``calibration-2026-09-26`` (``TEXTS_URL``) into
-``.cache/holdout/``; ``check`` and ``load`` read that cache and fail on a
-missing text or one whose hash differs. ``build`` chose the examples once,
+are not in the repository. ``fetch`` puts them into ``.cache/holdout/``:
+the arXiv and PubMed abstracts (CC BY or CC0, ``SHIPPED``) from the
+release ``calibration-2026-09-26`` (``TEXTS_URL``), with the licence and
+source of each; the tweets and GitHub issues, which aren't ours to
+republish, by id from their sources. ``check`` and ``load`` fail on a
+missing text or one whose hash differs; ``load(strict=False)``, which
+``bench.holdout run`` uses, leaves such examples out and says how many
+(an issue edited since, for one). ``build`` chose the examples once,
 from live sources (arXiv, Europe PMC and GitHub searches return other
 results later), so it refuses to replace a frozen task without ``--force``:
 rebuilding makes a different test, not a reproduction. The two Hugging
@@ -47,6 +51,7 @@ import subprocess
 import time
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from . import hub
@@ -57,7 +62,9 @@ FROZEN = ROOT / "datasets" / "holdout"
 CACHE = ROOT / ".cache" / "holdout"
 SEED = 0
 MAX_CHARS = 4000
-#: The texts of every frozen task, one JSON line each: task, id, licence, text.
+#: The tasks whose texts the release carries: open-access abstracts.
+SHIPPED = ("arxiv_field", "pubmed_study")
+#: The released texts, one JSON line each: task, id, licence, source, text.
 TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
              "calibration-2026-09-26/holdout-texts.jsonl")
 #: The Hugging Face datasets' commits at build time (unchanged since
@@ -315,48 +322,102 @@ def freeze(name: str, rows: list[dict]) -> None:
     print(f"{name}: {len(rows)} examples, {counts}")
 
 
-def load(name: str) -> list[Task]:
-    """The frozen task, texts from the cache, each checked against its hash."""
+def load(name: str, strict: bool = True) -> list[Task]:
+    """The frozen task, texts from the cache, each checked against its hash.
+    Not ``strict``: examples without a matching text are left out."""
     frozen = json.loads((FROZEN / f"{name}.json").read_text())
     texts = {}
     cached = CACHE / f"{name}.jsonl"
     if cached.exists():
         texts = {r["id"]: r["text"] for r in map(json.loads, cached.read_text().splitlines())}
     missing = [e for e in frozen["examples"] if e["id"] not in texts]
-    if missing:
+    changed = [e for e in frozen["examples"]
+               if e["id"] in texts and sha(texts[e["id"]]) != e["sha256"]]
+    if strict and missing:
         raise SystemExit(f"{name}: {len(missing)} texts not cached; run `python -m bench.holdout_data "
                          f"fetch`")
+    if strict and changed:
+        raise SystemExit(f"{name}: the text of {changed[0]['id']} (and {len(changed) - 1} more) "
+                         "changed since it was frozen")
+    if missing or changed:
+        print(f"{name}: {len(missing)} texts missing and {len(changed)} changed since the "
+              "freeze; left out")
+    skip = {e["id"] for e in missing + changed}
     tasks = []
     for e in frozen["examples"]:
+        if e["id"] in skip:
+            continue
         text = texts[e["id"]]
-        if sha(text) != e["sha256"]:
-            raise SystemExit(f"{name}: the text of {e['id']} changed since it was frozen")
         tasks.append(Task(state=text, instructions=frozen["question"],
                           criteria={o: None for o in frozen["options"]}, gold=e["label"],
                           index=e["index"]))
     return tasks
 
 
+def refetch_hf(name: str, ids: list[str]) -> dict[str, str]:
+    """Tweets by row index, from the pinned revision of their dataset."""
+    dataset = ids[0].rsplit("/validation/", 1)[0]
+    current = json.loads(get(f"https://huggingface.co/api/datasets/{dataset}"))["sha"]
+    if current != HF_REVISIONS[dataset]:
+        raise SystemExit(f"{dataset} is at {current}, not the pinned {HF_REVISIONS[dataset]}")
+    indexes = {i: int(i.rsplit("/", 1)[1]) for i in ids}
+    rows = hub.pages(dataset, "default", "validation", sorted(indexes.values()))
+    return {i: rows[n]["text"] for i, n in indexes.items()}
+
+
+def refetch_github(name: str, ids: list[str]) -> dict[str, str]:
+    """Issues by repository and number, through ``gh``; a deleted one is left out."""
+    def one(i: str) -> tuple[str, str | None]:
+        repo, number = i.removeprefix("github:").split("#")
+        try:
+            return i, issue_text(gh(f"repos/{repo}/issues/{number}"))
+        except subprocess.CalledProcessError:
+            return i, None
+    with ThreadPoolExecutor(8) as pool:
+        return {i: text for i, text in pool.map(one, ids) if text is not None}
+
+
+#: How the tasks the release doesn't carry are fetched again, by id.
+REFETCH = {"fin_topic": refetch_hf, "fin_sentiment": refetch_hf, "github_issue": refetch_github}
+
+
 def fetch(url: str = TEXTS_URL) -> None:
-    """The released texts into the cache, one file per task."""
+    """Every task's texts into the cache, one file per task: the released
+    ones from ``url``, the others by id from their sources."""
     with urllib.request.urlopen(url, timeout=300) as response:
         rows = [json.loads(line) for line in response.read().decode().splitlines() if line.strip()]
     CACHE.mkdir(parents=True, exist_ok=True)
     for name in TASKS:
+        if name in REFETCH:
+            ids = [e["id"] for e in json.loads((FROZEN / f"{name}.json").read_text())["examples"]]
+            texts = REFETCH[name](name, ids)
+        else:
+            texts = {r["id"]: r["text"] for r in rows if r["task"] == name}
         (CACHE / f"{name}.jsonl").write_text("".join(
-            json.dumps({"id": r["id"], "text": r["text"]}) + "\n" for r in rows if r["task"] == name))
+            json.dumps({"id": i, "text": t}) + "\n" for i, t in texts.items()))
+
+
+#: The licence names behind the URLs and words the sources report.
+LICENCES = {"http://creativecommons.org/licenses/by/4.0/": "CC BY 4.0",
+            "http://creativecommons.org/publicdomain/zero/1.0/": "CC0 1.0", "cc by": "CC BY"}
+
+
+def source(i: str) -> str:
+    kind, ident = i.split(":", 1)
+    return {"arxiv": f"https://arxiv.org/abs/{ident}",
+            "pmc": f"https://europepmc.org/article/PMC/{ident}"}[kind]
 
 
 def export(path: Path) -> None:
-    """The cached texts of every frozen task as one file for the release,
-    each checked against its hash and with the licence it was taken under."""
+    """The released tasks' cached texts as one file, each checked against its
+    hash, with its licence and source for attribution."""
     lines = []
-    for name in TASKS:
+    for name in SHIPPED:
         frozen = json.loads((FROZEN / f"{name}.json").read_text())
         texts = {t.index: t.state for t in load(name)}
-        licence = "MIT (the Hugging Face dataset)" if name.startswith("fin_") else None
-        lines += [json.dumps({"task": name, "id": e["id"], "license": e.get("license", licence),
-                              "text": texts[e["index"]]}) + "\n" for e in frozen["examples"]]
+        lines += [json.dumps({"task": name, "id": e["id"], "license": LICENCES[e["license"]],
+                              "source": source(e["id"]), "text": texts[e["index"]]}) + "\n"
+                  for e in frozen["examples"]]
     path.write_text("".join(lines))
     print(f"wrote {len(lines)} texts to {path}")
 
@@ -371,6 +432,9 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "fetch":
         fetch()
+        for name in TASKS:
+            print(name, len(load(name, strict=False)), "examples match their frozen hashes")
+        return
     if args.command == "export":
         export(args.out)
         return

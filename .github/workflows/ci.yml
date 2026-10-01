@@ -13,6 +13,6 @@ jobs:
       # installed for the parity tests between its calibration code and ours,
       # pinned to the head commit of its calibration PR (as the privatemode
       # extra) until that is merged; switch both to main then.
-      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@8800357ad7b96099ba97b2038e1eba03b69a64a0"
+      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@7b993cd5dcbf3285fd9f11ebf56e2f1b90a4c31e"
       - run: python -m pytest -q tests
       - run: python -m compileall -q bench

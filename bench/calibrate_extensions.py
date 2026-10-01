@@ -531,7 +531,7 @@ def position_bias(args, run, formula_lodo, shipped, figures) -> list[str]:
     md.append(f"Every row asked in {'/'.join(map(str, counts))} rotated option orders (about "
               f"{per_set} rows per text dataset). Compared "
               "on the same rows, after the formula T: one order (the default), the average of "
-              "all rotations (4× the cost; the strongest standard position fix), and PriDe "
+              "all rotations (up to 4× the cost; the strongest standard position fix), and PriDe "
               "(position prior estimated from 10% of the rows in all rotations, applied to the "
               "other 90% at the cost of one order).\n")
     small = deltas.pop("_small", [])

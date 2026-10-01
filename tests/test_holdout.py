@@ -71,3 +71,63 @@ def test_the_report_needs_a_recorded_served_model(tmp_path, monkeypatch):
     monkeypatch.setattr(holdout.c, "load_run", lambda _: {name: Run() for name in TASKS})
     with pytest.raises(SystemExit, match="no served model"):
         holdout.report(tmp_path, tmp_path)
+
+
+def test_texts_survive_export_and_fetch(tmp_path, monkeypatch):
+    """The reproduce path on a small task: the released task through a
+    file:// release, the other by id through its refetcher; a text edited
+    since the freeze fails check and is left out of a run."""
+    frozen, cache = tmp_path / "frozen", tmp_path / "cache"
+    frozen.mkdir()
+    texts = {"shipped": {"arxiv:1": "an abstract", "pmc:PMC2": "another abstract"},
+             "refetched": {"github:o/r#1": "an issue", "github:o/r#2": "another issue"}}
+    licences = {"arxiv:1": "http://creativecommons.org/licenses/by/4.0/", "pmc:PMC2": "cc by"}
+    for name, rows in texts.items():
+        (frozen / f"{name}.json").write_text(json.dumps({
+            "task": name, "question": "Which?", "options": ["a", "b"],
+            "examples": [{"index": i, "id": k, "label": "a", "sha256": holdout_data.sha(t),
+                          **({"license": licences[k]} if k in licences else {})}
+                         for i, (k, t) in enumerate(rows.items())]}))
+    monkeypatch.setattr(holdout_data, "FROZEN", frozen)
+    monkeypatch.setattr(holdout_data, "CACHE", cache)
+    monkeypatch.setattr(holdout_data, "TASKS", {"shipped": ("Which?", ["a", "b"]),
+                                                "refetched": ("Which?", ["a", "b"])})
+    monkeypatch.setattr(holdout_data, "SHIPPED", ("shipped",))
+    cache.mkdir()
+    (cache / "shipped.jsonl").write_text("".join(
+        json.dumps({"id": k, "text": t}) + "\n" for k, t in texts["shipped"].items()))
+    release = tmp_path / "holdout-texts.jsonl"
+    holdout_data.export(release)
+    assert {json.loads(line)["license"] for line in release.read_text().splitlines()} == {
+        "CC BY 4.0", "CC BY"}
+    edited = dict(texts["refetched"], **{"github:o/r#2": "edited since"})
+    monkeypatch.setattr(holdout_data, "REFETCH", {"refetched": lambda name, ids: edited})
+    for path in cache.iterdir():
+        path.unlink()
+    holdout_data.fetch(release.as_uri())
+    assert [t.state for t in holdout_data.load("shipped")] == list(texts["shipped"].values())
+    with pytest.raises(SystemExit, match="changed"):
+        holdout_data.load("refetched")
+    assert [t.state for t in holdout_data.load("refetched", strict=False)] == ["an issue"]
+
+
+def test_library_version_names_the_commit(monkeypatch, tmp_path):
+    from bench import adapters
+
+    class Dist:
+        version = "0.1.0"
+
+        def __init__(self, direct_url):
+            self.direct_url = direct_url
+
+        def read_text(self, name):
+            return json.dumps(self.direct_url)
+
+    def installed(direct_url):
+        monkeypatch.setattr(adapters.metadata, "distribution", lambda _: Dist(direct_url))
+        return adapters.library_version()
+
+    assert installed({"url": "https://github.com/x/y", "vcs_info": {"commit_id": "abc"}}) == "0.1.0+abc"
+    plain = tmp_path / "with space"                        # not a git checkout: version only
+    plain.mkdir()
+    assert installed({"url": plain.as_uri(), "dir_info": {"editable": True}}) == "0.1.0"
