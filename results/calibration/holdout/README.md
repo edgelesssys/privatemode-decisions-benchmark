@@ -27,12 +27,15 @@ known ones.
 
 Sources, licences and selection rules are in the plan and in
 `bench/holdout_data.py`. `datasets/holdout/` holds the frozen ids, labels
-and text hashes; the texts, with the licence of each, are in the release.
+and text hashes. The release carries the arXiv and PubMed abstracts with the
+licence and source of each; the tweets and GitHub issues aren't ours to
+republish, so `fetch` gets them again by id (999 of the 1,000 issues still
+matched their hashes on 2026-10-01; a run leaves out the rest).
 The arXiv, PubMed and GitHub texts were first published in 2026. Finance,
 science, medicine and code are new domains to the benchmark; the kinds of
-question are not (topic and sentiment are benchmark families). Each task is split 50/50 into calibration and test halves as
-before; every number here is on the test halves, each dataset weighted
-equally.
+question are not (topic and sentiment are benchmark families). Each task is
+split 50/50 into calibration and test halves as before; every number here is
+on the test halves, each dataset weighted equally.
 
 ## Against the pre-registered criteria
 
@@ -126,6 +129,9 @@ checked on a fresh set of held-out tasks, not on these. Filed as
 
 - GLM-5.3-Flash through the production Privatemode proxy, raw probabilities
   (T = 1), 4 requests in flight per task, with up to three tasks at once.
+  Asked with the library's calibration branch at `cf05f2c`, its head during
+  the run (the run files predate recording the library); scored with the
+  commit `summary.json` names, which the benchmark pins.
   The endpoint reported `glm-5.3-flash` for every row, and on average
   97.8–99.9% of the probability landed on the options.
 - 32 requests were throttled (HTTP 429) and asked again, into the same run
@@ -139,9 +145,9 @@ checked on a fresh set of held-out tasks, not on these. Filed as
 ## Reproduce
 
 ```sh
-python -m bench.holdout_data fetch          # the texts, from the release, into .cache/holdout
+python -m bench.holdout_data fetch          # abstracts from the release, the rest by id
 python -m bench.holdout_data check          # verify them against the frozen hashes
-python -m bench.holdout report --run <release>/holdout --out results/calibration/holdout
+python -m bench.holdout report --run runs/holdout --out results/calibration/holdout
 python -m bench.holdout run --task fin_topic --out runs/holdout   # asking again, for all five
 ```
 

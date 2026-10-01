@@ -160,6 +160,13 @@ cases only are skewed toward hard ones and break the guarantee.
 
 ## Reproduce
 
+From the repository root, with the release
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26)
+extracted as `runs/` (`tar -xzf calibration-runs-2026-09-26.tar.gz && mv
+calibration-runs-2026-09-26 runs`) and the suite's release
+[`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24)
+to `results/` (`--published results`):
+
 ```sh
 pip install -e '.[privatemode,calibration]'
 python -m bench.suite -n 1000 --replicates 1 --arms privatemode --concurrency 4 --out runs/r1
@@ -167,12 +174,13 @@ python -m bench.suite -n 1000 --replicates 1 --arms privatemode --concurrency 4 
 python -m bench.neutral_priors --out neutral-priors.json
 python -m bench.off_option --out off-option.json
 python -m bench.calibrate_report --run runs/r1 --second runs/r2 \
-    --priors neutral-priors.json --published <published runs>/results \
-    --label-check banking77-label-check.json --out report/
+    --priors neutral-priors.json --published results \
+    --label-check results/calibration/part-1/banking77-label-check.json --out report/
 ```
 
 Run a suite command twice on the same `--out` to fill rows lost to the
 proxy's rate limit. [Part 2](../part-2/README.md) compares Jev on the same
 examples, adds a guaranteed error rate for automated answers, and tests
 position bias. The raw runs used here are in the release
-[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26),
+with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.

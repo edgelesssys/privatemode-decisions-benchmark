@@ -157,7 +157,7 @@ rvl_cdip (16 options) was not used to fit the formula. Its own best T is 2.14, t
 
 ## 6. Position bias: rotations and PriDe
 
-Every row asked in 2/3/4 rotated option orders (about 100 rows per text dataset). Compared on the same rows, after the formula T: one order (the default), the average of all rotations (4× the cost; the strongest standard position fix), and PriDe (position prior estimated from 10% of the rows in all rotations, applied to the other 90% at the cost of one order).
+Every row asked in 2/3/4 rotated option orders (about 100 rows per text dataset). Compared on the same rows, after the formula T: one order (the default), the average of all rotations (up to 4× the cost; the strongest standard position fix), and PriDe (position prior estimated from 10% of the rows in all rotations, applied to the other 90% at the cost of one order).
 
 | method | mean accuracy | points vs one order | mean NLL | mean ECE |
 |---|---|---|---|---|

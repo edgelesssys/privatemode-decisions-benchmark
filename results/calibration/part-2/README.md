@@ -164,16 +164,24 @@ their positions.
 
 ## Reproduce
 
+From the repository root, with the release
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26)
+extracted as `runs/` (`tar -xzf calibration-runs-2026-09-26.tar.gz && mv
+calibration-runs-2026-09-26 runs`) and the suite's release
+[`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24)
+to `results/` (`--published results`):
+
 ```sh
 python -m bench.rotations --out runs/rotations -n 100
 python -m bench.rotations --out runs/rot-boolq -n 1000 --only boolq
 python -m bench.rotations --out runs/rot-boolq-renamed -n 1000 --only boolq --perturb rename
 python -m bench.calibrate_extensions --run runs/r1 --second runs/r2 \
-    --published <published runs>/results --summary ../part-1/summary.json \
+    --published results --summary results/calibration/part-1/summary.json \
     --rotations runs/rotations --rotations-boolq runs/rot-boolq \
     --rotations-renamed runs/rot-boolq-renamed --out report2/
 ```
 
 Run a rotation command twice to fill rows lost to the rate limit. The raw
 runs are in the release
-[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26),
+with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.

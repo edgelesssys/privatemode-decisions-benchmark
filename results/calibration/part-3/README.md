@@ -234,24 +234,32 @@ and [glm-5.3/full-report.md](glm-5.3/full-report.md).
 
 ## Reproduce
 
+From the repository root, with the release
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26)
+extracted as `runs/` (`tar -xzf calibration-runs-2026-09-26.tar.gz && mv
+calibration-runs-2026-09-26 runs`) and the suite's release
+[`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24)
+to `results/` (`--published results`):
+
 ```sh
 # other models (one run each, 4 in flight; resolved model and build are recorded per row)
 DECISIONS_MODEL=kimi-latest python -m bench.suite -n 1000 --replicates 1 --arms privatemode \
-    --concurrency 4 --out runs/kimi
+    --concurrency 4 --out runs/kimi-k2.6
 DECISIONS_MODEL=glm-latest python -m bench.suite -n 1000 --replicates 1 --arms privatemode \
-    --concurrency 4 --skip rvl_cdip --out runs/glm
-python -m bench.calibrate_report --run runs/kimi --out kimi-k2.6/ \
+    --concurrency 4 --skip rvl_cdip --out runs/glm-5.3
+python -m bench.calibrate_report --run runs/kimi-k2.6 --out kimi-k2.6/ \
     --source results/calibration/part-3/kimi-k2.6/constants.json
-python -m bench.calibrate_report --run runs/glm --out glm-5.3/ \
+python -m bench.calibrate_report --run runs/glm-5.3 --out glm-5.3/ \
     --source results/calibration/part-3/glm-5.3/constants.json
 # this report
-python -m bench.calibrate_part3 --run runs/r1 --summary ../part-1/summary.json \
-    --published <published runs>/results --rotations runs/rotations \
-    --model kimi-k2.6=runs/kimi --model glm-5.3=runs/glm --out report3/
+python -m bench.calibrate_part3 --run runs/r1 --summary results/calibration/part-1/summary.json \
+    --published results --rotations runs/rotations \
+    --model kimi-k2.6=runs/kimi-k2.6 --model glm-5.3=runs/glm-5.3 --out report3/
 # the labelling page
-python -m bench.label_page ../part-1/banking77-label-check.json <somewhere>/label-check.html
+python -m bench.label_page results/calibration/part-1/banking77-label-check.json <somewhere>/label-check.html
 ```
 
 Then, in the library, `python scripts/update_calibration.py` with each
 `constants.json`. The raw runs are in the release
-[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26), with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.
+[`calibration-2026-09-26`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-2026-09-26),
+with every run of parts 1–3, including the Kimi K2.6 and GLM-5.3 runs.
