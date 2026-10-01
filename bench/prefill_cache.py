@@ -1,17 +1,22 @@
 """What the prompt layouts cost when several questions share a state.
 
-    python -m bench.prefill_cache --out runs/cache.json [-n 40] [--dataset scotus]
+    python -m bench.prefill_cache --out runs/cache-ag.json -n 40
+    python -m bench.prefill_cache --out runs/cache-scotus.json -n 30 --dataset scotus
+    python -m bench.prefill_cache --combine runs/cache-ag.json runs/cache-scotus.json \
+        --out results/prefill/cache-multi-question.json
 
 The benchmark asks one question per state, so it can't show how the layouts
-differ when a call has several: with the state first, the requests of a call
-share the state; with each request's own question first, only the preamble;
-with all of the call's questions first (the library's default), the
-question block and the state. This asks five questions about each of ``-n``
-states (ag_news articles by default; ``--dataset scotus`` for long ones)
-with ``mode="staged"``, one call at a time, in all three layouts (rotating
-which goes first), and records each call's wall time and the prompt tokens
-served from the cache. Privatemode only caches prefixes of about 2,300
-tokens, so the difference shows with long states.
+differ when a call has several: with each request's own question first
+(``optimize="accuracy"``, the library's default) the requests of a call
+share only the preamble; with all of the call's questions first
+(``"cost"``), the question block and the state. This asks five questions
+about each of ``-n`` states (ag_news articles by default; ``--dataset
+scotus`` for long ones) with ``mode="staged"``, one call at a time, in both
+layouts (alternating which goes first), and records each call's wall time
+and the prompt tokens served from the cache. Privatemode only caches
+prefixes of about 2,300 tokens, so the difference shows with long states.
+``--combine`` puts the summaries of several runs into one file, keyed by
+what they measured.
 """
 
 from __future__ import annotations
@@ -41,7 +46,7 @@ QUESTIONS = {
 }
 
 
-LAYOUTS = ("state first", "own question first", "all questions first")
+LAYOUTS = ("accuracy", "cost")
 
 
 def main() -> None:
@@ -49,19 +54,24 @@ def main() -> None:
     parser.add_argument("--out", required=True)
     parser.add_argument("-n", type=int, default=40)
     parser.add_argument("--dataset", default="ag_news", help="where the states come from")
+    parser.add_argument("--combine", nargs="+", help="runs of this tool to put into --out")
     args = parser.parse_args()
+    if args.combine:
+        combined = {}
+        for path in args.combine:
+            run = json.loads(Path(path).read_text())
+            combined[f"{run['dataset']}, {run['calls']} calls"] = run["summary"]
+        Path(args.out).write_text(json.dumps(combined, indent=1))
+        return
     set_max_in_flight(9)
     engine = SystemOne.from_env("glm-5.3-flash", temperature=1.0)
-    calls = {"state first": lambda s: engine.system_one(s, QUESTIONS, mode="staged", question_first=False),
-             "own question first": lambda s: engine.system_one(s, QUESTIONS, mode="staged", question_first="own"),
-             "all questions first": lambda s: engine.system_one(s, QUESTIONS, mode="staged", question_first=True)}
     rows = []
     tasks = load(args.dataset, 1000)
     for number, task in enumerate(tasks[len(tasks) - args.n:]):     # rows the other runs used least
-        # Rotate which layout goes first, so none always follows a warm cache.
-        order = LAYOUTS[number % 3:] + LAYOUTS[:number % 3]
+        # Alternate which layout goes first, so neither always follows a warm cache.
+        order = LAYOUTS[number % 2:] + LAYOUTS[:number % 2]
         for layout in order:
-            response = calls[layout](task.state)
+            response = engine.system_one(task.state, QUESTIONS, mode="staged", optimize=layout)
             rows.append({"index": task.index, "layout": layout,
                          "wall_s": response.timings["wall"],
                          "input_tokens": response.usage.input_tokens,
@@ -74,7 +84,8 @@ def main() -> None:
             "wall_p95_s": float(np.percentile([x["wall_s"] for x in r], 95)),
             "input_tokens": float(np.mean([x["input_tokens"] for x in r])),
             "cached_share": float(np.sum([x["cached_tokens"] for x in r]) / np.sum([x["input_tokens"] for x in r]))}
-    Path(args.out).write_text(json.dumps({"summary": summary, "rows": rows}, indent=1))
+    Path(args.out).write_text(json.dumps({"dataset": args.dataset, "calls": args.n,
+                                          "summary": summary, "rows": rows}, indent=1))
     print(json.dumps(summary, indent=1))
 
 

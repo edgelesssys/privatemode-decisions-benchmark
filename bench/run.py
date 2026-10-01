@@ -106,7 +106,7 @@ def build_arms(args) -> list:
     if "privatemode" in wanted:
         arms.append(PrivatemodeArm(permutations=args.permutations,
                                    image_max_side=args.image_max_side,
-                                   question_first=not args.state_first))
+                                   optimize=args.optimize))
     if "jev" in wanted:
         arms.append(JevArm())
     if "laya" in wanted:
@@ -134,6 +134,7 @@ def identity(args, arms) -> dict:
     came first. Two load conditions are two experiments.
     """
     spec = BY_NAME[args.dataset]
+    privatemode = next((a for a in arms if a.name == "privatemode"), None)
     frozen_bytes = (frozen_dir() / f"{args.dataset}.json").read_bytes()
     return {
         "dataset": spec.name, "hf": spec.hf, "config": spec.config,
@@ -148,17 +149,12 @@ def identity(args, arms) -> dict:
         "laya_shortlist": args.laya_shortlist,
         "cot_max_tokens": args.cot_max_tokens,
         "perturb": args.perturb,
-        # What the Privatemode arm asked: the library's prefill and the
-        # temperature it reports at. A run from another library version or
-        # setting must not resume into this one.
-        **({"prefill": PREFIX, "privatemode_temperature": next(
-            a.temperature for a in arms if a.name == "privatemode"),
-            "library": library_version()}
-           if any(a.name == "privatemode" for a in arms) else {}),
-        # Only when set, so that runs from before the question-first prompt
-        # keep their identity (and resume) with --state-first.
-        **({"question_first": True} if "privatemode" in {a.name for a in arms}
-           and not args.state_first else {}),
+        # What the Privatemode arm asked: the library's prefill, layout and
+        # the temperature it reports at, and the library itself. A run from
+        # another library version or setting must not resume into this one.
+        **({"prefill": PREFIX, "privatemode_temperature": privatemode.temperature,
+            "optimize": privatemode.optimize, "library": library_version()}
+           if privatemode else {}),
     }
 
 
@@ -338,10 +334,9 @@ def build_parser() -> argparse.ArgumentParser:
                         help="1 keeps the latency numbers honest (default)")
     parser.add_argument("--warmup", type=int, default=3,
                         help="examples run and discarded before measuring")
-    parser.add_argument("--state-first", action="store_true",
-                        help="Privatemode only: the prompt layout before the "
-                             "question-first default (state, then question), "
-                             "as the published suite and calibration runs used")
+    parser.add_argument("--optimize", default="accuracy", choices=("accuracy", "cost"),
+                        help="Privatemode only: the library's prompt layout (the same "
+                             "prompt with one question per call)")
     parser.add_argument("--permutations", type=int, default=1,
                         help="Privatemode only: option orders averaged per "
                              "question. >1 is no longer a like-for-like "

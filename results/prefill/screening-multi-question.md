@@ -12,7 +12,7 @@ Accuracy in points against the baseline, pooled over all rows with a paired boot
 | QA | +0.89 [-0.15, +1.98] | 7 / 5 (2) | -1.2 | 0.539 (B 0.553) | 1.85 | 0.936 | 0.053 | 685 | +62 | 0.253 |
 | R-Q | +2.18 [+1.21, +3.16] | 12 / 2 (3) | +0.8 | 0.499 (B 0.553) | 2.07 | 0.945 | 0.052 | 419 | +14 | 0.200 |
 
-**Gate** (accuracy-plan Phase 2): pooled ≥ +1.0 point with the interval above 0; no control dataset losing more than the noise floor (the largest control difference between B and B2, 0.8 points, or 1 point if larger); NLL after temperature not worse; latency +30 ms at most; for filler, the placement control (F-before) must not show the same gain.
+**Gate** (fixed before the screening): pooled ≥ +1.0 point with the interval above 0; no control dataset losing more than the noise floor (the largest control difference between B and B2, 0.8 points, or 1 point if larger); NLL after temperature not worse; latency +30 ms at most; for filler, the placement control (F-before) must not show the same gain.
 
 | arm | accuracy | controls | NLL | latency | placement | verdict |
 |---|---|---|---|---|---|---|
@@ -49,7 +49,7 @@ Accuracy points against the baseline (McNemar p < 0.05 marked *):
 | QA | -0.6 | +1.6 | +3.2 | +0.1 |
 | R-Q | +1.2 | +2.7 | +5.1 | +0.9 |
 
-## Where the gains are: by the baseline's confidence (H4)
+## Where the gains are: by the baseline's confidence
 
 Rows pooled over datasets, split into five equal groups by the baseline's top probability; accuracy points against the baseline in each:
 

@@ -49,6 +49,7 @@ import json
 import math
 import os
 import random
+import re
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -64,6 +65,7 @@ from decisions.inference import PREAMBLE, PREFIX, batches
 
 from . import calibration as c
 from . import hub
+from .adapters import library_version
 from .datasets import Task, load
 
 DEV = ("patent", "rte", "sst5", "xnli_de", "toxic_conversations", "gnad10", "massive_scenario_en",
@@ -71,7 +73,7 @@ DEV = ("patent", "rte", "sst5", "xnli_de", "toxic_conversations", "gnad10", "mas
 CONTROLS = ("sst2", "dbpedia_14", "banking77", "clinc150")
 ARMS = ("B", "B2", "R-Q", "R-full", "R-think", "F-dots", "F-alpha", "F-words", "F-scrambled",
         "F-before", "F-count", "G", "H-32", "H-128",
-        # Phase 3, shapes of the question sandwich:
+        # Shapes of the question sandwich:
         "R-Qi", "R-QSQS",
         # The question restated in the think block, padded with dots to --tokens:
         "RF",
@@ -79,6 +81,14 @@ ARMS = ("B", "B2", "R-Q", "R-full", "R-think", "F-dots", "F-alpha", "F-words", "
         "RQ-F", "RQ-FF", "RQ-mid",
         # Several questions about one state, all of them first (a shared prefix):
         "QA")
+
+
+def check_arm(arm: str) -> str:
+    """An arm name, or exit: a typo would otherwise run the baseline under
+    the typo's name. ``H-<tokens>`` is real thinking of that many tokens."""
+    if arm in ARMS or re.fullmatch(r"H-[1-9]\d*", arm):
+        return arm
+    raise SystemExit(f"unknown arm {arm!r}; known: {', '.join(ARMS)}, H-<tokens>")
 MODEL = os.environ.get("DECISIONS_MODEL", "glm-5.3-flash")
 #: As the suite sends scanned pages (``bench.run`` default).
 IMAGE_MAX_SIDE = 1024
@@ -283,7 +293,9 @@ class Prefill(SystemOne):
 
     def payload(self, arm: str, state, question: Choice, allowed, read, index: int,
                 thought: str | None = None, images: tuple[str, ...] = ()) -> dict:
-        body = self._request(state, question, allowed, read, images)
+        # The baseline is the state-first prompt the suite was run with: the
+        # library's request with an empty lead. Every other arm rewrites it.
+        body = self._request(state, question, "", allowed, read, images)
         content = body["messages"][0]["content"]
         user = content if isinstance(content, str) else content[-1]["text"]
         whole = json.dumps({"state": state, **self._question(question)}, ensure_ascii=False)
@@ -337,7 +349,8 @@ class Prefill(SystemOne):
         the tokens it took."""
         body, elapsed = self.client.post("/chat/completions", {
             "model": self.model, "max_tokens": tokens, "temperature": 0,
-            "messages": [{"role": "user", "content": self._text(state, question)}]})
+            "messages": [{"role": "user", "content": PREAMBLE + json.dumps(
+                {"state": state, **self._question(question)}, ensure_ascii=False)}]})
         message = body["choices"][0]["message"]
         text = message.get("reasoning_content") or message.get("reasoning") or ""
         if not text and "</think>" in (message.get("content") or ""):
@@ -399,12 +412,28 @@ def main() -> None:
     generic = Path(args.generic).read_text().strip() if args.generic else None
     engine = Prefill(client, MODEL, temperature=1.0, max_workers=4, fillers=fillers, generic=generic,
                      tokens=tokens, length=args.tokens)
+    arms = [check_arm(arm) for arm in args.arms.split(",")]
     run = c.load_run(args.run)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    (out / "fillers.json").write_text(json.dumps(
-        {k: {"tokens": tokens.count("\n" + v) - tokens.count("\n"), "text": v[:200]}
-         for k, v in fillers.items()}, indent=1))
+    # What an arm directory's rows were asked with: a resume with other
+    # settings would mix two experiments under one name.
+    settings = {"split": args.split, "tokens": args.tokens, "perturb": args.perturb,
+                "rows": args.rows, "model": MODEL, "library": library_version(),
+                "fillers": {k: {"tokens": tokens.count("\n" + v) - tokens.count("\n"),
+                                "text": v[:200]} for k, v in fillers.items()}}
+    for arm in arms:
+        meta = out / f"{arm}{args.suffix}" / "settings.json"
+        if meta.exists():
+            before = json.loads(meta.read_text())
+            changed = [k for k in ("split", "tokens", "perturb", "rows", "model")
+                       if before.get(k) != settings[k]]
+            if changed:
+                raise SystemExit(f"{meta.parent} was asked with other {', '.join(changed)}; "
+                                 "use another --out or --suffix")
+        else:
+            meta.parent.mkdir(parents=True, exist_ok=True)
+            meta.write_text(json.dumps(settings, indent=1))
     ids = engine.oracle.single_token_indexes(PREFIX, limit=191)
     lock = threading.Lock()
     for name in args.only.split(","):
@@ -417,7 +446,7 @@ def main() -> None:
         else:
             wanted = set(dev_rows(run, name, args.rows, args.split))
             tasks = [t for t in load(name, 1000, perturbation=args.perturb) if t.index in wanted]
-        for arm in args.arms.split(","):
+        for arm in arms:
             if arm == "G" and not generic:
                 raise SystemExit("the G arm needs --generic")
             path = out / f"{arm}{args.suffix}" / f"{name}.jsonl"

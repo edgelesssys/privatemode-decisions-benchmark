@@ -13,7 +13,7 @@ answered. Per arm:
 * option mass, how far the mean answer moves from the baseline's (total
   variation of the mean distribution, which is also the position prior since
   the option order is fixed), extra prompt tokens, latency and EUR per 1,000;
-* the accuracy change by the baseline's confidence (H4), and two offline
+* the accuracy change by the baseline's confidence, and two offline
   ensembles: the mean of baseline and arm, and the arm only where the
   baseline is unsure.
 
@@ -33,9 +33,11 @@ import numpy as np
 
 from . import calibration as c
 from .calibrate_report import fmt, table
+from .pricing import PRIVATEMODE_EUR_PER_MTOK
 from .specs import BY_NAME
 
-EUR_IN, EUR_OUT = 0.20 / 1e6, 0.65 / 1e6
+#: GLM-5.3-Flash's list prices per token, input and output (bench.pricing).
+EUR_IN, EUR_OUT = (eur / 1e6 for eur in PRIVATEMODE_EUR_PER_MTOK["glm-5.3-flash"][:2])
 CONTROLS = ("sst2", "dbpedia_14", "banking77", "clinc150")
 GROUPS = {"nli": "NLI / QA", "qa": "NLI / QA", "sentiment": "sentiment", "moderation": "sentiment",
           "topic": "topic", "legal": "topic", "intent": "intent"}
@@ -123,7 +125,7 @@ def compare(base: dict[str, dict[int, dict]], arm: dict[str, dict[int, dict]]) -
                                        for i in order])) * 1000,
             "group": (GROUPS.get(BY_NAME[name].family, BY_NAME[name].family)
                       if name in BY_NAME else "knowledge"),
-            # For the ensembles and H4.
+            # For the ensembles and the confidence breakdown.
             "Pb": Pb, "Pa": Pa, "y": y,
         }
         pooled_a.append(right_a)
@@ -189,7 +191,7 @@ def report(args) -> tuple[str, dict]:
     # Gate.
     floor = max((abs(v["arm"] - v["base"]) for n, v in noise["per"].items() if n in CONTROLS),
                 default=0.0) if noise else 0.0
-    md.append(f"\n**Gate** (accuracy-plan Phase 2): pooled ≥ +1.0 point with the interval above "
+    md.append(f"\n**Gate** (fixed before the screening): pooled ≥ +1.0 point with the interval above "
               f"0; no control dataset losing more than the noise floor (the largest control "
               f"difference between B and B2, {floor * 100:.1f} points, or 1 point if larger); NLL "
               f"after temperature not worse; latency +30 ms at most; for filler, the placement "
@@ -259,10 +261,14 @@ def report(args) -> tuple[str, dict]:
                 accs[label] = c.accuracy(d.P[keep], d.y[keep]) if keep.any() else float("nan")
                 cells.append(f"{accs[label]:.3f} ({int(keep.sum())})")
             if best and n in results[best]["per"] and "glm-cot" in accs:
-                v = results[best]["per"][n]
-                gap = accs["glm-cot"] - v["base"]
-                if gap > 0.02:
-                    closed.append((v["arm"] - v["base"]) / gap)
+                # All three on the rows glm-cot answered, not B on ours.
+                d = others["glm-cot"][n]
+                both = sorted(set(map(int, d.index)) & set(order) & set(arms[best].get(n, {})))
+                if len(both) >= 20:
+                    on = lambda rows: c.accuracy(*matrix(rows, both)[:2])  # noqa: E731
+                    gap = c.accuracy(d.P[np.isin(d.index, both)], d.y[np.isin(d.index, both)]) - on(base[n])
+                    if gap > 0.02:
+                        closed.append((on(arms[best][n]) - on(base[n])) / gap)
             rows.append(cells)
         md.append(f"\n## Against Jev and chain of thought\n")
         md.append(f"Accuracy on the dev rows: the baseline, the best screened arm (`{best}`), and the "
@@ -286,8 +292,8 @@ def report(args) -> tuple[str, dict]:
         rows.append(cells)
     md.append(table(rows, ["arm"] + groups))
 
-    # H4: by the baseline's confidence.
-    md.append("\n## Where the gains are: by the baseline's confidence (H4)\n")
+    # By the baseline's confidence.
+    md.append("\n## Where the gains are: by the baseline's confidence\n")
     md.append("Rows pooled over datasets, split into five equal groups by the baseline's top "
               "probability; accuracy points against the baseline in each:\n")
     rows = []

@@ -24,7 +24,7 @@ Accuracy in points against the baseline, pooled over all rows with a paired boot
 | R-full | +0.89 [+0.09, +1.65] | 9 / 2 (1) | +0.4 | 0.515 (B 0.553) | 2.30 | 0.917 | 0.033 | 508 | +12 | 0.221 |
 | R-think | +0.09 [-0.59, +0.74] | 7 / 6 (2) | -3.2 | 0.561 (B 0.553) | 1.89 | 0.952 | 0.022 | 134 | -12 | 0.143 |
 
-**Gate** (accuracy-plan Phase 2): pooled ≥ +1.0 point with the interval above 0; no control dataset losing more than the noise floor (the largest control difference between B and B2, 0.8 points, or 1 point if larger); NLL after temperature not worse; latency +30 ms at most; for filler, the placement control (F-before) must not show the same gain.
+**Gate** (fixed before the screening): pooled ≥ +1.0 point with the interval above 0; no control dataset losing more than the noise floor (the largest control difference between B and B2, 0.8 points, or 1 point if larger); NLL after temperature not worse; latency +30 ms at most; for filler, the placement control (F-before) must not show the same gain.
 
 | arm | accuracy | controls | NLL | latency | placement | verdict |
 |---|---|---|---|---|---|---|
@@ -86,7 +86,7 @@ Accuracy on the dev rows: the baseline, the best screened arm (`R-Q`), and the p
 | toxic_conversations | 0.812 | 0.852 | 0.776 (250) | 0.876 (250) |
 | xnli_de | 0.808 | 0.816 | 0.808 (250) | 0.868 (250) |
 
-Headroom closed by `R-Q`, `(arm − B) / (glm-cot − B)` on the datasets where glm-cot is more than 2 points ahead: median 65%.
+Headroom closed by `R-Q`: removed. As first generated, it set glm-cot on the rows it answered against B on all rows; the confirmation's figure (57%) replaces it.
 
 
 ## By task family
@@ -109,7 +109,7 @@ Headroom closed by `R-Q`, `(arm − B) / (glm-cot − B)` on the datasets where 
 | R-full | -0.4 | +1.7 | +2.4 | +0.5 |
 | R-think | -0.5 | -1.5 | +1.2 | +0.8 |
 
-## Where the gains are: by the baseline's confidence (H4)
+## Where the gains are: by the baseline's confidence
 
 Rows pooled over datasets, split into five equal groups by the baseline's top probability; accuracy points against the baseline in each:
 

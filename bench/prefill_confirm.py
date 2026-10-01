@@ -37,10 +37,11 @@ from .aggregate import TIE
 from .calibrate_report import fmt, table
 from .metrics import normalised, wilcoxon
 from .prefill_report import EUR_IN, EUR_OUT, load, matrix
+from decisions.calibration import FORMULAS
 
 BANDS = ((2, 2, "2"), (3, 6, "3–6"), (7, 20, "7–20"), (21, 80, "21–80"), (81, 10_000, "81+"))
-#: The 28-dataset default: log T = a + b · log(options) (decisions/calibration.py).
-SHIPPED = (0.962, -0.076)
+#: The library's default for GLM-5.3-Flash: log T = a + b · log(options).
+SHIPPED = tuple(FORMULAS["glm-5.3-flash"])
 #: Published on the same 1,000 MMLU-Pro questions by ekzhang/openjev-sglang
 #: (evals/results/mmlu-pro-2026-09-18): Jev resolved to jev-1.13-20260917.
 MMLU_PUBLISHED = {"Jev (jev-1.13-20260917)": 0.829, "openjev-sglang (Qwen3.6-35B-A3B)": 0.588}
@@ -130,23 +131,28 @@ def jevbench_section(args, runs, arms, result) -> list[str]:
 
 
 def products_section(per, text, shared, v, wtl) -> tuple[list[str], dict]:
-    """The suite's headline on the test halves: every arm on the same
-    examples, normalised against the majority class of the rows scored,
-    wins, ties and losses against Jev, and the median price over the
-    datasets Jev answers (prompt tokens at list price)."""
+    """The suite's headline on the test halves: normalised accuracy against
+    the majority class of the rows scored, over the datasets each arm
+    answers (our arms on all rows, a published arm on the rows it answered);
+    against Jev, mean accuracy, wins, ties and losses on the rows both
+    answered; and the median price over the datasets Jev answers (prompt
+    tokens at list price)."""
     columns = {"B": "B", v: "variant", "Jev": "Jev", "Laya": "Laya"}
     rows, summary = [], {}
     for label, key in columns.items():
         present = [n for n in text if key in per[n]]
         if not present:
             continue
+        majority = "majority" if key in ("B", "variant") else f"majority@{key}"
         summary[label] = {"datasets": len(present), "normalised": float(np.mean(
-            [normalised(per[n][key], per[n]["majority"]) for n in present]))}
+            [normalised(per[n][key], per[n][majority]) for n in present]))}
+        at_jev = key if key == "Jev" else f"{key}@Jev"
         cells = [label, len(present), f"{summary[label]['normalised']:.3f}",
-                 f"{np.mean([per[n][key] for n in shared]):.3f}" if all(key in per[n] for n in shared) else "—"]
+                 f"{np.mean([per[n][at_jev] for n in shared]):.3f}"
+                 if all(at_jev in per[n] for n in shared) else "—"]
         if key in ("B", "variant") and shared:
             tokens = "tokens_B" if key == "B" else "tokens_v"
-            diffs = [per[n][key] - per[n]["Jev"] for n in shared]
+            diffs = [per[n][f"{key}@Jev"] - per[n]["Jev"] for n in shared]
             test = wilcoxon(diffs)
             cells += ["–".join(map(str, wtl(key))), f"{test['p']:.2g}",
                       f"{(np.median([per[n][tokens] for n in shared]) * EUR_IN + EUR_OUT) * 1000:.4f}"]
@@ -154,11 +160,11 @@ def products_section(per, text, shared, v, wtl) -> tuple[list[str], dict]:
         else:
             cells += ["", "", ""]
         rows.append(cells)
-    return ["\n**Against Jev and Laya** on the same examples. Normalised accuracy is 0 for "
-            "always answering the majority class of the rows scored and 1 for all right, "
-            "averaged over the datasets an arm answers; the mean accuracy and the "
-            "wins–ties–losses are over the datasets Jev answers, and so is the median price "
-            "(prompt tokens at list price):\n",
+    return ["\n**Against Jev and Laya.** Normalised accuracy is 0 for always answering the "
+            "majority class of the rows scored and 1 for all right, averaged over the datasets "
+            "an arm answers (29, 28 and 27: not the same sets). The mean accuracy, the "
+            "wins–ties–losses and the Wilcoxon test are against Jev on the rows both answered, "
+            "and the median price is over Jev's datasets (prompt tokens at list price):\n",
             table(rows, ["arm", "datasets", "normalised accuracy", "mean accuracy, Jev's datasets",
                          "against Jev", "Wilcoxon p", "EUR / 1000, median"])], summary
 
@@ -196,7 +202,15 @@ def report(args) -> tuple[str, dict]:
             if d is not None:
                 keep = np.isin(d.index, order)
                 if keep.sum() >= 20:
+                    # The published arm and ours on the rows both answered.
+                    both = sorted(int(i) for i in d.index[keep])
                     entry[label] = c.accuracy(d.P[keep], d.y[keep])
+                    entry[f"{label} rows"] = len(both)
+                    entry[f"B@{label}"] = float(np.mean([accuracy_of(r[n], both) for r in arms["B"]]))
+                    entry[f"variant@{label}"] = float(np.mean([accuracy_of(r[n], both)
+                                                               for r in arms[v]]))
+                    golds = [first[i]["gold"] for i in both]
+                    entry[f"majority@{label}"] = max(golds.count(g) for g in set(golds)) / len(golds)
         per[n] = entry
         diff = entry["variant"] - entry["B"]
         rows.append([n, k, entry["rows"], f"{entry['B']:.3f}", f"{entry['variant']:.3f}",
@@ -208,7 +222,8 @@ def report(args) -> tuple[str, dict]:
     test = wilcoxon(diffs)
     md = [f"# `{v}` against the baseline on the test halves\n",
           f"GLM-5.3-Flash, the test halves of {len(text)} datasets, two replicates of each arm; "
-          f"accuracy is the mean of the replicates.\n",
+          f"accuracy is the mean of the replicates. Jev, Laya and glm-cot are their published "
+          f"runs on the rows of these they answered.\n",
           f"**{wins} wins, {len(text) - wins - losses} ties, {losses} losses** (ties within "
           f"±{TIE:.2f}); median difference {np.median(diffs) * 100:+.1f} points, mean "
           f"{np.mean(diffs) * 100:+.2f}; Wilcoxon signed-rank p = {test['p']:.3g}.\n"]
@@ -229,8 +244,9 @@ def report(args) -> tuple[str, dict]:
     md.append(table(band_rows, ["options", "datasets", "B", v, "Jev"]))
 
     # Headroom, Jev, cost.
-    closed = [(per[n]["variant"] - per[n]["B"]) / (per[n]["glm-cot"] - per[n]["B"])
-              for n in text if "glm-cot" in per[n] and per[n]["glm-cot"] - per[n]["B"] > 0.02]
+    # glm-cot against B and the variant on the rows glm-cot answered.
+    closed = [(per[n]["variant@glm-cot"] - per[n]["B@glm-cot"]) / (per[n]["glm-cot"] - per[n]["B@glm-cot"])
+              for n in text if "glm-cot" in per[n] and per[n]["glm-cot"] - per[n]["B@glm-cot"] > 0.02]
     shared = [n for n in text if "Jev" in per[n]]
     eur_b = np.mean([per[n]["tokens_B"] * EUR_IN + EUR_OUT for n in text]) * 1000
     eur_v = np.mean([per[n]["tokens_v"] * EUR_IN + EUR_OUT for n in text]) * 1000
@@ -238,14 +254,17 @@ def report(args) -> tuple[str, dict]:
               f"points ahead of the baseline: median {np.median(closed):.0%}.\n" if closed else "")
     products = {}
     if shared:
-        wtl = lambda key: (sum(per[n][key] > per[n]["Jev"] + TIE for n in shared),
-                           sum(abs(per[n][key] - per[n]["Jev"]) <= TIE for n in shared),
-                           sum(per[n][key] < per[n]["Jev"] - TIE for n in shared))
-        md.append(f"\n**Against Jev** on the {len(shared)} datasets both answer, same examples: "
-                  f"the baseline {'–'.join(map(str, wtl('B')))} (wins–ties–losses), `{v}` "
+        # Against Jev on the rows both answered (key@Jev), not on all of ours.
+        wtl = lambda key: (sum(per[n][f"{key}@Jev"] > per[n]["Jev"] + TIE for n in shared),
+                           sum(abs(per[n][f"{key}@Jev"] - per[n]["Jev"]) <= TIE for n in shared),
+                           sum(per[n][f"{key}@Jev"] < per[n]["Jev"] - TIE for n in shared))
+        md.append(f"\n**Against Jev** on the {len(shared)} datasets both answer, on the rows both "
+                  f"answered ({sum(per[n]['Jev rows'] for n in shared):,} of "
+                  f"{sum(per[n]['rows'] for n in shared):,}): the baseline "
+                  f"{'–'.join(map(str, wtl('B')))} (wins–ties–losses), `{v}` "
                   f"{'–'.join(map(str, wtl('variant')))}; mean accuracy "
-                  f"{np.mean([per[n]['B'] for n in shared]):.3f} and "
-                  f"{np.mean([per[n]['variant'] for n in shared]):.3f} against Jev's "
+                  f"{np.mean([per[n]['B@Jev'] for n in shared]):.3f} and "
+                  f"{np.mean([per[n]['variant@Jev'] for n in shared]):.3f} against Jev's "
                   f"{np.mean([per[n]['Jev'] for n in shared]):.3f}.\n")
         products_md, products = products_section(per, text, shared, v, wtl)
         md += products_md

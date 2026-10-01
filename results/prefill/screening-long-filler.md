@@ -20,7 +20,7 @@ Accuracy in points against the baseline, pooled over all rows with a paired boot
 | RQ-FF | +1.83 [+0.86, +2.80] | 11 / 3 (2) | +0.4 | 0.506 (B 0.553) | 2.03 | 0.961 | 0.061 | 1442 | +114 | 0.405 |
 | RQ-mid | +1.86 [+0.94, +2.83] | 10 / 3 (2) | +0.0 | 0.507 (B 0.553) | 1.81 | 0.902 | 0.057 | 1444 | +147 | 0.405 |
 
-**Gate** (accuracy-plan Phase 2): pooled ≥ +1.0 point with the interval above 0; no control dataset losing more than the noise floor (the largest control difference between B and B2, 0.8 points, or 1 point if larger); NLL after temperature not worse; latency +30 ms at most; for filler, the placement control (F-before) must not show the same gain.
+**Gate** (fixed before the screening): pooled ≥ +1.0 point with the interval above 0; no control dataset losing more than the noise floor (the largest control difference between B and B2, 0.8 points, or 1 point if larger); NLL after temperature not worse; latency +30 ms at most; for filler, the placement control (F-before) must not show the same gain.
 
 | arm | accuracy | controls | NLL | latency | placement | verdict |
 |---|---|---|---|---|---|---|
@@ -73,7 +73,7 @@ Accuracy points against the baseline (McNemar p < 0.05 marked *):
 | RQ-FF | +0.9 | +2.8 | +4.0 | +0.8 |
 | RQ-mid | +0.0 | +4.9 | +2.9 | +0.7 |
 
-## Where the gains are: by the baseline's confidence (H4)
+## Where the gains are: by the baseline's confidence
 
 Rows pooled over datasets, split into five equal groups by the baseline's top probability; accuracy points against the baseline in each:
 

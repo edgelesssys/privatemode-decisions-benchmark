@@ -53,11 +53,15 @@ def test_question_first_puts_the_question_and_options_before_the_state():
 
 
 def test_question_first_matches_the_library():
-    library = engine()
-    if not hasattr(library, "question_first"):
-        pytest.skip("installed privatemode-decisions has no question_first")
+    """R-Q is the library's default prompt, byte for byte."""
     ours = payload("R-Q")["messages"][0]["content"]
-    assert library._content({"text": "state"}, QUESTION, question_first=True) == ours
+    lead = Prefill._question_text(QUESTION) + "\n"
+    assert engine()._content({"text": "state"}, QUESTION, lead) == ours
+
+
+def test_the_baseline_is_the_state_first_prompt_of_the_suite():
+    whole = json.dumps({"state": {"text": "state"}, **Prefill._question(QUESTION)}, ensure_ascii=False)
+    assert payload("B")["messages"][0]["content"] == PREAMBLE + whole
 
 
 def test_jevbench_items_map_as_its_own_adapter_does(tmp_path):
@@ -96,10 +100,67 @@ def test_filler_combined_with_the_question_first():
 def test_all_questions_first_matches_the_library():
     from bench.prefill import call_questions
 
-    library = engine()
-    if "lead" not in library._content.__code__.co_varnames:
-        pytest.skip("installed privatemode-decisions leads with one question only")
     questions, _ = call_questions(QUESTION, 3)
     block = "".join(Prefill._question_text(q) + "\n" for q in questions)
     ours = payload("QA")["messages"][0]["content"]
-    assert library._content({"text": "state"}, QUESTION, question_first=True, lead=block) == ours
+    assert engine()._content({"text": "state"}, QUESTION, block) == ours
+
+
+class FakeTokens:
+    """One token per character: enough to size the padded thoughts."""
+
+    def count(self, text):
+        return len(text)
+
+    def units_for(self, kind, tokens):
+        return max(1, tokens // 2)
+
+
+def test_padded_thoughts_restate_the_question_unless_it_already_came_first():
+    padded = Prefill(Offline(), "glm-5.3-flash", temperature=1.0, fillers={"dots": ". ."},
+                     generic=None, tokens=FakeTokens(), length=120)
+    rf = padded.payload("RF", {"text": "state"}, QUESTION, [11, 12], [11, 12], 3)
+    think = rf["messages"][1]["content"]
+    assert think.startswith("<think>Let me think. The question: Does it apply?")
+    assert think.endswith(f"Ok, now let me answer.</think>{PREFIX}")
+    ff = padded.payload("RQ-FF", {"text": "state"}, QUESTION, [11, 12], [11, 12], 3)
+    assert "The question:" not in ff["messages"][1]["content"]
+    assert ff["messages"][0]["content"] == payload("R-Q")["messages"][0]["content"]
+
+
+def test_unknown_arms_stop_the_run():
+    from bench.prefill import check_arm
+
+    assert check_arm("R-Q") == "R-Q" and check_arm("H-1024") == "H-1024"
+    for typo in ("R-q", "H-", "H-0", "RQF"):
+        with pytest.raises(SystemExit, match="unknown arm"):
+            check_arm(typo)
+
+
+def test_mcnemar_is_exact_and_two_sided():
+    import numpy as np
+
+    from bench.prefill_report import mcnemar
+
+    same = np.array([True, False, True])
+    assert mcnemar(same, same) == 1.0
+    a, b = np.array([True] * 10 + [False] * 5), np.array([False] * 10 + [False] * 5)
+    assert mcnemar(a, b) == pytest.approx(2 * 0.5 ** 10)
+    assert mcnemar(b, a) == mcnemar(a, b)
+
+
+def test_the_run_identity_records_the_layout_and_library():
+    from bench import run as run_module
+
+    class Arm:
+        name, model, temperature, optimize = "privatemode", "glm-5.3-flash", 1.0, "accuracy"
+
+    class Other:
+        name, model = "jev", "jev-latest"
+
+    args = run_module.build_parser().parse_args(["--dataset", "sst2"])
+    with_glm = run_module.identity(args, [Arm(), Other()])
+    assert with_glm["optimize"] == "accuracy" and with_glm["library"]
+    assert with_glm["prefill"] == PREFIX
+    without = run_module.identity(args, [Other()])
+    assert not {"optimize", "library", "prefill"} & set(without)

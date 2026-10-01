@@ -4,8 +4,7 @@ Can GLM-5.3-Flash answer more accurately in one masked read if the prompt
 gets longer before `answer=`? Repetition, filler and short real thinking,
 screened on a dev set, the winner confirmed on the test halves of all 29
 datasets, then compared on MMLU-Pro and JevBench with published numbers.
-The plan is `accuracy-plan.md` and `filler-tokens-plan.md` in the library
-repo; the tools are `bench/prefill.py` (runs), `bench/prefill_report.py`
+The tools are `bench/prefill.py` (runs), `bench/prefill_report.py`
 (screening) and `bench/prefill_confirm.py` (confirmation).
 
 ## Results
@@ -18,7 +17,7 @@ repo; the tools are `bench/prefill.py` (runs), `bench/prefill_report.py`
 | Why that shape? | Under the causal mask the state is read before the model knows what is asked. Repeating only the instruction before the state does nothing (+0.0), so it's the options, read first, that help. A third copy (R-QSQS) or repeating the state too (R-full) gains no more. |
 | Where? | Where the baseline is unsure: +9.7 points in the least sure fifth, about 0 elsewhere. Most on sentiment (sst5 +10.3, toxic_conversations +6.3) and intent (massive +3 to +4); nothing on topic sets that were already easy, and −2.2 on scanned documents (rvl_cdip). |
 | What does it cost? | Prompt tokens ×1.6 on average (EUR 0.135 → 0.223 per 1,000). At concurrency 1, nothing measurable up to about 20 options; with long option lists the list is sent twice: +110 ms on banking77 (77 options), +330 ms on clinc150 (151). With several questions per state the layout matters (next row). |
-| Several questions per state? | Leading every request with **all** of the call's questions keeps a shared, cacheable prefix, but keeps less of the gain: +0.9 points [−0.15, +1.98] with five questions per state, against +2.2 when each request leads with its own question. On 2,000-token states it was the fastest layout (p50 670 ms, 59% cached), because Privatemode only caches prefixes of about 2,300 tokens. It is the library's default; the own question first is `question_first="own"`. |
+| Several questions per state? | Leading every request with **all** of the call's questions keeps a shared, cacheable prefix, but keeps less of the gain: +0.9 points [−0.15, +1.98] with five questions per state, against +2.2 when each request leads with its own question. On 2,000-token states it was the fastest layout (p50 670 ms, 59% cached), because Privatemode only caches prefixes of about 2,300 tokens. It is the library's `optimize="cost"`; the default, `"accuracy"`, leads with the own question. |
 | Calibration? | Better: NLL after a temperature 0.553 → 0.499 on the dev set, and the shipped default temperature still fits (excess ECE 0.016 with R-Q against 0.023 for the baseline, both on the test halves), so no new constants are needed. |
 | Label strings? | No more dependence: renaming every option costs −7.7 points for the baseline and −8.1 with R-Q. |
 | And real thinking? | The ceiling, and a different trade. 128 thinking tokens and then our read: +2.3 points on the dev set at +1.7 s, but worse calibrated (its own T is 3.9); 32 tokens do nothing. On MMLU-Pro it is +12 points where no prompt variant helps. Thinking only where the one-pass answer is below 0.9 keeps most of it: +10.0 on MMLU-Pro for 53% of questions, +1.9 on the classification sets for 21%. |
@@ -43,7 +42,7 @@ Same 3,388 dev rows and baseline as the screening; the full tables are in
 - **Long filler is real but weak.** The gain grows with length and
   disappears when the filler comes before the question, the signature of
   extra computation after the question. At 1,024 tokens it is just under the
-  plan's +1-point gate, from one dev run among many arms, and costs 1,024
+  +1-point gate fixed before the screening, from one dev run among many arms, and costs 1,024
   prefill tokens per decision.
 - **Framing keeps the model on the answer, not the accuracy.** Saying that
   the thinking is over ("Ok, now let me answer.") keeps the probability on
@@ -93,12 +92,11 @@ the call over it, and the block itself is shared by every call with the
 same questions. Short states are never cached, so there the extra tokens
 only cost time.
 
-**What the library does with it:** all of the call's questions first is the
-default (`question_first=True`), for the cache with long states;
-`question_first="own"` leads each request with its own question, more
-accurate with several questions per call; `False` is the old layout. With
-one question per call the first two are identical, which is what the
-confirmation below measured.
+**What the library does with it:** each request's own question first is
+the default (`optimize="accuracy"`), the more accurate layout and the
+faster one on short states; all of the call's questions first is
+`optimize="cost"`, for the cache with long states. With one question per
+call the two are identical, which is what the confirmation below measured.
 
 ## (a) Against the current state
 
@@ -163,15 +161,16 @@ the maintainer's run.
 
 ## What changes in the library
 
-The library now asks the questions before the state as well, by default:
-all of the call's questions first (`question_first=True`), each request's
-own question first as an option (`"own"`), or the old layout (`False`).
-The default temperatures apply unchanged: the calibration check above found
-them at least as good on the new prompt (excess ECE 0.016 against 0.023).
+The library now asks the question before the state as well: each
+request's own question (`optimize="accuracy"`, the default) or all of the
+call's questions (`"cost"`); the state-first layout is gone. The default
+temperatures apply unchanged: the calibration check above found them at
+least as good on the new prompt (excess ECE 0.016 against 0.023).
 
-The benchmark's Privatemode arm follows the library's default and records
-it in the run identity; `--state-first` reproduces the layout the published
-suite (`results/suite.md`) and the calibration runs used.
+The benchmark's Privatemode arm follows the library and records the layout
+and the library version in the run identity. The published suite
+(`results/suite.md`) and the calibration runs used the state-first prompt
+of earlier library versions; reproducing them needs such a version.
 
 ## Checked and dropped
 
@@ -188,20 +187,38 @@ suite (`results/suite.md`) and the calibration runs used.
 
 ## Reproduce
 
+**The runs behind this report weren't kept.** They were made from 26 to 29
+September 2026 with the library's calibration and accuracy branches of
+then (the arms build their prompts in `bench.prefill`, parity-tested
+against the library), and were lost from local storage before they were
+released, so the reports here can't be regenerated; the commands below
+make new runs, which record their settings and the library version in
+`settings.json` per arm. Two checks are still possible against the
+published runs: Jev and Laya answered every test-half row, so the
+confirmation's comparisons with them are on the same examples; glm-cot
+missed 1, 19 and 1 rows on emotion, newsgroups20 and patent, so on those
+three its headroom ratio compares slightly different rows (the tools now
+use the rows both answered). The screening reports' text was edited after
+generation only to drop references to an unpublished plan, and one
+headroom line on mismatched rows was removed.
+
+From the repository root, with the release `calibration-2026-09-26`
+extracted as `runs/` and the suite's release `runs-2026-09-24` to `results/`:
+
 ```sh
-# Phase 0/1: G's text from the model's own openings
+# G's text from the model's own openings
 python -m bench.generic_thought --run runs/r1 --out runs/prefill/generic
-# Phase 2 and 3: screening on 250 calibration-half rows of 14 datasets, and 250 MMLU-Pro questions
+# screening on 250 calibration-half rows of 14 datasets, and 250 MMLU-Pro questions
 python -m bench.prefill --run runs/r1 --out runs/prefill/screen --generic runs/prefill/generic/generic.txt \
     --arms B,B2,R-Q,R-full,F-dots,F-before,R-think,F-alpha,F-words,F-scrambled,F-count,G,H-32,H-128,R-Qi,R-QSQS
 python -m bench.prefill --run runs/r1 --out runs/prefill/screen --only mmlu_pro --generic runs/prefill/generic/generic.txt \
     --arms B,B2,R-Q,R-Qi,R-QSQS,R-full,R-think,F-dots,F-before,G,H-32,H-128,H-1024
-python -m bench.prefill_report --runs runs/prefill/screen --published <published runs>/results --out report/
+python -m bench.prefill_report --runs runs/prefill/screen --published results --out report/
 # follow-up: longer filler, framed filler, and filler with R-Q (1,024 tokens unless noted)
 python -m bench.prefill --run runs/r1 --out runs/prefill/long --arms F-dots,RF,F-before --tokens 1024 --suffix=-1024
 python -m bench.prefill --run runs/r1 --out runs/prefill/combo --arms RQ-F,RQ-FF,RQ-mid --tokens 1024
 python -m bench.prefill --run runs/r1 --out runs/prefill/long256 --arms F-dots --tokens 256 --suffix=-256
-# Phase 4: test halves, two replicates, plus MMLU-Pro, JevBench, renaming and latency
+# confirmation: test halves, two replicates, plus MMLU-Pro, JevBench, renaming and latency
 for r in 1 2; do python -m bench.prefill --run runs/r1 --out runs/prefill/confirm --split test --rows 100000 \
     --only jevbench,mmlu_pro,<the 29 datasets> --jevbench <jevbench checkout> --arms B,R-Q --suffix=-r$r; done
 python -m bench.prefill --run runs/r1 --out runs/prefill/confirm --split test --rows 100000 \
@@ -210,17 +227,22 @@ python -m bench.prefill --run runs/r1 --out runs/prefill/renamed --split test --
 python -m bench.prefill --run runs/r1 --out runs/prefill/latency --split test --rows 80 --threads 1 --arms B,R-Q,B2 \
     --only sst2,ag_news,trec_coarse,massive_scenario_en,banking77,clinc150
 python -m bench.prefill --run runs/r1 --out runs/prefill/screen --arms QA
-python -m bench.prefill_cache --out cache-ag.json -n 40
-python -m bench.prefill_cache --out cache-scotus.json -n 30 --dataset scotus
+python -m bench.prefill_cache --out runs/prefill/cache-ag.json -n 40
+python -m bench.prefill_cache --out runs/prefill/cache-scotus.json -n 30 --dataset scotus
+python -m bench.prefill_cache --combine runs/prefill/cache-ag.json runs/prefill/cache-scotus.json \
+    --out results/prefill/cache-multi-question.json   # measured with the three layouts of then
 # JevBench's own runner, per tier (original, easy, hard) and model
 python -m jevbench.cli run --tasks datasets/public/<tier>.jsonl --adapter openai_compat \
     --endpoint $DECISIONS_BASE_URL --model glm-5.3-flash --key-env DECISIONS_API_KEY --results <model>/<tier>/results.jsonl
-python -m bench.prefill_confirm --runs runs/prefill/confirm --variant R-Q --published <published runs>/results \
+python -m bench.prefill_confirm --runs runs/prefill/confirm --variant R-Q --published results \
     --renamed runs/prefill/renamed --latency runs/prefill/latency --mmlu-extra H-1024-r1 \
     --jevbench <jevbench checkout> --jevbench-runs <jevbench runs> --out report/
 ```
 
-`runs/r1` is the calibration run of part 1 (it defines the halves). Every
+`runs/r1` is the calibration run of part 1 (it defines the halves).
+`cache-multi-question.json` was measured with the earlier layouts (state
+first, own question first, all questions first); the tool now measures the
+library's two, `"accuracy"` and `"cost"`, which are the last two of those. Every
 run keeps at most 4 requests in flight unless `--threads` says otherwise,
 and at most `--per-minute` requests a minute, since the API key's limit of
 1,000 a minute is shared.

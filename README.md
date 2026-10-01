@@ -16,11 +16,14 @@ in the same order and instruction; only what is behind the call differs.
 JevBench's 231 public items ([MIT](https://github.com/fstandhartinger/jevbench),
 commit `1bcc55e`) against Jev's published scores, for comparison only:
 
-| system | output tokens | public items | public hard items |
+| system | output tokens | public items (231) | public hard items (111) |
 |---|---:|---:|---:|
-| **Privatemode** (GLM-5.3-Flash, one pass) | 1 | **0.894** | **0.779** |
-| Jev 1.13.0, published | 45 | 0.866 | 0.741 (incl. 109 sealed) |
+| Privatemode (GLM-5.3-Flash, one pass) | 1 | 0.894 | 0.779 |
+| Jev 1.13.0, published | 45 | 0.866 | not published (0.741 on all 220 hard items, 109 of them sealed) |
 | GLM-5.3-Flash, structured output + thinking (JevBench's runner) | 518 | 0.983 | 0.964 |
+
+Among the one-pass systems Privatemode is ahead on the public items;
+thinking first, at seconds per decision, is ahead of both.
 
 On MMLU-Pro one pass scores 61.9% against Jev's published 82.9% on the
 same 1,000 questions; the gap is in questions that need calculation. ECE
@@ -30,34 +33,33 @@ and more systems: [`results/prefill/`](results/prefill/README.md#jevbench).
 
 ### The library as it ships
 
-Test halves of the 29 datasets (up to 500 examples each), the library's
-current prompt (question also before the state), two replicates; Jev and
-Laya on the same examples from the published suite
-([`confirmation.md`](results/prefill/confirmation.md),
-[calibration report](results/calibration/README.md)):
+Test halves of the 29 datasets (up to 500 examples each); Jev and Laya on
+the same examples from the published suite. Each row says what it was
+measured with:
 
-| | Privatemode | Jev | Laya |
-|---|---|---|---|
-| datasets it can answer | 29 | 28 | 27 |
-| normalised accuracy | **0.638** | 0.560 | 0.414 |
-| mean accuracy, the 28 datasets Jev answers | **0.798** | 0.775 | |
-| against Jev (wins–ties–losses) | 16–8–3, Wilcoxon p = 0.001 | | |
-| latency p50, concurrency 1, from Germany | about 150 ms | 251 ms | runs locally |
-| EUR per 1,000 decisions, median | 0.095 | 0.016 | runs locally |
-| excess ECE without labels | **0.032** | 0.080 (0.040 with a default T) | |
-| accuracy with 100 labels (`calibrate()`) | **80.2%** | 79.6% | |
+| | Privatemode | Jev | Laya | measured with |
+|---|---|---|---|---|
+| datasets it can answer | 29 | 28 | 27 | |
+| normalised accuracy | **0.638** | 0.560 | 0.414 | current prompt, [confirmation](results/prefill/confirmation.md) |
+| mean accuracy, the 28 datasets Jev answers | **0.798** | 0.775 | | current prompt, confirmation |
+| against Jev (wins–ties–losses) | 16–8–3, Wilcoxon p = 0.001 | | | current prompt, confirmation |
+| latency p50, concurrency 1, from Germany | about 150 ms | 251 ms | runs locally | current prompt on six datasets; Jev from the suite |
+| EUR per 1,000 decisions, median | 0.095 | 0.016 | runs locally | current prompt's tokens at list price |
+| excess ECE without labels | **0.032** | 0.080 (0.040 with a default T) | | state-first prompt, [calibration](results/calibration/README.md) |
+| accuracy with 100 labels (`calibrate()`) | **80.2%** | 79.6% | | state-first prompt, calibration |
 
 Normalised accuracy is 0 for always answering the majority class and 1 for
-all right. The prompt layout was chosen on the other halves. Latency is
-flat up to 18 options; long option lists are sent twice (386 ms at 77, 900
-ms at 151). The price is the median prompt at list price. The calibration
-rows come from the state-first runs; on the current prompt the default
-temperature fits at least as well (0.016 against 0.023).
+all right, over the datasets each system answers. The prompt layout was
+chosen on the other halves. Latency is flat up to 18 options; long option
+lists are sent twice (386 ms at 77, 900 ms at 151). On the current prompt
+the default temperature fits at least as well as on the state-first one
+(0.016 against 0.023).
 
 ### The published suite (state-first prompt)
 
 29 datasets, up to 1,000 examples, two replicates, seed 0, with the
-library's earlier prompt (`bench.suite --state-first`). Recomputed by
+library's earlier prompt, which today's library no longer builds (reproducing
+the runs needs a library version from before the question-first change). Recomputed by
 `bench.aggregate` into [`results/suite.md`](results/suite.md), with the
 replicate spread on every figure; raw runs in the release
 [`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24) ([how to rebuild](results/README.md)).
@@ -141,7 +143,7 @@ docker run -d -p 127.0.0.1:8080:8080 ghcr.io/edgelesssys/privatemode/privatemode
   --apiKey <privatemode-api-key>
 
 python3.14 -m venv .venv
-.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@5e27cbcc2f56dff642980da0a649879d356f3690"
+.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@9886d0102002cd3884dbf939feee2e2c664f316f"
 .venv/bin/pip install -e '.[dev,laya]'               # laya pulls torch + transformers
 cp .env.example .env                                 # proxy URL, Jev key, HF token
 ```
@@ -156,7 +158,7 @@ The first install is the library under test (`pip install -e
 # 2. Run. The suite forecasts its cost and refuses to start over --budget-eur.
 .venv/bin/python -m bench.suite --dry-run -n 1000 --replicates 2 --arms all
 .venv/bin/python -m bench.suite -n 1000 --replicates 2 --arms all --concurrency 16
-#    (add --state-first for the prompt layout the published runs used)
+#    (--optimize cost for the library's cacheable layout; the same prompt with one question)
 
 # 3. Aggregate. Recomputed from the JSONL, so a new question costs nothing.
 .venv/bin/python -m bench.aggregate results --write results/suite.md
