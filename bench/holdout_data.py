@@ -366,16 +366,28 @@ def refetch_hf(name: str, ids: list[str]) -> dict[str, str]:
 
 
 def refetch_github(name: str, ids: list[str]) -> dict[str, str]:
-    """Issues by repository and number, through ``gh``; a deleted one is left out."""
+    """Issues by repository and number, through ``gh``. A deleted or hidden
+    one (HTTP 404 or 410) is left out; any other failure (authentication,
+    rate limit, server error) is retried, then raised rather than taken for
+    a deletion."""
     def one(i: str) -> tuple[str, str | None]:
         repo, number = i.removeprefix("github:").split("#")
-        try:
-            return i, issue_text(gh(f"repos/{repo}/issues/{number}"))
-        except subprocess.CalledProcessError:
-            return i, None
+        for attempt in range(4):
+            try:
+                return i, issue_text(gh(f"repos/{repo}/issues/{number}"))
+            except subprocess.CalledProcessError as error:
+                if re.search(r"HTTP 4(04|10)\b", error.stderr or ""):
+                    return i, None
+                if attempt == 3:
+                    raise RuntimeError(f"{i}: {(error.stderr or '').strip()[:200]}") from error
+                time.sleep(5 * (attempt + 1))
     with ThreadPoolExecutor(8) as pool:
         return {i: text for i, text in pool.map(one, ids) if text is not None}
 
+
+#: Tasks whose sources change after the freeze: ``check`` reports their
+#: edited or deleted texts instead of failing (a run leaves them out).
+DRIFTS = ("github_issue",)
 
 #: How the tasks the release doesn't carry are fetched again, by id.
 REFETCH = {"fin_topic": refetch_hf, "fin_sentiment": refetch_hf, "github_issue": refetch_github}
@@ -445,7 +457,9 @@ def main() -> None:
                                  "sample. To reproduce, `fetch` the released texts.")
             freeze(name, BUILDERS[name]())
         else:
-            print(name, len(load(name)), "examples verified")
+            strict = name not in DRIFTS
+            print(name, len(load(name, strict=strict)), "examples verified"
+                  + ("" if strict else " (issues edited or deleted since the freeze are expected)"))
 
 
 if __name__ == "__main__":

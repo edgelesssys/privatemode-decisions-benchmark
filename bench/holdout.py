@@ -54,6 +54,9 @@ def run(task: str, out: Path, concurrency: int) -> Path:
     from .run import ask_with_retry, load_env
     load_env(Path(__file__).resolve().parent.parent / ".env")
     tasks = load(task, strict=False)
+    if not tasks:
+        raise SystemExit(f"{task}: no text matches its frozen hash; run `python -m "
+                         "bench.holdout_data fetch`")
     arm = PrivatemodeArm(model=MODEL)
     frozen = (FROZEN / f"{task}.json").read_bytes()
     # Concurrency changes no answer, and the plan allows one run: it goes in

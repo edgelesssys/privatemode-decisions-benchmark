@@ -55,9 +55,8 @@ fewer datasets. Anything outside is a failure, reported as one.
 
 Chosen and frozen by `bench.holdout_data` without asking any model, each
 committed before its own run (not all before the first request: GitHub and
-arXiv were frozen while the others ran; corrected after the run). Up to
-1,000 examples each; the input is the text or abstract alone, no titles or
-metadata.
+arXiv were frozen while the others ran; corrected after the run). Up to 1,000 examples each; the input is
+the text or abstract alone, no titles or metadata.
 
 | task | family | source | licence | options | selection |
 |---|---|---|---|---|---|

@@ -146,7 +146,7 @@ checked on a fresh set of held-out tasks, not on these. Filed as
 
 ```sh
 python -m bench.holdout_data fetch          # abstracts from the release, the rest by id
-python -m bench.holdout_data check          # verify them against the frozen hashes
+python -m bench.holdout_data check          # against the frozen hashes; edited issues are reported
 python -m bench.holdout report --run runs/holdout --out results/calibration/holdout
 python -m bench.holdout run --task fin_topic --out runs/holdout   # asking again, for all five
 ```

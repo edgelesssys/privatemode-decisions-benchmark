@@ -131,3 +131,21 @@ def test_library_version_names_the_commit(monkeypatch, tmp_path):
     plain = tmp_path / "with space"                        # not a git checkout: version only
     plain.mkdir()
     assert installed({"url": plain.as_uri(), "dir_info": {"editable": True}}) == "0.1.0"
+
+
+def test_refetching_issues_tells_deleted_from_failed(monkeypatch):
+    """A 404 is a deleted issue, left out; a rate limit is retried and then
+    raised, not taken for a deletion (a run would ask a silent subset)."""
+    import subprocess
+
+    def gh(path):
+        if path.endswith("/1"):
+            return {"title": "An issue", "body": "text"}
+        stderr = "HTTP 404: Not Found" if path.endswith("/2") else "HTTP 403: API rate limit exceeded"
+        raise subprocess.CalledProcessError(1, "gh", stderr=stderr)
+    monkeypatch.setattr(holdout_data, "gh", gh)
+    monkeypatch.setattr(holdout_data.time, "sleep", lambda s: None)
+    assert set(holdout_data.refetch_github("github_issue", ["github:o/r#1", "github:o/r#2"])) == {
+        "github:o/r#1"}
+    with pytest.raises(RuntimeError, match="rate limit"):
+        holdout_data.refetch_github("github_issue", ["github:o/r#3"])

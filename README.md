@@ -230,7 +230,7 @@ docker run -d -p 127.0.0.1:8080:8080 ghcr.io/edgelesssys/privatemode/privatemode
   --apiKey <privatemode-api-key>
 
 python3.14 -m venv .venv
-.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@7b993cd5dcbf3285fd9f11ebf56e2f1b90a4c31e"
+.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@ae35442fc59e65d0b1a4dcc70e7f35187358dc3e"
 .venv/bin/pip install -e '.[dev,laya]'               # laya pulls torch + transformers
 cp .env.example .env                                 # proxy URL, Jev key, HF token
 ```
