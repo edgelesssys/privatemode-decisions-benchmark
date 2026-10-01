@@ -386,8 +386,10 @@ def refetch_github(name: str, ids: list[str]) -> dict[str, str]:
 
 
 #: Tasks whose sources change after the freeze: ``check`` reports their
-#: edited or deleted texts instead of failing (a run leaves them out).
+#: edited or deleted texts instead of failing (a run leaves them out), as
+#: long as at least ``DRIFT_FLOOR`` of them still match.
 DRIFTS = ("github_issue",)
+DRIFT_FLOOR = 0.9
 
 #: How the tasks the release doesn't carry are fetched again, by id.
 REFETCH = {"fin_topic": refetch_hf, "fin_sentiment": refetch_hf, "github_issue": refetch_github}
@@ -434,6 +436,23 @@ def export(path: Path) -> None:
     print(f"wrote {len(lines)} texts to {path}")
 
 
+def verify(name: str) -> int:
+    """How many of a task's cached texts match their frozen hashes; raises
+    on a mismatch, or for a task in ``DRIFTS`` on a missing cache or fewer
+    than ``DRIFT_FLOOR`` of its texts."""
+    if name not in DRIFTS:
+        return len(load(name))
+    if not (CACHE / f"{name}.jsonl").exists():
+        raise SystemExit(f"{name}: no texts cached; run `python -m bench.holdout_data fetch`")
+    total = len(json.loads((FROZEN / f"{name}.json").read_text())["examples"])
+    matched = len(load(name, strict=False))
+    if matched < DRIFT_FLOOR * total:
+        raise SystemExit(f"{name}: only {matched} of {total} texts match their frozen hashes")
+    if matched < total:
+        print(f"{name}: {total - matched} edited or deleted since the freeze, as expected")
+    return matched
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("command", choices=("fetch", "check", "build", "export"))
@@ -457,9 +476,7 @@ def main() -> None:
                                  "sample. To reproduce, `fetch` the released texts.")
             freeze(name, BUILDERS[name]())
         else:
-            strict = name not in DRIFTS
-            print(name, len(load(name, strict=strict)), "examples verified"
-                  + ("" if strict else " (issues edited or deleted since the freeze are expected)"))
+            print(name, verify(name), "examples verified")
 
 
 if __name__ == "__main__":

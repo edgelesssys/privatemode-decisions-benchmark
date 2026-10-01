@@ -149,3 +149,31 @@ def test_refetching_issues_tells_deleted_from_failed(monkeypatch):
         "github:o/r#1"}
     with pytest.raises(RuntimeError, match="rate limit"):
         holdout_data.refetch_github("github_issue", ["github:o/r#3"])
+
+
+def test_check_tolerates_some_drift_but_not_an_empty_cache(tmp_path, monkeypatch):
+    frozen, cache = tmp_path / "frozen", tmp_path / "cache"
+    frozen.mkdir()
+    texts = {f"github:o/r#{i}": f"issue {i}" for i in range(20)}
+    (frozen / "github_issue.json").write_text(json.dumps({
+        "task": "github_issue", "question": "Which?", "options": ["a", "b"],
+        "examples": [{"index": i, "id": k, "label": "a", "sha256": holdout_data.sha(t)}
+                     for i, (k, t) in enumerate(texts.items())]}))
+    monkeypatch.setattr(holdout_data, "FROZEN", frozen)
+    monkeypatch.setattr(holdout_data, "CACHE", cache)
+    with pytest.raises(SystemExit, match="no texts cached"):
+        holdout_data.verify("github_issue")
+    cache.mkdir()
+
+    def cached(n_edited):
+        (cache / "github_issue.jsonl").write_text("".join(
+            json.dumps({"id": k, "text": "edited" if i < n_edited else t}) + "\n"
+            for i, (k, t) in enumerate(texts.items())))
+    cached(2)                                    # 18 of 20 match: at the floor
+    assert holdout_data.verify("github_issue") == 18
+    cached(3)                                    # 17 of 20: below it
+    with pytest.raises(SystemExit, match="only 17 of 20"):
+        holdout_data.verify("github_issue")
+    (cache / "github_issue.jsonl").write_text("")   # a total refetch loss
+    with pytest.raises(SystemExit, match="only 0 of 20"):
+        holdout_data.verify("github_issue")
