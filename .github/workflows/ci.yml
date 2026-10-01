@@ -14,6 +14,6 @@ jobs:
       # pinned to the head commit of its accuracy PR (calibration plus
       # question_first; as the privatemode extra) until that is merged;
       # switch both to main then.
-      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@9886d0102002cd3884dbf939feee2e2c664f316f"
+      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@55acc5a5f3184dc4b167f8642aed667c827a4aec"
       - run: python -m pytest -q tests
       - run: python -m compileall -q bench

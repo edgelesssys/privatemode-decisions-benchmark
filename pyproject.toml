@@ -16,7 +16,7 @@ dependencies = []
 # Pinned to the head commit of the library's accuracy PR until it is merged
 # (the arm needs its temperature= and question_first=); switch to main then,
 # with CI and the README. A commit, not the branch: the branch moves and goes away.
-privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@9886d0102002cd3884dbf939feee2e2c664f316f"]
+privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@55acc5a5f3184dc4b167f8642aed667c827a4aec"]
 # The local arm. Heavy (torch + transformers, ~1.7 GB of weights on first
 # use) and only needed for --arms all|laya, so it is not a base dependency.
 laya = ["laya>=0.3.5", "torch>=2.2", "transformers>=4.48"]
