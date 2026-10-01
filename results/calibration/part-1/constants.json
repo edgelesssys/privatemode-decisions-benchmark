@@ -1,0 +1,17 @@
+{
+ "model": "glm-5.3-flash",
+ "formula": [
+  0.9621084025240039,
+  -0.07598928640186686
+ ],
+ "family": {
+  "qa": 1.7649903387569332,
+  "sentiment": 2.9346954414173414,
+  "nli": 1.8724220604161887,
+  "moderation": 2.9571324694966306,
+  "topic": 2.59897287930211,
+  "intent": 1.7582456438599048,
+  "legal": 2.2411363178682775
+ },
+ "source": "privatemode-decisions-benchmark, results/calibration/part-1/constants.json (run 20260925T215302Z)"
+}

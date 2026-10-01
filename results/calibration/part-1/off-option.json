@@ -1,0 +1,34 @@
+{
+ "ag_news asked as banking77": {
+  "mass fit median": 0.9979381135044465,
+  "mass misfit median": 0.9056442382354727,
+  "confidence fit median": 0.9999284729771487,
+  "confidence misfit median": 0.24026479279629692,
+  "AUROC low mass flags misfit": 0.9882,
+  "AUROC low confidence flags misfit": 0.994
+ },
+ "banking77 asked as ag_news": {
+  "mass fit median": 0.9921723058975483,
+  "mass misfit median": 0.9991362488242138,
+  "confidence fit median": 0.9985072106468784,
+  "confidence misfit median": 0.9905541452689912,
+  "AUROC low mass flags misfit": 0.1209,
+  "AUROC low confidence flags misfit": 0.6561
+ },
+ "sst2 asked as trec_coarse": {
+  "mass fit median": 0.9523380274989861,
+  "mass misfit median": 0.9962732222718169,
+  "confidence fit median": 0.9997694932707095,
+  "confidence misfit median": 0.9914497797126749,
+  "AUROC low mass flags misfit": 0.0703,
+  "AUROC low confidence flags misfit": 0.9053
+ },
+ "trec_coarse asked as sst2": {
+  "mass fit median": 0.9912826719118146,
+  "mass misfit median": 0.9881617958218092,
+  "confidence fit median": 0.9980009642588764,
+  "confidence misfit median": 0.7057850216484838,
+  "AUROC low mass flags misfit": 0.5473,
+  "AUROC low confidence flags misfit": 0.9522
+ }
+}

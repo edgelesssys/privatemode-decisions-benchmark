@@ -135,6 +135,16 @@ them: a synonym can change what a question asks (boolq's `true`/`false`
 became `correct`/`wrong`), in which case the drop does not isolate
 memorisation.
 
+### Calibration
+
+Whether the Privatemode arm's probabilities can be trusted, how a
+temperature fixes their overconfidence without labels, and what conformal
+prediction sets need, is a separate analysis: two further runs of all
+datasets, rotation runs, neutral inputs and runs of two other models, in
+[`results/calibration/`](results/calibration/README.md). The arm reports
+raw probabilities (calibration temperature 1) for it, so the ECE and Brier
+columns here describe the raw model; the library softens them by default.
+
 ### What is outside these columns
 
 Confidential computing. Privatemode runs the model inside an attested
@@ -220,7 +230,7 @@ docker run -d -p 127.0.0.1:8080:8080 ghcr.io/edgelesssys/privatemode/privatemode
   --apiKey <privatemode-api-key>
 
 python3.14 -m venv .venv
-.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions"
+.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@ae35442fc59e65d0b1a4dcc70e7f35187358dc3e"
 .venv/bin/pip install -e '.[dev,laya]'               # laya pulls torch + transformers
 cp .env.example .env                                 # proxy URL, Jev key, HF token
 ```

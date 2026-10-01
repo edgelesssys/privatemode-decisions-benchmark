@@ -1,0 +1,566 @@
+{
+ "checked_by": "Claude, an LLM that is not one of the four voting systems, reading each text against both labels (not yet checked by a person)",
+ "rule": "flagged when at least 3 of jev, laya, glm-cot, embed-nn agree on an answer other than the gold label (published runs, run 0)",
+ "rows": [
+  {
+   "index": 41,
+   "text": "I would like to reactivate my card.",
+   "gold": "card_linking",
+   "consensus": "activate_my_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 76,
+   "text": "Could you help me reactivate my card? It was previously lost, but I found it this morning in my jacket.",
+   "gold": "card_linking",
+   "consensus": "lost_or_stolen_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 125,
+   "text": "This rate is too low. Are you sure your using the right exchange rate.",
+   "gold": "card_payment_wrong_exchange_rate",
+   "consensus": "exchange_rate",
+   "verdict": "gold right"
+  },
+  {
+   "index": 145,
+   "text": "The exchange rate seems off on this transaction",
+   "gold": "card_payment_wrong_exchange_rate",
+   "consensus": "exchange_rate",
+   "verdict": "gold right"
+  },
+  {
+   "index": 156,
+   "text": "How can I check the exchange rate applied to my transaction?",
+   "gold": "card_payment_wrong_exchange_rate",
+   "consensus": "exchange_rate",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 172,
+   "text": "When will the $1 transaction be credited to me?",
+   "gold": "extra_charge_on_statement",
+   "consensus": "transfer_timing",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 236,
+   "text": "My account was charged for a withdraw I tried to make that was decline.",
+   "gold": "pending_cash_withdrawal",
+   "consensus": "declined_cash_withdrawal",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 271,
+   "text": "Can I exchange currencies?",
+   "gold": "fiat_currency_support",
+   "consensus": "exchange_via_app",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 308,
+   "text": "Can I get my card expedited?",
+   "gold": "card_delivery_estimate",
+   "consensus": "card_arrival",
+   "verdict": "gold right"
+  },
+  {
+   "index": 312,
+   "text": "I am waiting for my card to arrive.",
+   "gold": "card_delivery_estimate",
+   "consensus": "card_arrival",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 406,
+   "text": "How are currencies exchanged?",
+   "gold": "exchange_via_app",
+   "consensus": "exchange_rate",
+   "verdict": "gold right"
+  },
+  {
+   "index": 428,
+   "text": "What currency's can i exchange for?",
+   "gold": "exchange_via_app",
+   "consensus": "fiat_currency_support",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 552,
+   "text": "How do I reset my PIN?",
+   "gold": "pin_blocked",
+   "consensus": "change_pin",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 599,
+   "text": "Should i reinstall the payment app?",
+   "gold": "contactless_not_working",
+   "consensus": "apple_pay_or_google_pay",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 601,
+   "text": "I would like to make a transfer. How much does it cost?",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "transfer_fee_charged",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 618,
+   "text": "What are the fees for top-ups?",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "top_up_by_card_charge",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 620,
+   "text": "What are the charges for receiving money?",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "receiving_money",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 628,
+   "text": "Will I be charged for a SEPA transfer?",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "transfer_fee_charged",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 629,
+   "text": "is there a fee for a transfer? if so how much will it be?",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "transfer_fee_charged",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 637,
+   "text": "Do I get charged if i am getting money?",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "receiving_money",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 638,
+   "text": "Can you tell me the total cost of a transfer?",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "transfer_fee_charged",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 639,
+   "text": "can i do a transfer with swift",
+   "gold": "top_up_by_bank_transfer_charge",
+   "consensus": "transfer_into_account",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 775,
+   "text": "My cash withdrawal was partly declined",
+   "gold": "wrong_amount_of_cash_received",
+   "consensus": "declined_cash_withdrawal",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 835,
+   "text": "There is a fee on my account. Why?",
+   "gold": "card_payment_fee_charged",
+   "consensus": "extra_charge_on_statement",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 842,
+   "text": "I am still waiting for a transaction to be completed",
+   "gold": "transfer_not_received_by_recipient",
+   "consensus": "pending_transfer",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 851,
+   "text": "Where is the transfer I started?",
+   "gold": "transfer_not_received_by_recipient",
+   "consensus": "pending_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 852,
+   "text": "transaction failed?",
+   "gold": "transfer_not_received_by_recipient",
+   "consensus": "failed_transfer",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 881,
+   "text": "I need support options, I want to top my card",
+   "gold": "supported_cards_and_currencies",
+   "consensus": "topping_up_by_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 894,
+   "text": "I would like to add money to my account through my American Express.",
+   "gold": "supported_cards_and_currencies",
+   "consensus": "topping_up_by_card",
+   "verdict": "gold right"
+  },
+  {
+   "index": 912,
+   "text": "Do you accept other currencies besides US Dollars?",
+   "gold": "supported_cards_and_currencies",
+   "consensus": "fiat_currency_support",
+   "verdict": "gold right"
+  },
+  {
+   "index": 913,
+   "text": "Can I use any currency to add money?",
+   "gold": "supported_cards_and_currencies",
+   "consensus": "fiat_currency_support",
+   "verdict": "gold right"
+  },
+  {
+   "index": 1020,
+   "text": "What happened to my top-up?",
+   "gold": "top_up_reverted",
+   "consensus": "pending_top_up",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1178,
+   "text": "May I use my account now, even though the identity verification has not gone through yet?",
+   "gold": "why_verify_identity",
+   "consensus": "unable_to_verify_identity",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1179,
+   "text": "Do I need to verify my identity to use my account?",
+   "gold": "why_verify_identity",
+   "consensus": "verify_my_identity",
+   "verdict": "gold right"
+  },
+  {
+   "index": 1186,
+   "text": "Since my id hasn't been verified, when can I use my account?",
+   "gold": "why_verify_identity",
+   "consensus": "unable_to_verify_identity",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1187,
+   "text": "I won't verify my identity.",
+   "gold": "why_verify_identity",
+   "consensus": "unable_to_verify_identity",
+   "verdict": "gold right"
+  },
+  {
+   "index": 1189,
+   "text": "I do not wish to verify my identity.",
+   "gold": "why_verify_identity",
+   "consensus": "unable_to_verify_identity",
+   "verdict": "gold right"
+  },
+  {
+   "index": 1192,
+   "text": "What other methods are there to verify my identity?",
+   "gold": "why_verify_identity",
+   "consensus": "verify_my_identity",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 1225,
+   "text": "What do i need to verify my id?",
+   "gold": "unable_to_verify_identity",
+   "consensus": "verify_my_identity",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 1230,
+   "text": "How long will it take for my ID to verify?",
+   "gold": "unable_to_verify_identity",
+   "consensus": "verify_my_identity",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 1591,
+   "text": "The ATM isn't giving out any money.",
+   "gold": "declined_cash_withdrawal",
+   "consensus": "atm_support",
+   "verdict": "gold right"
+  },
+  {
+   "index": 1702,
+   "text": "How do I cancel a previous purchase",
+   "gold": "request_refund",
+   "consensus": "cancel_transfer",
+   "verdict": "gold right"
+  },
+  {
+   "index": 1719,
+   "text": "I need to cancel a purchase I made.",
+   "gold": "request_refund",
+   "consensus": "cancel_transfer",
+   "verdict": "gold right"
+  },
+  {
+   "index": 1721,
+   "text": "Good morning. I tried to make a purchase with my credit card last night and again this morning. Both times it was declined. Can you investigate?",
+   "gold": "declined_transfer",
+   "consensus": "declined_card_payment",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 1722,
+   "text": "I am getting continuous failure for all my transfers. I have cross checked each recipient detail again and again and everything is correct.",
+   "gold": "declined_transfer",
+   "consensus": "failed_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1737,
+   "text": "Trouble transferring transaction contact for help",
+   "gold": "declined_transfer",
+   "consensus": "failed_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1835,
+   "text": "My card didn't work in one of the shops.",
+   "gold": "declined_card_payment",
+   "consensus": "card_not_working",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1855,
+   "text": "I transferred money yesterday, but it still isn't available?",
+   "gold": "pending_transfer",
+   "consensus": "balance_not_updated_after_bank_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1859,
+   "text": "When will the transfer go through?",
+   "gold": "pending_transfer",
+   "consensus": "transfer_timing",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1862,
+   "text": "When will my transfer go through?",
+   "gold": "pending_transfer",
+   "consensus": "transfer_timing",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1875,
+   "text": "The transfer is coming up as pending the payment is due today. Will I be charged a fee?",
+   "gold": "pending_transfer",
+   "consensus": "transfer_fee_charged",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 1879,
+   "text": "How long does it take for a money transfer to show?",
+   "gold": "pending_transfer",
+   "consensus": "transfer_timing",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2080,
+   "text": "I think my card payment has been stopped",
+   "gold": "reverted_card_payment?",
+   "consensus": "declined_card_payment",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2160,
+   "text": "I've tried numerous times to submit a transfer of funds. Why isn't it going through?",
+   "gold": "beneficiary_not_allowed",
+   "consensus": "failed_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2164,
+   "text": "I had a transfer blocked",
+   "gold": "beneficiary_not_allowed",
+   "consensus": "declined_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2167,
+   "text": "Why did I get a message saying that my transfer is not possible?  I have done this before no problem.  Please fix.",
+   "gold": "beneficiary_not_allowed",
+   "consensus": "declined_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2168,
+   "text": "Hey I want to buy some crypto but the app doesn't allow me to! What's the issue, I really want to exchange this",
+   "gold": "beneficiary_not_allowed",
+   "consensus": "exchange_via_app",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2176,
+   "text": "I have tried transferring money numerous times.  All I keep getting is an error message.  Can you tell me what is going on and how this van be fixed?",
+   "gold": "beneficiary_not_allowed",
+   "consensus": "failed_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2185,
+   "text": "My transfer to beneficiary didn't go through",
+   "gold": "beneficiary_not_allowed",
+   "consensus": "failed_transfer",
+   "verdict": "gold right"
+  },
+  {
+   "index": 2213,
+   "text": "I recently got a new place while I'm staying abroad and have been using this account to manage payments, but suddenly I am seeing fees increase. Where are these additional fees coming from?",
+   "gold": "transfer_fee_charged",
+   "consensus": "extra_charge_on_statement",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2226,
+   "text": "I need someone to alert me as to what's going on. I had transferred an amount but the receiver is saying that the amount is somewhat less than what I sent over. I now have to make another transfer to make up the difference.",
+   "gold": "transfer_fee_charged",
+   "consensus": "transfer_not_received_by_recipient",
+   "verdict": "gold right"
+  },
+  {
+   "index": 2233,
+   "text": "What extra charges are there?",
+   "gold": "transfer_fee_charged",
+   "consensus": "extra_charge_on_statement",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2466,
+   "text": "What methods can I use to top up my account?",
+   "gold": "top_up_by_cash_or_cheque",
+   "consensus": "topping_up_by_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2477,
+   "text": "How can I top-up my card?",
+   "gold": "top_up_by_cash_or_cheque",
+   "consensus": "topping_up_by_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2499,
+   "text": "Is a non-electronic card available as well",
+   "gold": "order_physical_card",
+   "consensus": "get_physical_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2507,
+   "text": "What will I be charged for a physical card?",
+   "gold": "order_physical_card",
+   "consensus": "get_physical_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2544,
+   "text": "My card is just not working at this time.",
+   "gold": "virtual_card_not_working",
+   "consensus": "card_not_working",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2575,
+   "text": "Will there be additional costs of I make a withdrawal from a local ATM of British pounds? I need some cash to feel comfortable on the journey home",
+   "gold": "wrong_exchange_rate_for_cash_withdrawal",
+   "consensus": "cash_withdrawal_charge",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2587,
+   "text": "I withdrew some cash out of the ATM over the holiday. It seems that I was charged some outrageous fees. I would not have done that had I been aware of these outrageous charges!",
+   "gold": "wrong_exchange_rate_for_cash_withdrawal",
+   "consensus": "cash_withdrawal_charge",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2597,
+   "text": "I used the ATM machine to get money out for Holiday shopping and saw the outrageous charges. Why is that? I would not have used the ATM if I had known!",
+   "gold": "wrong_exchange_rate_for_cash_withdrawal",
+   "consensus": "cash_withdrawal_charge",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2622,
+   "text": "how does a virtual card work",
+   "gold": "get_disposable_virtual_card",
+   "consensus": "getting_virtual_card",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2682,
+   "text": "How long will it take for my transferred money to show up?",
+   "gold": "balance_not_updated_after_bank_transfer",
+   "consensus": "transfer_timing",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2693,
+   "text": "I made a transfer and am still waiting.",
+   "gold": "balance_not_updated_after_bank_transfer",
+   "consensus": "pending_transfer",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2711,
+   "text": "My transfer is pending.",
+   "gold": "balance_not_updated_after_bank_transfer",
+   "consensus": "pending_transfer",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2724,
+   "text": "My app shows some cash I didn't get.",
+   "gold": "cash_withdrawal_not_recognised",
+   "consensus": "wrong_amount_of_cash_received",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2751,
+   "text": "Help!  My wallet was stolen and someone is taking money out.  I need this money!  What can I do?",
+   "gold": "cash_withdrawal_not_recognised",
+   "consensus": "lost_or_stolen_card",
+   "verdict": "both defensible"
+  },
+  {
+   "index": 2761,
+   "text": "whats your exchange rate",
+   "gold": "exchange_charge",
+   "consensus": "exchange_rate",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2829,
+   "text": "Is it okay to use a bank card to top up",
+   "gold": "top_up_by_card_charge",
+   "consensus": "topping_up_by_card",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2852,
+   "text": "WHAT CAN I DO AFTER THE CARD MISSING",
+   "gold": "activate_my_card",
+   "consensus": "lost_or_stolen_card",
+   "verdict": "consensus right"
+  },
+  {
+   "index": 2920,
+   "text": "Am I able to order a new card and have it sent to me in China?",
+   "gold": "card_about_to_expire",
+   "consensus": "order_physical_card",
+   "verdict": "consensus right"
+  }
+ ]
+}
