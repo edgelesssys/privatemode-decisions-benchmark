@@ -1,0 +1,48 @@
+{
+ "short states (ag_news, 40 calls)": {
+  "state first": {
+   "calls": 40,
+   "wall_p50_s": 0.40306774945929646,
+   "wall_p95_s": 0.46248851880664005,
+   "input_tokens": 905.875,
+   "cached_share": 0.0
+  },
+  "own question first": {
+   "calls": 40,
+   "wall_p50_s": 0.4094321250449866,
+   "wall_p95_s": 0.4748851058422587,
+   "input_tokens": 1268.875,
+   "cached_share": 0.0
+  },
+  "all questions first": {
+   "calls": 40,
+   "wall_p50_s": 0.5303192080464214,
+   "wall_p95_s": 0.6500515857944265,
+   "input_tokens": 2720.875,
+   "cached_share": 0.0
+  }
+ },
+ "long states (scotus, 30 calls)": {
+  "state first": {
+   "calls": 30,
+   "wall_p50_s": 0.809165270999074,
+   "wall_p95_s": 1.0732264500460584,
+   "input_tokens": 9746.333333333334,
+   "cached_share": 0.03151954581210028
+  },
+  "own question first": {
+   "calls": 30,
+   "wall_p50_s": 0.9351626669522375,
+   "wall_p95_s": 1.4280847641290164,
+   "input_tokens": 10109.333333333334,
+   "cached_share": 0.0
+  },
+  "all questions first": {
+   "calls": 30,
+   "wall_p50_s": 0.6698074999731034,
+   "wall_p95_s": 1.0690256223431787,
+   "input_tokens": 11561.333333333334,
+   "cached_share": 0.5845692538346211
+  }
+ }
+}

@@ -1,0 +1,215 @@
+{
+ "opening sentences": 698,
+ "free of the example": 53,
+ "free sentences": [
+  [
+   "The question asks which section (Ressort) this article belongs to.",
+   7
+  ],
+  [
+   "Let me analyze this German NLI task.",
+   3
+  ],
+  [
+   "This is a natural language inference (NLI) task in German.",
+   2
+  ],
+  [
+   "This is technology news.",
+   2
+  ],
+  [
+   "Which entity type?",
+   2
+  ],
+  [
+   "The question asks which intent this expresses.",
+   2
+  ],
+  [
+   "The question asks which patent category (IPC classification section) this belongs to.",
+   1
+  ],
+  [
+   "This is an electrosurgical device.",
+   1
+  ],
+  [
+   "The question asks which patent category (IPC section) this belongs to.",
+   1
+  ],
+  [
+   "This is a software/computing patent.",
+   1
+  ],
+  [
+   "This is about transporting goods.",
+   1
+  ],
+  [
+   "This is about conveyors — transporting.",
+   1
+  ],
+  [
+   "This is related to electrophotography/xerography.",
+   1
+  ],
+  [
+   "The review is dismissive but not extremely harsh.",
+   1
+  ],
+  [
+   "It says the movie is entertaining.",
+   1
+  ],
+  [
+   "The task: sentiment classification on a five-point scale.",
+   1
+  ],
+  [
+   "These are essentially equivalent.",
+   1
+  ],
+  [
+   "The relatives of the cousin - are they his family?",
+   1
+  ],
+  [
+   "That entails she told me where to search.",
+   1
+  ],
+  [
+   "This is a complaint about a food product, not attacking a person or group.",
+   1
+  ],
+  [
+   "The article deals with labor/employment issues, unions, wages.",
+   1
+  ],
+  [
+   "This is a domestic (Austrian) news story about justice/crime.",
+   1
+  ],
+  [
+   "This is a gaming/tech article.",
+   1
+  ],
+  [
+   "This is a tech/telecom news article.",
+   1
+  ],
+  [
+   "This is a cultural topic - art exhibition, photography.",
+   1
+  ],
+  [
+   "The article is about the refugee crisis, Balkan route, Macedonia, Austria, EU cooperation.",
+   1
+  ],
+  [
+   "This is business/economy news.",
+   1
+  ],
+  [
+   "The trial is in Munich, Germany, about German terrorists.",
+   1
+  ],
+  [
+   "This is about events in Greece — foreign news.",
+   1
+  ],
+  [
+   "This is likely from a news dataset (AG News).",
+   1
+  ]
+ ],
+ "openings in most datasets": [
+  [
+   "This is a",
+   10
+  ],
+  [
+   "The question asks",
+   7
+  ],
+  [
+   "This is about",
+   6
+  ],
+  [
+   "So the answer",
+   6
+  ],
+  [
+   "This is clearly",
+   5
+  ],
+  [
+   "The state is",
+   5
+  ],
+  [
+   "The question is",
+   4
+  ],
+  [
+   "The answer is",
+   3
+  ],
+  [
+   "Answer is option",
+   3
+  ],
+  [
+   "This falls under",
+   2
+  ],
+  [
+   "Let me think",
+   2
+  ],
+  [
+   "The review says",
+   2
+  ],
+  [
+   "The review says:",
+   2
+  ],
+  [
+   "The premise says",
+   2
+  ],
+  [
+   "The hypothesis says",
+   2
+  ],
+  [
+   "The premise says:",
+   2
+  ],
+  [
+   "The premise is",
+   2
+  ],
+  [
+   "The premise doesn't",
+   2
+  ],
+  [
+   "So the hypothesis",
+   2
+  ],
+  [
+   "The task: determine",
+   2
+  ]
+ ],
+ "used": [
+  "This is a question with numbered options.",
+  "The question asks which option applies.",
+  "This is about the state given above.",
+  "The state is the material to judge.",
+  "The question is which option fits best."
+ ]
+}

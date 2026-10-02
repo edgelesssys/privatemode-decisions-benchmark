@@ -124,7 +124,7 @@ class PrivatemodeArm(Arm):
 
     def __init__(self, base_url: str | None = None, api_key: str | None = None,
                  model: str | None = None, permutations: int = 1,
-                 image_max_side: int | None = None) -> None:
+                 image_max_side: int | None = None, optimize: str = "accuracy") -> None:
         base_url = base_url or os.environ["DECISIONS_BASE_URL"]
         api_key = api_key or os.environ.get("DECISIONS_API_KEY") or None
         self.model = model or os.environ.get("DECISIONS_MODEL", "glm-5.3-flash")
@@ -139,7 +139,12 @@ class PrivatemodeArm(Arm):
         #: Part of the run identity, with the library's prefill.
         self.temperature = 1.0
         self._engine = SystemOne(self._client, self.model,
-                                 permutations=permutations, temperature=self.temperature)
+                                 permutations=permutations, temperature=self.temperature,
+                                 optimize=optimize)
+        #: The library's prompt layout (``"accuracy"`` or ``"cost"``; with one
+        #: question per call, as here, the same prompt). Part of the run
+        #: identity.
+        self.optimize = optimize
 
     def ask(self, task: Task) -> Answer:
         response = self._engine.system_one(
