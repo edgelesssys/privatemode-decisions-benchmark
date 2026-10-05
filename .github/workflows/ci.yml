@@ -11,9 +11,8 @@ jobs:
           python-version: "3.14"
       # The metrics are the claim, and they need no keys. The library is
       # installed for the parity tests between its calibration code and ours,
-      # pinned to the head commit of its accuracy PR (calibration plus
-      # optimize; as the privatemode extra) until that is merged;
-      # switch both to main then.
-      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@b15d84b3228cc966947239c90c5fcdbba147a70a"
+      # pinned to its accuracy commit on main (calibration plus optimize; as
+      # the privatemode extra).
+      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@45f42735623ab7c20c73602f7ca2059731c5a7ad"
       - run: python -m pytest -q tests
       - run: python -m compileall -q bench

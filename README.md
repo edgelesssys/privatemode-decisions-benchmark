@@ -59,7 +59,7 @@ the default temperature fits at least as well as on the state-first one
 
 29 datasets, up to 1,000 examples, two replicates, seed 0, with the
 library's earlier prompt, which today's library no longer builds (reproducing
-the runs needs the library at `ae35442`). Recomputed by
+the runs needs the library at `a9f94ef`). Recomputed by
 `bench.aggregate` into [`results/suite.md`](results/suite.md), with the
 replicate spread on every figure; raw runs in the release
 [`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24) ([how to rebuild](results/README.md)).
@@ -143,7 +143,7 @@ docker run -d -p 127.0.0.1:8080:8080 ghcr.io/edgelesssys/privatemode/privatemode
   --apiKey <privatemode-api-key>
 
 python3.14 -m venv .venv
-.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@b15d84b3228cc966947239c90c5fcdbba147a70a"
+.venv/bin/pip install "privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@45f42735623ab7c20c73602f7ca2059731c5a7ad"
 .venv/bin/pip install -e '.[dev,laya]'               # laya pulls torch + transformers
 cp .env.example .env                                 # proxy URL, Jev key, HF token
 ```
