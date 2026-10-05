@@ -69,7 +69,8 @@ from decisions.inference import PREAMBLE, PREFIX, batches
 from . import calibration as c
 from . import hub
 from .adapters import library_version
-from .datasets import Task, load
+from .datasets import Task, has_images, load
+from .specs import BY_NAME
 
 DEV = ("patent", "rte", "sst5", "xnli_de", "toxic_conversations", "gnad10", "massive_scenario_en",
        "ag_news", "boolq", "mnli", "sst2", "dbpedia_14", "banking77", "clinc150")
@@ -429,6 +430,11 @@ def main() -> None:
     engine = Prefill(client, MODEL, temperature=1.0, max_workers=4, fillers=fillers, generic=generic,
                      tokens=tokens, length=args.tokens)
     arms = [check_arm(arm) for arm in args.arms.split(",")]
+    if "G" in arms and not generic:
+        raise SystemExit("the G arm needs --generic")
+    scans = [n for n in args.only.split(",") if n in BY_NAME and has_images(BY_NAME[n])]
+    if scans and any(arm.startswith("H-") for arm in arms):
+        raise SystemExit(f"the H arms think on the text alone; {', '.join(scans)} has images")
     run = c.load_run(args.run)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -438,7 +444,9 @@ def main() -> None:
                 "fillers": {k: {"tokens": tokens.count("\n" + v) - tokens.count("\n"),
                                 "text": v[:200]} for k, v in fillers.items()}}
     for arm in arms:
-        check_settings(out / f"{arm}{args.suffix}" / "settings.json", settings)
+        # Only G reads the --generic text.
+        check_settings(out / f"{arm}{args.suffix}" / "settings.json",
+                       settings if arm == "G" else {**settings, "generic": None})
     ids = engine.oracle.single_token_indexes(PREFIX, limit=191)
     for name in args.only.split(","):
         if name == "mmlu_pro":
@@ -451,10 +459,6 @@ def main() -> None:
             wanted = set(dev_rows(run, name, args.rows, args.split))
             tasks = [t for t in load(name, 1000, perturbation=args.perturb) if t.index in wanted]
         for arm in arms:
-            if arm == "G" and not generic:
-                raise SystemExit("the G arm needs --generic")
-            if arm.startswith("H-") and any(t.images for t in tasks):
-                raise SystemExit(f"{arm} thinks on the text alone; {name} has images")
             path = out / f"{arm}{args.suffix}" / f"{name}.jsonl"
             path.parent.mkdir(parents=True, exist_ok=True)
             done = {json.loads(line)["index"] for line in path.open()} if path.exists() else set()
