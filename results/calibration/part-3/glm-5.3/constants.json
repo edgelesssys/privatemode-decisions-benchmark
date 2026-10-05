@@ -1,0 +1,21 @@
+{
+ "model": "glm-5.3",
+ "formula": [
+  0.7123460621931156,
+  -0.007929419293019805
+ ],
+ "family": {
+  "qa": 0.9567326405613896,
+  "sentiment": 3.090205474628276,
+  "nli": 1.536472965661943,
+  "moderation": 2.2258972855543733,
+  "topic": 2.4134964716116922,
+  "intent": 1.7450599618403675,
+  "legal": 2.1847459932206563
+ },
+ "source": "privatemode-decisions-benchmark, results/calibration/part-3/glm-5.3/constants.json (run 20260926T101622Z)",
+ "alias": "glm-latest",
+ "fingerprint": [
+  "vllm-0.28.0-tp4-ep-a6fedf37"
+ ]
+}

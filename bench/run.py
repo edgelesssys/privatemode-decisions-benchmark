@@ -44,8 +44,9 @@ from pathlib import Path
 from threading import Lock
 
 from decisions.client import APIError, set_max_in_flight
+from decisions.inference import PREFIX
 
-from .adapters import (ChainOfThoughtArm, EmbeddingArm, JevArm, LayaArm,
+from .adapters import (ChainOfThoughtArm, EmbeddingArm, JevArm, LayaArm, library_version,
                        PrivatemodeArm)
 from .datasets import DEFAULT_MAX_CHARS, NAMES, Task, frozen_dir, has_images, load
 from .pricing import DEFAULT_EUR_PER_USD
@@ -146,6 +147,13 @@ def identity(args, arms) -> dict:
         "laya_shortlist": args.laya_shortlist,
         "cot_max_tokens": args.cot_max_tokens,
         "perturb": args.perturb,
+        # What the Privatemode arm asked: the library's prefill and the
+        # temperature it reports at. A run from another library version or
+        # setting must not resume into this one.
+        **({"prefill": PREFIX, "privatemode_temperature": next(
+            a.temperature for a in arms if a.name == "privatemode"),
+            "library": library_version()}
+           if any(a.name == "privatemode" for a in arms) else {}),
     }
 
 
@@ -275,6 +283,12 @@ def execute(args) -> Path:
                            throttled=answer.throttled,
                            concurrency=args.concurrency,
                            attempts=attempts)
+                if answer.option_mass is not None:
+                    row["option_mass"] = answer.option_mass
+                if answer.served_model:
+                    row["served_model"] = answer.served_model
+                if answer.fingerprint:
+                    row["fingerprint"] = answer.fingerprint
             except Exception as error:
                 row.update(error=f"{type(error).__name__}: {error}"[:300])
             with lock:

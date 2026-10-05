@@ -13,11 +13,15 @@ dependencies = []
 # The Privatemode arm measures the library that actually ships, rather than a
 # reimplementation of it. To change the library alongside, clone it next to
 # this one and `pip install -e ../privatemode-decisions` instead.
-privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions"]
+# Pinned to the library's calibration commit on main (the arm needs its
+# temperature=), with CI and the README. A commit, not the branch: main moves.
+privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@a9f94ef5d3dc2def1fd2c17441164cf9cea2a251"]
 # The local arm. Heavy (torch + transformers, ~1.7 GB of weights on first
 # use) and only needed for --arms all|laya, so it is not a base dependency.
 laya = ["laya>=0.3.5", "torch>=2.2", "transformers>=4.48"]
-dev = ["pytest>=8"]
+# The calibration analysis (bench.calibration, bench.calibrate_report).
+calibration = ["numpy>=1.26", "matplotlib>=3.8"]
+dev = ["pytest>=8", "numpy>=1.26"]
 
 [build-system]
 requires = ["setuptools>=77"]

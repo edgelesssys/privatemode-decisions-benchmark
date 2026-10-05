@@ -1,0 +1,21 @@
+{
+ "model": "kimi-k2.6",
+ "formula": [
+  1.0693375445767888,
+  -0.09517746306101181
+ ],
+ "family": {
+  "qa": 2.0414875765715155,
+  "sentiment": 3.3540593673118235,
+  "nli": 1.9970009027619517,
+  "moderation": 2.965314134483066,
+  "topic": 2.6123357385802928,
+  "intent": 1.926226551842755,
+  "legal": 2.0874442538758284
+ },
+ "source": "privatemode-decisions-benchmark, results/calibration/part-3/kimi-k2.6/constants.json (run 20260926T102643Z)",
+ "alias": "kimi-latest",
+ "fingerprint": [
+  "vllm-0.28.0-tp4-ep-b9597783"
+ ]
+}

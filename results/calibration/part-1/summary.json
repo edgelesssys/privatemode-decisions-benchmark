@@ -1,0 +1,254 @@
+{
+ "global_t": 2.148665047027078,
+ "formula": [
+  0.9859037645111665,
+  -0.08593437439374023
+ ],
+ "oracle": {
+  "ag_news": 2.444374576020609,
+  "amazon_reviews_de": 2.689156855546166,
+  "banking77": 1.9265608077657392,
+  "boolq": 1.8478923641718557,
+  "clinc150": 1.3639904896348318,
+  "dbpedia_14": 1.585503864581765,
+  "emotion": 3.7413262792346718,
+  "gnad10": 3.266479905059509,
+  "ledgar": 2.0188193810996267,
+  "massive_intent_de": 1.8797295662597717,
+  "massive_intent_en": 1.8013156854327512,
+  "massive_scenario_de": 1.8104142877853844,
+  "massive_scenario_en": 1.7678116076117987,
+  "mnli": 1.7057883958404663,
+  "newsgroups20": 2.1630036671922426,
+  "patent": 3.1248663242100836,
+  "rotten_tomatoes": 1.9802780616703155,
+  "rte": 1.8830332682419302,
+  "rvl_cdip": 2.143509636125013,
+  "scotus": 2.6473968071338696,
+  "sst2": 2.0845829418203037,
+  "sst5": 2.7292571159487773,
+  "toxic_conversations": 2.7077163065005707,
+  "trec_coarse": 1.8347131706029067,
+  "trec_fine": 1.5903535200460373,
+  "tweet_offensive": 3.4022775433800008,
+  "tweet_sentiment": 3.3865406321645364,
+  "xnli_de": 2.032513051290432,
+  "yahoo_topics": 2.8734027235513153
+ },
+ "lodo": {
+  "boolq": 2.151216993642576,
+  "rotten_tomatoes": 2.1499358612673376,
+  "rte": 2.1509818891622543,
+  "sst2": 2.1491446313790776,
+  "toxic_conversations": 2.1445635227923785,
+  "tweet_offensive": 2.1390840619329836,
+  "mnli": 2.1550755653632128,
+  "tweet_sentiment": 2.1327688990436697,
+  "xnli_de": 2.1503750653761187,
+  "ag_news": 2.1445488220381175,
+  "amazon_reviews_de": 2.1376472269298916,
+  "sst5": 2.1383454835861215,
+  "emotion": 2.1053093134058876,
+  "trec_coarse": 2.156039848761074,
+  "gnad10": 2.1072907953787943,
+  "patent": 2.1149120185080483,
+  "yahoo_topics": 2.1207278793621915,
+  "scotus": 2.127906109920745,
+  "dbpedia_14": 2.158080782798048,
+  "massive_scenario_de": 2.162827268562312,
+  "massive_scenario_en": 2.1643937817195105,
+  "newsgroups20": 2.1479930325820145,
+  "trec_fine": 2.183120038044668,
+  "massive_intent_de": 2.167868722390267,
+  "massive_intent_en": 2.17161454102527,
+  "banking77": 2.1674917875465,
+  "ledgar": 2.1615380281715018,
+  "clinc150": 2.209469812077741
+ },
+ "context_lodo": {
+  "boolq": 2.331232382327136,
+  "rotten_tomatoes": 2.3293752684385662,
+  "rte": 2.328763391974502,
+  "sst2": 2.329602131528007,
+  "toxic_conversations": 2.3128359654818325,
+  "tweet_offensive": 2.3209491002007647,
+  "mnli": 2.32757847569893,
+  "tweet_sentiment": 2.2750958182415544,
+  "xnli_de": 2.325651490711045,
+  "ag_news": 2.325167921119257,
+  "amazon_reviews_de": 2.318379295001907,
+  "sst5": 2.2838670527329685,
+  "emotion": 2.292262708882932,
+  "trec_coarse": 2.3423233587198937,
+  "gnad10": 2.2769360652483113,
+  "patent": 2.2889704893558456,
+  "yahoo_topics": 2.301853297810347,
+  "scotus": 2.3144623133386246,
+  "dbpedia_14": 2.3438762160083666,
+  "massive_scenario_de": 2.343010720173789,
+  "massive_scenario_en": 2.3476571188977857,
+  "newsgroups20": 2.329365666124585,
+  "trec_fine": 2.366265671941804,
+  "massive_intent_de": 2.358710403675988,
+  "massive_intent_en": 2.3652441570989233,
+  "banking77": 2.366333433751197,
+  "ledgar": 2.3567914738630757,
+  "clinc150": 2.383308263301991
+ },
+ "shipped": {
+  "formula": [
+   0.9621084025240039,
+   -0.07598928640186686
+  ],
+  "global": 2.1477371446144713,
+  "family": {
+   "qa": 1.7649903387569332,
+   "sentiment": 2.9346954414173414,
+   "nli": 1.8724220604161887,
+   "moderation": 2.9571324694966306,
+   "topic": 2.59897287930211,
+   "intent": 1.7582456438599048,
+   "legal": 2.2411363178682775
+  }
+ },
+ "excess_ece": {
+  "raw": 0.12881028329967464,
+  "per task (oracle)": 0.0062392239979063265,
+  "global T (LODO)": 0.03985584653182219,
+  "formula (LODO)": 0.03216001019052785,
+  "same family (LODO)": 0.029463231139906943,
+  "leave family out": 0.06171620007710078,
+  "formula, related datasets held out": 0.032449104699601335,
+  "formula, whole family held out": 0.05364833378756347
+ },
+ "contamination": {
+  "accuracy": [
+   -1.3939689928132974,
+   0.35250405436099264
+  ],
+  "likely": [
+   -0.02217923802677998,
+   0.08986890543134105
+  ],
+  "unclear": [
+   0.09243061809991744,
+   0.11843610402336714
+  ]
+ },
+ "half_split": {
+  "excess_ece": 0.03472060809424238,
+  "share": 0.684929558539917
+ },
+ "methods": {
+  "raw": {
+   "name": "raw",
+   "how": "the model's probabilities as they come (T = 1)",
+   "labels": "none",
+   "t": 1.0,
+   "accuracy": 0.7810895839029957,
+   "confidence": 0.9274070832240399,
+   "ece": 0.14878229340164342,
+   "excess": 0.128863236288343,
+   "share": 0.0
+  },
+  "global": {
+   "name": "one T for all tasks",
+   "how": "a single temperature fitted on all other datasets",
+   "labels": "none",
+   "t": 2.1501554633217284,
+   "accuracy": 0.7810895839029957,
+   "confidence": 0.7996825638593114,
+   "ece": 0.08846748036048231,
+   "excess": 0.039715958106751305,
+   "share": 0.6333668438078323
+  },
+  "formula": {
+   "name": "**default: T from the option count**",
+   "how": "log T = a + b\u00b7log(options), fitted on all other datasets; the library's default",
+   "labels": "none",
+   "t": 2.22162133933939,
+   "accuracy": 0.7810895839029957,
+   "confidence": 0.804387729337946,
+   "ece": 0.08096815342892015,
+   "excess": 0.03209814371277877,
+   "share": 0.7121173992656618
+  },
+  "family": {
+   "name": "T from the task family",
+   "how": "one temperature per kind of task (sentiment, intent, \u2026), fitted on the other datasets of that family",
+   "labels": "none",
+   "t": 2.5042272093937132,
+   "accuracy": 0.7810895839029957,
+   "confidence": 0.7890161316044878,
+   "ece": 0.0785697629876277,
+   "excess": 0.029398707067471448,
+   "share": 0.737302936738581
+  },
+  "context": {
+   "name": "neutral-input correction + T",
+   "how": "divide out the answer to empty or `N/A` input, then a temperature",
+   "labels": "none",
+   "t": 2.3290645290495435,
+   "accuracy": 0.7498653032342635,
+   "confidence": 0.7603635664875814,
+   "ece": 0.11065668797820125,
+   "excess": 0.05904543461699183,
+   "share": 0.4003576096444032
+  },
+  "oracle": {
+   "name": "T per task",
+   "how": "a temperature fitted on this task's calibration half",
+   "labels": "~500",
+   "t": 2.025666216195029,
+   "accuracy": 0.7810895839029957,
+   "confidence": 0.7926227230967553,
+   "ece": 0.053553416754824446,
+   "excess": 0.0062859226605507645,
+   "share": 1.0
+  },
+  "jev": {
+   "name": "Jev, as returned",
+   "how": "`jev-latest`'s probabilities, rounded to 0.01",
+   "labels": "none",
+   "t": 1.0,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.8752002173776454,
+   "ece": 0.10926457326379661,
+   "excess": 0.07954487855878441,
+   "share": null
+  },
+  "jev unzero": {
+   "name": "Jev, zeros set to 0.005",
+   "how": "half a rounding unit where Jev says 0, so a temperature can be fitted",
+   "labels": "none",
+   "t": 1.0,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.8077946370652483,
+   "ece": 0.12729997483486297,
+   "excess": 0.08173558115701243,
+   "share": null
+  },
+  "jev default": {
+   "name": "Jev, zeros set + default T",
+   "how": "the same recipe as GLM's default: log T = a + b\u00b7log(options), fitted on Jev's other datasets",
+   "labels": "none",
+   "t": 1.2497522737801423,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.8000336509072744,
+   "ece": 0.09185008387196814,
+   "excess": 0.04009563533388461,
+   "share": 0.425144278075689
+  },
+  "jev own": {
+   "name": "Jev, zeros set + T per task",
+   "how": "zeros set, then a temperature fitted on this task's calibration half",
+   "labels": "~500",
+   "t": 1.1931637222431626,
+   "accuracy": 0.7753640621289428,
+   "confidence": 0.7883000815650486,
+   "ece": 0.06830320958121133,
+   "excess": 0.019461953868680566,
+   "share": 1.0
+  }
+ }
+}

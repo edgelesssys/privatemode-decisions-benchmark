@@ -45,11 +45,18 @@ class TimedClient(OpenAIClient):
         super().__init__(*args, **kwargs)
         self.throttled = 0
         self._local = threading.local()
+        self._served: dict = {}
 
     def last(self) -> dict:
-        """Detail of this thread's most recent call."""
-        return getattr(self._local, "detail", {"gate_wait_s": 0.0,
-                                               "throttled": 0})
+        """Detail of this thread's most recent call. The served model and
+        build fall back to the most recent call on any thread: above 128
+        options the library reads on its own pool threads, and all of a
+        run's requests go to the same model."""
+        detail = dict(getattr(self._local, "detail", {"gate_wait_s": 0.0, "throttled": 0}))
+        for key in ("served_model", "fingerprint"):
+            if not detail.get(key) and self._served.get(key):
+                detail[key] = self._served[key]
+        return detail
 
     def post(self, path: str, payload: dict) -> tuple[dict, float]:
         body = json.dumps(payload).encode()
@@ -84,5 +91,12 @@ class TimedClient(OpenAIClient):
             self._local.detail = {"gate_wait_s": waited, "throttled": throttled}
             if status >= 400:
                 raise APIError(status, raw)
-            return json.loads(raw), elapsed
+            parsed = json.loads(raw)
+            # What the alias resolved to: ``glm-flash-latest`` can move to
+            # another model, so a run records what actually answered.
+            served = {"served_model": parsed.get("model"),
+                      "fingerprint": parsed.get("system_fingerprint")}
+            self._local.detail.update(served)
+            self._served.update({k: v for k, v in served.items() if v})
+            return parsed, elapsed
         raise RuntimeError("unreachable")

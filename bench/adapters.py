@@ -28,11 +28,16 @@ a raw one. Measure it separately (``--permutations``) and say so.
 
 from __future__ import annotations
 
+import json
 import math
 import os
 import re
+import subprocess
 import time
+import urllib.parse
 from dataclasses import dataclass
+from importlib import metadata
+from pathlib import Path
 from typing import Any
 
 from decisions import Choice, OpenAIClient, SystemOne
@@ -63,6 +68,13 @@ class Answer:
     #: 429/503/529 responses seen while producing this answer. Any at all
     #: and the arm's latency is flagged in the report.
     throttled: int = 0
+    #: Probability on the option tokens before the mask (Privatemode only):
+    #: low means the model wanted to answer outside the options.
+    option_mass: float | None = None
+    #: The model the endpoint says answered, and its build (``model`` and
+    #: ``system_fingerprint`` of the response), when it reports them.
+    served_model: str | None = None
+    fingerprint: str | None = None
 
 
 class Arm:
@@ -71,6 +83,28 @@ class Arm:
     def unsupported(self, task: Task) -> str | None:
         """Why this arm cannot take this task, or ``None`` if it can."""
         return None
+
+
+def library_version() -> str:
+    """The installed privatemode-decisions: its version and the commit it was
+    installed from: for a git install the commit, for a local git checkout
+    its HEAD (``+dirty`` if the library's own files changed, untracked ones
+    included), else the version alone. The default temperatures and
+    ``calibrate()`` come from a moving branch, so a result names the one it
+    used."""
+    dist = metadata.distribution("privatemode-decisions")
+    info = json.loads(dist.read_text("direct_url.json") or "{}")
+    commit = (info.get("vcs_info") or {}).get("commit_id")
+    url = info.get("url", "")
+    if not commit and url.startswith("file://"):
+        path = Path(urllib.parse.unquote(urllib.parse.urlparse(url).path))
+        if (path / ".git").exists():
+            git = lambda *a: subprocess.run(["git", "-C", str(path), *a],  # noqa: E731
+                                            capture_output=True, text=True).stdout.strip()
+            commit = git("rev-parse", "HEAD")
+            if commit and git("status", "--porcelain", "--", "decisions"):
+                commit += "+dirty"
+    return f"{dist.version}+{commit}" if commit else dist.version
 
 
 class PrivatemodeArm(Arm):
@@ -100,8 +134,12 @@ class PrivatemodeArm(Arm):
         #: declared parameter and the run records it.
         self.image_max_side = image_max_side
         self._client = TimedClient(base_url, api_key)
+        #: Raw probabilities: calibration is measured from them, so the
+        #: library's default temperature must not be baked into the runs.
+        #: Part of the run identity, with the library's prefill.
+        self.temperature = 1.0
         self._engine = SystemOne(self._client, self.model,
-                                 permutations=permutations)
+                                 permutations=permutations, temperature=self.temperature)
 
     def ask(self, task: Task) -> Answer:
         response = self._engine.system_one(
@@ -128,6 +166,7 @@ class PrivatemodeArm(Arm):
                       input_tokens=usage.input_tokens,
                       output_tokens=usage.output_tokens,
                       cached_tokens=usage.cached_tokens,
+                      option_mass=answer.option_mass,
                       **self._client.last())
 
     def close(self) -> None:
