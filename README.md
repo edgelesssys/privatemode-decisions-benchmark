@@ -59,7 +59,7 @@ the default temperature fits at least as well as on the state-first one
 
 29 datasets, up to 1,000 examples, two replicates, seed 0, with the
 library's earlier prompt, which today's library no longer builds (reproducing
-the runs needs a library version from before the question-first change). Recomputed by
+the runs needs the library at `ae35442`). Recomputed by
 `bench.aggregate` into [`results/suite.md`](results/suite.md), with the
 replicate spread on every figure; raw runs in the release
 [`runs-2026-09-24`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/runs-2026-09-24) ([how to rebuild](results/README.md)).

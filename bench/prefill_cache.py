@@ -31,6 +31,7 @@ from decisions import Choice, SystemOne
 from decisions.client import set_max_in_flight
 
 from .datasets import load
+from .prefill import MODEL
 
 QUESTIONS = {
     "topic": Choice({"World": None, "Sports": None, "Business": None, "Sci/Tech": None},
@@ -64,7 +65,7 @@ def main() -> None:
         Path(args.out).write_text(json.dumps(combined, indent=1))
         return
     set_max_in_flight(9)
-    engine = SystemOne.from_env("glm-5.3-flash", temperature=1.0)
+    engine = SystemOne.from_env(MODEL, temperature=1.0)
     rows = []
     tasks = load(args.dataset, 1000)
     for number, task in enumerate(tasks[len(tasks) - args.n:]):     # rows the other runs used least

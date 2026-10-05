@@ -25,14 +25,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
-from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
 
 from . import calibration as c
-from .calibrate_report import fmt, table
+from .calibrate_report import table
 from .pricing import PRIVATEMODE_EUR_PER_MTOK
 from .specs import BY_NAME
 
@@ -270,7 +268,7 @@ def report(args) -> tuple[str, dict]:
                     if gap > 0.02:
                         closed.append((on(arms[best][n]) - on(base[n])) / gap)
             rows.append(cells)
-        md.append(f"\n## Against Jev and chain of thought\n")
+        md.append("\n## Against Jev and chain of thought\n")
         md.append(f"Accuracy on the dev rows: the baseline, the best screened arm (`{best}`), and the "
                   f"published Jev and `glm-cot` runs on the same examples (rows they answered in "
                   f"brackets). `glm-cot` lets GLM-5.3-Flash reason before answering, with its own "

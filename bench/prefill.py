@@ -31,8 +31,10 @@ thought). What changes is the prompt before it:
   answers are digit tokens.
 * ``G`` puts a content-free opening in the model's own style in the think
   block, from ``--generic``.
-* ``H-32`` and ``H-128`` generate that many thinking tokens and then read the
-  answer after them: real thinking, the reference.
+* ``H-<n>`` (``H-32``, ``H-128``, …) generates up to ``n`` thinking tokens and
+  then reads the answer after them: real thinking, the reference. Text only.
+* ``B`` is the state-first prompt the suite was run with, the baseline;
+  ``B2`` the same asked again, the noise floor between runs.
 
 Rows come from the calibration halves of ``--run`` (``bench.calibration.split``),
 ``--rows`` per dataset, the same rows for every arm (``--split test`` for the
@@ -45,6 +47,7 @@ The library is used unchanged.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
@@ -70,7 +73,6 @@ from .datasets import Task, load
 
 DEV = ("patent", "rte", "sst5", "xnli_de", "toxic_conversations", "gnad10", "massive_scenario_en",
        "ag_news", "boolq", "mnli", "sst2", "dbpedia_14", "banking77", "clinc150")
-CONTROLS = ("sst2", "dbpedia_14", "banking77", "clinc150")
 ARMS = ("B", "B2", "R-Q", "R-full", "R-think", "F-dots", "F-alpha", "F-words", "F-scrambled",
         "F-before", "F-count", "G", "H-32", "H-128",
         # Shapes of the question sandwich:
@@ -81,6 +83,13 @@ ARMS = ("B", "B2", "R-Q", "R-full", "R-think", "F-dots", "F-alpha", "F-words", "
         "RQ-F", "RQ-FF", "RQ-mid",
         # Several questions about one state, all of them first (a shared prefix):
         "QA")
+MODEL = os.environ.get("DECISIONS_MODEL", "glm-5.3-flash")
+#: As the suite sends scanned pages (``bench.run`` default).
+IMAGE_MAX_SIDE = 1024
+#: Rows per dataset in the screening (``--rows``).
+ROWS = 250
+#: What a resume must match in an arm's ``settings.json``.
+RESUMED = ("split", "tokens", "perturb", "rows", "model", "library", "generic")
 
 
 def check_arm(arm: str) -> str:
@@ -89,9 +98,20 @@ def check_arm(arm: str) -> str:
     if arm in ARMS or re.fullmatch(r"H-[1-9]\d*", arm):
         return arm
     raise SystemExit(f"unknown arm {arm!r}; known: {', '.join(ARMS)}, H-<tokens>")
-MODEL = os.environ.get("DECISIONS_MODEL", "glm-5.3-flash")
-#: As the suite sends scanned pages (``bench.run`` default).
-IMAGE_MAX_SIDE = 1024
+
+
+def check_settings(meta: Path, settings: dict) -> None:
+    """Record an arm directory's settings, or exit if it was asked with
+    other ones: a resume would mix two experiments under one name."""
+    if not meta.exists():
+        meta.parent.mkdir(parents=True, exist_ok=True)
+        meta.write_text(json.dumps(settings, indent=1))
+        return
+    before = json.loads(meta.read_text())
+    changed = [k for k in RESUMED if before.get(k) != settings[k]]
+    if changed:
+        raise SystemExit(f"{meta.parent} was asked with other {', '.join(changed)}; "
+                         "use another --out or --suffix")
 
 ONES = "zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen " \
        "fifteen sixteen seventeen eighteen nineteen".split()
@@ -288,9 +308,6 @@ class Prefill(SystemOne):
             self.pads[need] = UNITS["dots"](self.tokens.units_for("dots", need)) if need else ""
         return head + self.pads[need] + tail
 
-    def question_text(self, question: Choice) -> str:
-        return json.dumps(self._question(question), ensure_ascii=False)
-
     def payload(self, arm: str, state, question: Choice, allowed, read, index: int,
                 thought: str | None = None, images: tuple[str, ...] = ()) -> dict:
         # The baseline is the state-first prompt the suite was run with: the
@@ -301,23 +318,23 @@ class Prefill(SystemOne):
         whole = json.dumps({"state": state, **self._question(question)}, ensure_ascii=False)
         think = None
         if arm == "R-Q":
-            user = PREAMBLE + self.question_text(question) + "\n" + whole
+            user = PREAMBLE + self._question_text(question) + "\n" + whole
         elif arm == "QA":
             questions, _ = call_questions(question, index)
-            lead = "".join(self.question_text(q) + "\n" for q in questions)
+            lead = "".join(self._question_text(q) + "\n" for q in questions)
             user = PREAMBLE + lead + whole
         elif arm in ("RQ-F", "RQ-FF"):
-            user = PREAMBLE + self.question_text(question) + "\n" + whole
+            user = PREAMBLE + self._question_text(question) + "\n" + whole
             think = (self.fillers["dots"] if arm == "RQ-F"
                      else self.padded_thought(question, restate=False))
         elif arm == "RQ-mid":
-            user = (PREAMBLE + self.question_text(question) + "\n"
+            user = (PREAMBLE + self._question_text(question) + "\n"
                     + json.dumps({"state": state}, ensure_ascii=False) + "\n"
-                    + self.fillers["dots"] + "\n" + self.question_text(question))
+                    + self.fillers["dots"] + "\n" + self._question_text(question))
         elif arm == "R-Qi":
             user = PREAMBLE + json.dumps({"question": question.instructions}, ensure_ascii=False) + "\n" + whole
         elif arm == "R-QSQS":
-            user = PREAMBLE + self.question_text(question) + "\n" + whole + "\n" + whole
+            user = PREAMBLE + self._question_text(question) + "\n" + whole + "\n" + whole
         elif arm == "R-full":
             user = PREAMBLE + whole + "\n" + whole
         elif arm == "F-before":
@@ -364,8 +381,7 @@ class Prefill(SystemOne):
         latency, thought, generated = 0.0, None, 0
         if arm.startswith("H-"):
             thought, latency, generated = self.think(task.state, question, int(arm[2:]))
-        reads, prompt_tokens, cached = [], 0, 0
-        slowest = 0.0
+        reads, prompt_tokens, cached, reading = [], 0, 0, 0.0
         for read in batches(allowed, self.max_logprob_ids):
             body, elapsed = self.client.post(
                 "/chat/completions", self.payload(arm, task.state, question, allowed, read,
@@ -374,13 +390,13 @@ class Prefill(SystemOne):
             usage = body.get("usage") or {}
             prompt_tokens = max(prompt_tokens, usage.get("prompt_tokens", 0))
             cached = max(cached, (usage.get("prompt_tokens_details") or {}).get("cached_tokens") or 0)
-            slowest += elapsed
+            reading += elapsed
         weights = self._answer(reads, question, allowed)
         total = math.fsum(weights.values())
         row = {"index": task.index, "gold": task.gold,
                "probabilities": {k: v / total for k, v in weights.items()},
                "option_mass": min(1.0, total), "prompt_tokens": prompt_tokens,
-               "cached_tokens": cached, "latency_s": latency + slowest}
+               "cached_tokens": cached, "latency_s": latency + reading}
         if thought is not None:
             row.update(thought=thought, generated_tokens=generated)
         if arm == "QA":
@@ -394,7 +410,7 @@ def main() -> None:
     parser.add_argument("--out", required=True)
     parser.add_argument("--arms", default="B,B2,R-Q,R-full,F-dots,F-before")
     parser.add_argument("--only", default=",".join(DEV))
-    parser.add_argument("--rows", type=int, default=250)
+    parser.add_argument("--rows", type=int, default=ROWS)
     parser.add_argument("--split", default="calibration", choices=("calibration", "test"))
     parser.add_argument("--tokens", type=int, default=128, help="filler length in tokens")
     parser.add_argument("--generic", help="file with the G arm's text")
@@ -416,26 +432,14 @@ def main() -> None:
     run = c.load_run(args.run)
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
-    # What an arm directory's rows were asked with: a resume with other
-    # settings would mix two experiments under one name.
     settings = {"split": args.split, "tokens": args.tokens, "perturb": args.perturb,
                 "rows": args.rows, "model": MODEL, "library": library_version(),
+                "generic": hashlib.sha256(generic.encode()).hexdigest() if generic else None,
                 "fillers": {k: {"tokens": tokens.count("\n" + v) - tokens.count("\n"),
                                 "text": v[:200]} for k, v in fillers.items()}}
     for arm in arms:
-        meta = out / f"{arm}{args.suffix}" / "settings.json"
-        if meta.exists():
-            before = json.loads(meta.read_text())
-            changed = [k for k in ("split", "tokens", "perturb", "rows", "model")
-                       if before.get(k) != settings[k]]
-            if changed:
-                raise SystemExit(f"{meta.parent} was asked with other {', '.join(changed)}; "
-                                 "use another --out or --suffix")
-        else:
-            meta.parent.mkdir(parents=True, exist_ok=True)
-            meta.write_text(json.dumps(settings, indent=1))
+        check_settings(out / f"{arm}{args.suffix}" / "settings.json", settings)
     ids = engine.oracle.single_token_indexes(PREFIX, limit=191)
-    lock = threading.Lock()
     for name in args.only.split(","):
         if name == "mmlu_pro":
             tasks = mmlu_pro_tasks(mmlu_pro_rows(args.split, args.rows))
@@ -449,6 +453,8 @@ def main() -> None:
         for arm in arms:
             if arm == "G" and not generic:
                 raise SystemExit("the G arm needs --generic")
+            if arm.startswith("H-") and any(t.images for t in tasks):
+                raise SystemExit(f"{arm} thinks on the text alone; {name} has images")
             path = out / f"{arm}{args.suffix}" / f"{name}.jsonl"
             path.parent.mkdir(parents=True, exist_ok=True)
             done = {json.loads(line)["index"] for line in path.open()} if path.exists() else set()
@@ -472,8 +478,7 @@ def main() -> None:
                         failed += 1
                         errors.add(row["error"])
                         continue
-                    with lock:
-                        handle.write(json.dumps(row) + "\n")
+                    handle.write(json.dumps(row) + "\n")
             print(f"{arm:12} {name:22} {len(todo) - failed} rows in {perf_counter() - started:.0f}s"
                   + (f", {failed} failed ({'; '.join(sorted(errors)[:2])})" if failed else ""),
                   flush=True)

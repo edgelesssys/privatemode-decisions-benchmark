@@ -28,7 +28,7 @@ def payload(arm, **kwargs):
     return engine().payload(arm, {"text": "state"}, QUESTION, [11, 12], [11, 12], 3, **kwargs)
 
 
-@pytest.mark.parametrize("arm", ["B", "R-Q", "R-Qi", "R-QSQS", "R-full", "R-think", "F-dots",
+@pytest.mark.parametrize("arm", ["B", "B2", "QA", "R-Q", "R-Qi", "R-QSQS", "R-full", "R-think", "F-dots",
                                  "F-alpha", "F-words", "F-scrambled", "F-count", "F-before", "G",
                                  "RQ-F", "RQ-mid"])
 def test_every_arm_ends_in_the_prefill_and_keeps_the_mask(arm):
@@ -135,6 +135,18 @@ def test_unknown_arms_stop_the_run():
     for typo in ("R-q", "H-", "H-0", "RQF"):
         with pytest.raises(SystemExit, match="unknown arm"):
             check_arm(typo)
+
+
+def test_a_resume_with_other_settings_stops_the_run(tmp_path):
+    from bench.prefill import check_settings
+
+    meta = tmp_path / "R-Q" / "settings.json"
+    settings = {"split": "test", "tokens": 128, "perturb": None, "rows": 250,
+                "model": "glm-5.3-flash", "library": "abc", "generic": None}
+    check_settings(meta, settings)
+    check_settings(meta, settings)
+    with pytest.raises(SystemExit, match="other library, generic"):
+        check_settings(meta, {**settings, "library": "def", "generic": "0f"})
 
 
 def test_mcnemar_is_exact_and_two_sided():

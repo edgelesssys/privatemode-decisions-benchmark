@@ -29,7 +29,7 @@ from decisions.client import OpenAIClient, set_max_in_flight
 
 from . import calibration as c
 from .datasets import load
-from .prefill import DEV, MODEL, Prefill, Tokens, dev_rows
+from .prefill import DEV, MODEL, ROWS, Prefill, Tokens, dev_rows
 
 SENTENCE = re.compile(r"(?<=[.!?])\s+")
 #: A content-free ending for each recurring opening. Openings that give an
@@ -80,7 +80,7 @@ def main() -> None:
     have = {(t["dataset"], t["index"]) for t in traces}
     tasks = []
     for name in DEV:
-        used = set(dev_rows(run, name, 250, "calibration"))
+        used = set(dev_rows(run, name, ROWS, "calibration"))
         cal, _ = c.split(run[name])
         spare = [int(i) for i in np.sort(cal.index) if int(i) not in used][: args.samples]
         tasks += [(name, t) for t in load(name, 1000) if t.index in spare]

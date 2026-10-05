@@ -62,6 +62,7 @@ def test_ours_on_all_rows_and_against_jev_on_the_rows_both_answered(result):
     # The headline line compares on the shared rows: 100 of 160.
     assert "on the rows both answered (100 of 160)" in md
     assert data["products"]["Jev"]["datasets"] == 2
+    assert "an arm answers (3 and 2: not the same sets)" in md
 
 
 def test_wins_against_the_baseline_count_each_dataset(result):

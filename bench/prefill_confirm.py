@@ -160,9 +160,11 @@ def products_section(per, text, shared, v, wtl) -> tuple[list[str], dict]:
         else:
             cells += ["", "", ""]
         rows.append(cells)
+    sizes = [str(n) for n in sorted({s["datasets"] for s in summary.values()}, reverse=True)]
+    counts = ", ".join(sizes[:-1]) + " and " + sizes[-1] if len(sizes) > 1 else "".join(sizes)
     return ["\n**Against Jev and Laya.** Normalised accuracy is 0 for always answering the "
             "majority class of the rows scored and 1 for all right, averaged over the datasets "
-            "an arm answers (29, 28 and 27: not the same sets). The mean accuracy, the "
+            f"an arm answers ({counts}: not the same sets). The mean accuracy, the "
             "wins–ties–losses and the Wilcoxon test are against Jev on the rows both answered, "
             "and the median price is over Jev's datasets (prompt tokens at list price):\n",
             table(rows, ["arm", "datasets", "normalised accuracy", "mean accuracy, Jev's datasets",
