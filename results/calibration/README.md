@@ -39,6 +39,7 @@ examples (about 0.05), so 0 means as calibrated as the sample can show.
 | Can labels also fix accuracy? | Yes: a bias per option next to the temperature gains 2.0 points from 100 labels (+1.0 from 20, +3.0 from 500), most where the model over-predicts a class (toxic_conversations +15). Cutoffs and thresholds then have to be set out-of-fold, or the error bound slips. |
 | Several option orders? | They keep the one-order temperature; a formula per number of orders was worse on held-out datasets. The answer changes in 9.0% of rotations. |
 | Many options, few labels? | One cutoff. Clustered conformal and grouping classes by the answers barely beat it at a few labels per class, and a cutoff per class puts 70 options in every set. |
+| A better prompt? | Asking the question before the state too gains 1.6 points ([results/prefill](../prefill/README.md)) and keeps the default temperature: excess ECE 0.016 with the shipped formula, against 0.023 for today's prompt on the same test halves. No new constants needed. |
 | Other models? | Kimi K2.6 follows the same recipe (formula recovers 79% of the gain) and reads scanned documents best (81.8%). GLM-5.3's temperature doesn't depend on the option count, and it puts only 64% of its probability on the options after `answer=`. |
 
 ![Reliability](part-1/reliability.png)
