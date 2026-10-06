@@ -249,9 +249,11 @@ def write_report(result: dict, meta: dict, out: Path) -> None:
               "|---|---|---|---|---|---|---|---|"]
     methods = list(result[names[0]]["zero_label"])
     mean = lambda m, k: float(np.mean([result[n]["zero_label"][m][k] for n in names]))  # noqa: E731
-    raw, best = mean("raw", "excess_ece"), mean("task T (calibration half)", "excess_ece")
+    # The share of the task T's reduction in plain ECE, as part 1 defines it
+    # (bench.calibrate_report), so the two shares can be compared.
+    raw, best = mean("raw", "ece"), mean("task T (calibration half)", "ece")
     for m in methods:
-        share = (raw - mean(m, "excess_ece")) / (raw - best) if raw != best else float("nan")
+        share = (raw - mean(m, "ece")) / (raw - best) if raw != best else float("nan")
         lines.append(
             f"| {m} | {np.median([result[n]['zero_label'][m]['T'] for n in names]):.2f} | "
             f"{mean(m, 'confidence'):.1%} | {mean(m, 'accuracy'):.1%} | {mean(m, 'ece'):.3f} | "
