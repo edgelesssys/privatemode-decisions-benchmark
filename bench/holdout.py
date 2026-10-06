@@ -230,7 +230,8 @@ def verdict(result: dict) -> list[tuple[str, str, str, bool]]:
 def share_of_gain(result: dict, method: str) -> float:
     """The part of the task T's reduction in plain ECE that ``method``
     achieves, pooled over the tasks, as part 1 defines it
-    (bench.calibrate_report), so the shares of the two compare."""
+    (bench.calibrate_report), so a held-out share compares with a share on
+    the known datasets."""
     def mean(m: str) -> float:
         return float(np.mean([result[n]["zero_label"][m]["ece"] for n in result]))
     raw, best = mean("raw"), mean("task T (calibration half)")
