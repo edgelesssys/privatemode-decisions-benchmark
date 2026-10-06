@@ -177,3 +177,14 @@ def test_check_tolerates_some_drift_but_not_an_empty_cache(tmp_path, monkeypatch
     (cache / "github_issue.jsonl").write_text("")   # a total refetch loss
     with pytest.raises(SystemExit, match="only 0 of 20"):
         holdout_data.verify("github_issue")
+
+
+def test_the_share_of_gain_is_on_plain_ece_like_part_one():
+    # ECE and excess ECE disagree here on purpose: on ECE the method covers
+    # half of the task T's reduction, on excess ECE all of it.
+    def task():
+        return {"zero_label": {
+            "raw": {"ece": 0.20, "excess_ece": 0.10},
+            "method": {"ece": 0.15, "excess_ece": 0.00},
+            "task T (calibration half)": {"ece": 0.10, "excess_ece": 0.00}}}
+    assert holdout.share_of_gain({"a": task(), "b": task()}, "method") == pytest.approx(0.5)

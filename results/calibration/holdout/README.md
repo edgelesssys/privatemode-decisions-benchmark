@@ -51,19 +51,16 @@ on the test halves, each dataset weighted equally.
 
 ## Without labels
 
-| method | T (median) | confidence | accuracy | ECE | excess ECE | share of gain | on the 28 known datasets: excess ECE (share) |
+| method | T (median) | confidence | accuracy | ECE | excess ECE | share of gain (ECE) | on the 28 known datasets: ECE (share) |
 |---|---|---|---|---|---|---|---|
-| raw | 1 | 95.3% | 78.8% | 0.165 | 0.151 | 0% | 0.129 (0%) |
-| one T for all tasks (2.15) | 2.15 | 86.1% | 78.8% | 0.095 | 0.057 | 70% | 0.040 (63%) |
-| **default: option-count formula** | 2.32 | 85.1% | 78.8% | 0.087 | **0.047** | **78%** | 0.032 (71%) |
-| T from the task family | 2.60 | 81.9% | 78.8% | 0.095 | 0.051 | 70% | 0.029 (74%) |
-| T per task (fitted on its calibration half) | 2.62 | 79.7% | 78.8% | 0.065 | 0.016 | 100% | 0.006 (100%) |
+| raw | 1 | 95.3% | 78.8% | 0.165 | 0.151 | 0% | 0.149 (0%) |
+| one T for all tasks (2.15) | 2.15 | 86.1% | 78.8% | 0.095 | 0.057 | 70% | 0.088 (63%) |
+| **default: option-count formula** | 2.32 | 85.1% | 78.8% | 0.087 | **0.047** | **78%** | 0.081 (71%) |
+| T from the task family | 2.60 | 81.9% | 78.8% | 0.095 | 0.051 | 70% | 0.079 (74%) |
+| T per task (fitted on its calibration half) | 2.62 | 79.7% | 78.8% | 0.065 | 0.016 | 100% | 0.054 (100%) |
 
 *Share of gain* is the part of the per-task temperature's reduction in ECE
-that a method achieves, pooled over the tasks, as part 1 defines it. An
-earlier version of this report computed it on excess ECE instead (77% for
-the default, 74% for the family T), which isn't comparable with part 1's
-shares; on excess ECE the known datasets give 79% for the default.
+that a method achieves, pooled over the tasks, as part 1 defines it.
 
 - **Raw probabilities are more overconfident here than on the known tasks**
   (95% stated against 79% right). The shipped formula removes about three
