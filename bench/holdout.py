@@ -227,6 +227,17 @@ def verdict(result: dict) -> list[tuple[str, str, str, bool]]:
     ]
 
 
+def share_of_gain(result: dict, method: str) -> float:
+    """The part of the task T's reduction in plain ECE that ``method``
+    achieves, pooled over the tasks, as part 1 defines it
+    (bench.calibrate_report), so a held-out share compares with a share on
+    the known datasets."""
+    def mean(m: str) -> float:
+        return float(np.mean([result[n]["zero_label"][m]["ece"] for n in result]))
+    raw, best = mean("raw"), mean("task T (calibration half)")
+    return (raw - mean(method)) / (raw - best) if raw != best else float("nan")
+
+
 def write_report(result: dict, meta: dict, out: Path) -> None:
     names = list(result)
     default = "option formula (default)"
@@ -245,13 +256,12 @@ def write_report(result: dict, meta: dict, out: Path) -> None:
               "accuracy doesn't change. The task T is fitted on the dataset's own "
               "calibration half: the ceiling a temperature can reach, not a zero-label "
               "method.", "",
-              "| method | T (median) | confidence | accuracy | ECE | excess ECE | NLL | share of gain |",
+              "| method | T (median) | confidence | accuracy | ECE | excess ECE | NLL | share of gain (ECE) |",
               "|---|---|---|---|---|---|---|---|"]
     methods = list(result[names[0]]["zero_label"])
     mean = lambda m, k: float(np.mean([result[n]["zero_label"][m][k] for n in names]))  # noqa: E731
-    raw, best = mean("raw", "excess_ece"), mean("task T (calibration half)", "excess_ece")
     for m in methods:
-        share = (raw - mean(m, "excess_ece")) / (raw - best) if raw != best else float("nan")
+        share = share_of_gain(result, m)
         lines.append(
             f"| {m} | {np.median([result[n]['zero_label'][m]['T'] for n in names]):.2f} | "
             f"{mean(m, 'confidence'):.1%} | {mean(m, 'accuracy'):.1%} | {mean(m, 'ece'):.3f} | "
