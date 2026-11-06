@@ -13,6 +13,6 @@ jobs:
       # installed for the parity tests between its calibration code and ours,
       # pinned to the commit with its two automation sequences (as the
       # privatemode extra).
-      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@bf973b9cec3fec33b29130dd47fe1ddda8e6dd04"
+      - run: pip install pytest numpy "privatemode-decisions @ git+https://github.com/edgelesssys/privatemode-decisions@df9541cb57635c45def03850a7dcfd23464e8e20"
       - run: python -m pytest -q tests
       - run: python -m compileall -q bench

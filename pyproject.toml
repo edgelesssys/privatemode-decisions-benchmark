@@ -13,10 +13,10 @@ dependencies = []
 # The Privatemode arm measures the library that actually ships, rather than a
 # reimplementation of it. To change the library alongside, clone it next to
 # this one and `pip install -e ../privatemode-decisions` instead.
-# Pinned to the library's commit with two automation sequences (the arm
+# Pinned to the library's commit on main with two automation sequences (the arm
 # needs its temperature= and optimize=, the parity tests the sequences),
 # with CI and the README. A commit, not a branch: branches move.
-privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@bf973b9cec3fec33b29130dd47fe1ddda8e6dd04"]
+privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@df9541cb57635c45def03850a7dcfd23464e8e20"]
 # The local arm. Heavy (torch + transformers, ~1.7 GB of weights on first
 # use) and only needed for --arms all|laya, so it is not a base dependency.
 laya = ["laya>=0.3.5", "torch>=2.2", "transformers>=4.48"]
