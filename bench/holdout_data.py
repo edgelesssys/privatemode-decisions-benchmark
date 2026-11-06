@@ -139,10 +139,9 @@ TASKS = {
     "github_pr": ("What kind of pull request is this?", list(PR_LABELS.values())),
 }
 #: The held-out sets: the first, and the fresh one that checks the fix of #4.
+#: medrxiv_subject is frozen but dropped by the fresh plan's rule (525 < 600 examples).
 SETS = {"first": ["fin_topic", "fin_sentiment", "arxiv_field", "pubmed_study", "github_issue"],
         "fresh": ["biorxiv_subject", "arxiv_cs", "stackexchange_site", "github_pr"]}
-#: Frozen, but dropped by the fresh plan's rule (fewer than 600 examples): 525.
-DROPPED = ("medrxiv_subject",)
 
 
 def sha(text: str) -> str:
