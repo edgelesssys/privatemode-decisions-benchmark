@@ -188,3 +188,23 @@ def test_the_share_of_gain_is_on_plain_ece_like_part_one():
             "method": {"ece": 0.15, "excess_ece": 0.00},
             "task T (calibration half)": {"ece": 0.10, "excess_ece": 0.00}}}
     assert holdout.share_of_gain({"a": task(), "b": task()}, "method") == pytest.approx(0.5)
+
+
+def ruled(one=0.3, two=0.3, violations=0) -> dict:
+    """One task's rule comparison, as ``compare_rules`` writes it."""
+    fit = lambda auto, v: {"automated": auto, "error": 0.05, "violations": v, "draws": 50}  # noqa: E731
+    return {"rules": {f"{b}, {n} labels": {"one sequence": fit(one if n == "all" else 0.1, 0),
+                                           "two sequences": fit(two if n == "all" else 0.1,
+                                                                violations if n == "all" else 0)}
+                      for b in ("T", "T + bias") for n in (LABELS, "all")}}
+
+
+@pytest.mark.parametrize("tasks, stays", [
+    ([ruled(), ruled()], True),                            # no cost, no gain
+    ([ruled(two=0.5), ruled(one=0.4, two=0.3)], True),      # a loss on one task, a gain on average
+    ([ruled(two=0.2), ruled()], False),                     # less automation on average
+    ([ruled(violations=11), ruled(violations=11)], False),  # 22 of 200 draws over: 11%
+])
+def test_the_fresh_decision(tasks, stays):
+    lines = holdout.decision({f"t{i}": t for i, t in enumerate(tasks)})
+    assert ("**The second sequence stays.**" in lines) is stays
