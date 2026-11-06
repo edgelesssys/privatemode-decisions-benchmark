@@ -64,7 +64,7 @@ CACHE = ROOT / ".cache" / "holdout"
 SEED = 0
 MAX_CHARS = 4000
 #: The tasks whose texts the release carries: open-access abstracts.
-SHIPPED = ("arxiv_field", "pubmed_study")
+SHIPPED = ("arxiv_field", "pubmed_study", "biorxiv_subject", "medrxiv_subject", "arxiv_cs")
 #: The released texts, one JSON line each: task, id, licence, source, text.
 TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
              "calibration-2026-09-26/holdout-texts.jsonl")
@@ -118,8 +118,10 @@ SE_SITES = {"math": "Mathematics", "physics": "Physics", "stats": "Statistics (C
             "travel": "Travel"}
 PR_LABELS = {"bug": "Bug fix", "enhancement": "Feature", "documentation": "Documentation",
              "dependencies": "Dependency update"}
-#: Filled from the walked posts when the task is built: the subject categories
-#: themselves come from the source (``build_rxiv``), then frozen with the task.
+#: The subject categories the walked posts had when the tasks were built
+#: (``build_rxiv`` takes them from the source; a rebuild records its own).
+BIORXIV_SUBJECTS = ["Animal behavior and cognition", "Biochemistry", "Bioengineering", "Bioinformatics", "Biophysics", "Cancer biology", "Cell biology", "Developmental biology", "Ecology", "Evolutionary biology", "Genetics", "Genomics", "Immunology", "Microbiology", "Molecular biology", "Neuroscience", "Paleontology", "Pathology", "Pharmacology and toxicology", "Physiology", "Plant biology", "Scientific communication and education", "Synthetic biology", "Systems biology", "Zoology"]
+MEDRXIV_SUBJECTS = ["Cardiovascular medicine", "Endocrinology", "Epidemiology", "Genetic and genomic medicine", "Health economics", "Health informatics", "Health policy", "Health systems and quality improvement", "Hiv aids", "Infectious diseases", "Neurology", "Nutrition", "Obstetrics and gynecology", "Occupational and environmental health", "Oncology", "Pediatrics", "Psychiatry and clinical psychology", "Public and global health", "Radiology and imaging", "Rehabilitation medicine and physical therapy", "Sexual and reproductive health"]
 RXIV_OPTIONS: dict[str, list[str]] = {}
 
 TASKS = {
@@ -130,8 +132,8 @@ TASKS = {
     "pubmed_study": ("What kind of study is this abstract from?", list(STUDY_TYPES)),
     "github_issue": ("What kind of issue is this?", list(ISSUE_LABELS.values())),
     # The fresh set.
-    "biorxiv_subject": ("Which subject category is this preprint in?", RXIV_OPTIONS),
-    "medrxiv_subject": ("Which subject category is this preprint in?", RXIV_OPTIONS),
+    "biorxiv_subject": ("Which subject category is this preprint in?", BIORXIV_SUBJECTS),
+    "medrxiv_subject": ("Which subject category is this preprint in?", MEDRXIV_SUBJECTS),
     "arxiv_cs": ("Which computer science area is this paper's primary subject?", list(ARXIV_CS.values())),
     "stackexchange_site": ("On which Stack Exchange site was this question asked?", list(SE_SITES.values())),
     "github_pr": ("What kind of pull request is this?", list(PR_LABELS.values())),
@@ -496,8 +498,7 @@ BUILDERS = {
 
 def freeze(name: str, rows: list[dict]) -> None:
     question, options = TASKS[name]
-    if options is RXIV_OPTIONS:
-        options = RXIV_OPTIONS[name]
+    options = RXIV_OPTIONS.get(name, options)
     FROZEN.mkdir(parents=True, exist_ok=True)
     CACHE.mkdir(parents=True, exist_ok=True)
     counts = {o: sum(r["label"] == o for r in rows) for o in options}
@@ -608,12 +609,14 @@ def fetch(url: str = TEXTS_URL) -> None:
     with urllib.request.urlopen(url, timeout=300) as response:
         rows = [json.loads(line) for line in response.read().decode().splitlines() if line.strip()]
     CACHE.mkdir(parents=True, exist_ok=True)
-    for name in SETS["first"]:
+    for name in TASKS:
         if name in REFETCH:
             ids = [e["id"] for e in json.loads((FROZEN / f"{name}.json").read_text())["examples"]]
             texts = REFETCH[name](name, ids)
         else:
             texts = {r["id"]: r["text"] for r in rows if r["task"] == name}
+            if not texts:
+                continue    # not in this release: the cache, if any, stays
         (CACHE / f"{name}.jsonl").write_text("".join(
             json.dumps({"id": i, "text": t}) + "\n" for i, t in texts.items()))
 
@@ -625,8 +628,8 @@ LICENCES = {"http://creativecommons.org/licenses/by/4.0/": "CC BY 4.0",
 
 def source(i: str) -> str:
     kind, ident = i.split(":", 1)
-    return {"arxiv": f"https://arxiv.org/abs/{ident}",
-            "pmc": f"https://europepmc.org/article/PMC/{ident}"}[kind]
+    return {"arxiv": f"https://arxiv.org/abs/{ident}", "pmc": f"https://europepmc.org/article/PMC/{ident}",
+            "biorxiv": f"https://doi.org/{ident}", "medrxiv": f"https://doi.org/{ident}"}[kind]
 
 
 def export(path: Path) -> None:
@@ -670,7 +673,7 @@ def main() -> None:
     args = parser.parse_args()
     if args.command == "fetch":
         fetch()
-        for name in SETS["first"]:
+        for name in TASKS:
             print(name, len(load(name, strict=False)), "examples match their frozen hashes")
         return
     if args.command == "export":
