@@ -3,6 +3,8 @@
     python -m bench.holdout run --task fin_topic --out runs/holdout [--concurrency 4]
     python -m bench.holdout report --run runs/holdout --out results/calibration/holdout
     python -m bench.holdout report --set fresh --run runs/fresh --out results/calibration/fresh
+    python -m bench.holdout report --set fresh --window-only --run runs/fresh \
+        --out results/calibration/fresh/window-only
 
 ``run`` asks the Privatemode arm for raw probabilities (T = 1) on one frozen
 task from ``bench.holdout_data`` and writes a run file ``load_run`` reads.
@@ -395,12 +397,26 @@ def write_report(result: dict, meta: dict, out: Path, plan: str) -> None:
                                                  default=float) + "\n")
 
 
-def report(run_dir: Path, out: Path, which: str = "first") -> None:
+#: The fresh set's window starts in July 2026: an arXiv id's year and month
+#: are its first submission's.
+WINDOW_ID = "2607"
+
+
+def in_window(name: str, data: c.Dataset) -> c.Dataset:
+    """Without the arXiv papers first submitted before the window, which
+    ``build_arxiv_cs`` let in. Dropped before the 50/50 split, so the
+    halves differ from the frozen run's."""
+    ids = {e["index"]: e["id"] for e in json.loads((FROZEN / f"{name}.json").read_text())["examples"]}
+    keep = np.array([not ids[i].startswith("arxiv:") or ids[i][6:10] >= WINDOW_ID for i in data.index])
+    return data.subset(keep)
+
+
+def report(run_dir: Path, out: Path, which: str = "first", window_only: bool = False) -> None:
     data = c.load_run(run_dir)
     missing = set(SETS[which]) - set(data)
     if missing:
         raise SystemExit(f"no run for {sorted(missing)}")
-    data = {n: data[n] for n in SETS[which]}
+    data = {n: in_window(n, data[n]) if window_only else data[n] for n in SETS[which]}
     unrecorded = [n for n, d in data.items() if not d.meta.get("served_model")]
     if unrecorded:
         raise SystemExit(f"no served model recorded for {unrecorded}")
@@ -429,11 +445,13 @@ def main() -> None:
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--set", choices=sorted(SETS), default="first",
                    help="fresh: also compare one automation sequence with two")
+    p.add_argument("--window-only", action="store_true",
+                   help="leave out arXiv papers first submitted before the fresh window")
     args = parser.parse_args()
     if args.command == "run":
         run(args.task, args.out, args.concurrency)
     else:
-        report(args.run, args.out, args.set)
+        report(args.run, args.out, args.set, args.window_only)
 
 
 if __name__ == "__main__":

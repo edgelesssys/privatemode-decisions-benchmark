@@ -49,7 +49,9 @@ submission: 237 of the 1,000 `arxiv_cs` papers have ids from before July
 frozen and run; rebuilding it would be a new test. The answers are the
 same under both rules, so this can't favour either one, but it does move
 the result. Scored again on the 763 papers from the window (not part of
-the plan's decision):
+the plan's decision; the older ones are dropped before the 50/50 split, so
+`arxiv_cs` gets new halves, same seed;
+[window-only/report.md](window-only/report.md)):
 
 | automated, all labels | one sequence | two sequences |
 |---|---|---|
@@ -62,7 +64,8 @@ there is the case the split costs, 1.6 points. The first set's
 July 2026; one paper is in both sets. A future arXiv task should filter
 on the id's year and month.
 
-[report.md](report.md) has every number; `summary.json` the same as data.
+[report.md](report.md) has every number of the plan's decision;
+`summary.json` the same as data.
 
 ## The tasks
 
@@ -113,4 +116,5 @@ python -m bench.holdout_data fetch --set fresh     # needs the release (see abov
 python -m bench.holdout_data check --set fresh
 python -m bench.holdout run --task arxiv_cs --out runs/fresh     # each of the four
 python -m bench.holdout report --set fresh --run runs/fresh --out results/calibration/fresh
+python -m bench.holdout report --set fresh --window-only --run runs/fresh --out results/calibration/fresh/window-only
 ```

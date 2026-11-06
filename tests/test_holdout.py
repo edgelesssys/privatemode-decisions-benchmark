@@ -240,3 +240,16 @@ def test_one_sequence_restores_the_late_start_after_an_error():
     with pytest.raises(RuntimeError), holdout.one_sequence():
         raise RuntimeError
     assert holdout.lib.LATE_START == 0.25
+
+
+def test_in_window_drops_only_arxiv_papers_from_before_the_window():
+    import numpy as np
+    from bench import calibration as c
+
+    def kept(name):
+        n = len(json.loads((holdout_data.FROZEN / f"{name}.json").read_text())["examples"])
+        data = c.Dataset(name, ["a"], np.arange(n), np.ones((n, 1)), np.zeros(n, int))
+        return len(holdout.in_window(name, data).y), n
+
+    assert kept("arxiv_cs") == (763, 1000)
+    assert kept("github_pr")[0] == kept("github_pr")[1]
