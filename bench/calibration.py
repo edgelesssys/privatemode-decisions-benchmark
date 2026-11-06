@@ -477,6 +477,13 @@ def binomial_cdf(k: int, n: int, p: float) -> float:
     return min(1.0, math.exp(top) * sum(math.exp(t - top) for t in log_terms))
 
 
+#: Where the late sequence of :func:`automation_threshold` starts, as a share
+#: of the labels, and the share of ``delta`` it tests at (the library's
+#: ``LATE_START`` and ``LATE_DELTA``).
+LATE_START = 0.25
+LATE_DELTA = 0.2
+
+
 def automation_threshold(confidence: np.ndarray, correct: np.ndarray, max_error: float,
                          delta: float = 0.1, step: float = 0.05) -> float:
     """Lowest confidence threshold whose error among automated answers is
@@ -485,30 +492,45 @@ def automation_threshold(confidence: np.ndarray, correct: np.ndarray, max_error:
     Learn then Test with fixed-sequence testing over a grid: the candidates
     automate 5%, 10%, ... of the calibration answers, most confident first.
     Each null hypothesis "the error above this threshold exceeds max_error"
-    is tested with an exact binomial test at level ``delta``, in that order,
-    and testing stops at the first failure, so no correction for multiple
-    tests is needed. Levels too small to reject even with zero errors are
-    skipped; which ones depends on ``max_error`` and ``delta`` only, not on
-    the labels. Returns ``inf`` (automate nothing) if no level is certified.
+    is tested with an exact binomial test, in that order, and testing stops
+    at the first failure. One sequence starts at the first level that could
+    pass with no errors. Once ``LATE_START`` of the labels holds at least
+    twice that many answers, a second sequence starts there at
+    ``LATE_DELTA`` of ``delta``, the first runs at the rest, and the lower
+    threshold wins; once the first reaches the late start it tests at the
+    whole ``delta``. Both starts depend on the number of labels,
+    ``max_error`` and ``delta`` only. Returns ``inf`` (automate nothing) if
+    no level is certified.
     """
     order = np.argsort(-confidence, kind="stable")
     conf, wrong = confidence[order], (~correct[order].astype(bool)).astype(int)
     errors = np.cumsum(wrong)
-    smallest = math.ceil(math.log(delta) / math.log1p(-max_error))
-    chosen = float("inf")
-    levels = round(1 / step)
-    for level in range(1, levels + 1):
-        # Integer arithmetic, as the library: a float step (0.15000000000000002)
-        # would round some levels up by one answer.
-        n = -(-len(conf) * level // levels)
-        while n < len(conf) and conf[n] == conf[n - 1]:
-            n += 1      # a threshold can't split a run of equal confidences
-        if n < smallest:
-            continue
-        if binomial_cdf(int(errors[n - 1]), n, max_error) > delta:
-            break
-        chosen = float(conf[n - 1])
-    return chosen
+
+    def smallest(level: float) -> int:
+        return math.ceil(math.log(level) / math.log1p(-max_error))
+
+    def sequence(start: int, level: float, whole_from: float = math.inf) -> float:
+        chosen = float("inf")
+        levels = round(1 / step)
+        for i in range(1, levels + 1):
+            # Integer arithmetic: a float step (0.15000000000000002) would
+            # round some levels up by one answer.
+            n = -(-len(conf) * i // levels)
+            while n < len(conf) and conf[n] == conf[n - 1]:
+                n += 1      # a threshold can't split a run of equal confidences
+            if n < start:
+                continue
+            if binomial_cdf(int(errors[n - 1]), n, max_error) > (delta if n >= whole_from else level):
+                break
+            chosen = float(conf[n - 1])
+        return chosen
+
+    late = math.ceil(len(conf) * LATE_START)
+    if late < 2 * smallest(delta):
+        return sequence(smallest(delta), delta)
+    top, rest = delta * (1 - LATE_DELTA), delta * LATE_DELTA
+    late = max(late, smallest(rest))
+    return min(sequence(smallest(top), top, whole_from=late), sequence(late, rest))
 
 
 # -- conformal cutoffs per group of classes ----------------------------------------
