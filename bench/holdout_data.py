@@ -150,7 +150,7 @@ def sha(text: str) -> str:
 def get(url: str, attempts: int = 5) -> bytes:
     """curl rather than urllib: arXiv's CDN refuses urllib's requests."""
     for attempt in range(attempts):
-        done = subprocess.run(["curl", "-sfL", "--max-time", "120", "-A",
+        done = subprocess.run(["curl", "-sfL", "--max-time", "300", "-A",
                                "privatemode-decisions-benchmark", url], capture_output=True)
         if done.returncode == 0:
             return done.stdout
