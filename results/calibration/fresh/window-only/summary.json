@@ -1,0 +1,732 @@
+{
+ "meta": {
+  "run": "20261106T152944Z\u201320261106T161052Z",
+  "served": [
+   "glm-5.3-flash"
+  ],
+  "model": "glm-5.3-flash",
+  "scored_with_library": "0.1.0+df9541cb57635c45def03850a7dcfd23464e8e20",
+  "global_t": 2.1477,
+  "families": {
+   "fin_topic": "topic",
+   "fin_sentiment": "sentiment",
+   "arxiv_field": "topic",
+   "pubmed_study": "topic",
+   "github_issue": "intent",
+   "biorxiv_subject": "topic",
+   "medrxiv_subject": "topic",
+   "arxiv_cs": "topic",
+   "stackexchange_site": "topic",
+   "github_pr": "intent"
+  },
+  "draws": 50,
+  "labels": 100,
+  "window_only": true
+ },
+ "datasets": {
+  "biorxiv_subject": {
+   "options": 25,
+   "examples": 766,
+   "calibration": 383,
+   "test": 383,
+   "family": "topic",
+   "option_mass": 0.9383286649068219,
+   "served_model": [
+    "glm-5.3-flash"
+   ],
+   "dropped": {
+    "failed": 0,
+    "repeated": 0,
+    "gold not an option or no probability": 0
+   },
+   "zero_label": {
+    "raw": {
+     "T": 1.0,
+     "accuracy": 0.6501305483028721,
+     "confidence": 0.8677603713481107,
+     "ece": 0.21762982304523867,
+     "excess_ece": 0.18489444358184506,
+     "nll": 1.6457698294040874
+    },
+    "global T": {
+     "T": 2.1477,
+     "accuracy": 0.6501305483028721,
+     "confidence": 0.6552853855042985,
+     "ece": 0.06194600051396158,
+     "excess_ece": -0.0059866878357373865,
+     "nll": 1.1679214345352469
+    },
+    "option formula (default)": {
+     "T": 2.0490278011297205,
+     "accuracy": 0.6501305483028721,
+     "confidence": 0.6787677455026543,
+     "ece": 0.05558059657575278,
+     "excess_ece": -0.010166622272736563,
+     "nll": 1.164109584218301
+    },
+    "family T": {
+     "T": 2.6,
+     "accuracy": 0.6501305483028721,
+     "confidence": 0.5470716040829391,
+     "ece": 0.10868544226998934,
+     "excess_ece": 0.03489195736519146,
+     "nll": 1.2330274194838247
+    },
+    "task T (calibration half)": {
+     "T": 2.14705188463935,
+     "accuracy": 0.6501305483028721,
+     "confidence": 0.655440897528114,
+     "ece": 0.06196845147265305,
+     "excess_ece": -0.005899269765200443,
+     "nll": 1.1678813436864492
+    }
+   },
+   "labelled": {
+    "T, 100 labels": {
+     "accuracy": 0.6501305483028722,
+     "excess_ece": -0.002079923366578569,
+     "coverage": 0.9090339425587467,
+     "size": 3.1610966057441257,
+     "singletons": 0.19702349869451694,
+     "automated": 0.01154046997389034,
+     "error": 0.004595959595959596,
+     "violation": 0.02,
+     "draws": 50,
+     "violations": 1
+    },
+    "T, all labels": {
+     "accuracy": 0.6501305483028722,
+     "excess_ece": -0.005864944426711491,
+     "coverage": 0.9086161879895562,
+     "size": 3.0496083550913835,
+     "singletons": 0.19060052219321147,
+     "automated": 0.0,
+     "error": 0.0,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T + bias, 100 labels": {
+     "accuracy": 0.6570234986945169,
+     "excess_ece": 0.002844917880116966,
+     "coverage": 0.909242819843342,
+     "size": 3.000783289817233,
+     "singletons": 0.19237597911227158,
+     "automated": 0.004699738903394256,
+     "error": 0.002,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T + bias, all labels": {
+     "accuracy": 0.668407310704961,
+     "excess_ece": -0.006043873680210683,
+     "coverage": 0.9122193211488249,
+     "size": 2.8903916449086164,
+     "singletons": 0.16203655352480417,
+     "automated": 0.0,
+     "error": 0.0,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    }
+   },
+   "coverage_check": {
+    "accuracy": 0.6684073107049608,
+    "excess_ece": -0.006043873757669349,
+    "coverage": 0.9138381201044387,
+    "size": 2.864229765013055,
+    "singletons": 0.1618798955613577,
+    "automated": 0.0,
+    "error": 0.0,
+    "violation": false
+   },
+   "rules": {
+    "T, 100 labels": {
+     "one sequence": {
+      "automated": 0.01154046997389034,
+      "error": 0.004595959595959596,
+      "violations": 1,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.01154046997389034,
+      "error": 0.004595959595959596,
+      "violations": 1,
+      "draws": 50
+     }
+    },
+    "T, all labels": {
+     "one sequence": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T + bias, 100 labels": {
+     "one sequence": {
+      "automated": 0.004699738903394256,
+      "error": 0.002,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.004699738903394256,
+      "error": 0.002,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T + bias, all labels": {
+     "one sequence": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     }
+    }
+   }
+  },
+  "arxiv_cs": {
+   "options": 10,
+   "examples": 763,
+   "calibration": 381,
+   "test": 382,
+   "family": "topic",
+   "option_mass": 0.9652254184547884,
+   "served_model": [
+    "glm-5.3-flash"
+   ],
+   "dropped": {
+    "failed": 0,
+    "repeated": 0,
+    "gold not an option or no probability": 0
+   },
+   "zero_label": {
+    "raw": {
+     "T": 1.0,
+     "accuracy": 0.7643979057591623,
+     "confidence": 0.9331420045776234,
+     "ece": 0.16875917210080635,
+     "excess_ece": 0.14732606646374508,
+     "nll": 1.2286452955248188
+    },
+    "global T": {
+     "T": 2.1477,
+     "accuracy": 0.7643979057591623,
+     "confidence": 0.8085528133927355,
+     "ece": 0.06646402311035218,
+     "excess_ece": 0.014083632656705342,
+     "nll": 0.7747777579795219
+    },
+    "option formula (default)": {
+     "T": 2.196803903499328,
+     "accuracy": 0.7643979057591623,
+     "confidence": 0.8011799944886552,
+     "ece": 0.056526577211419245,
+     "excess_ece": 0.0031947150572330524,
+     "nll": 0.7725948876713487
+    },
+    "family T": {
+     "T": 2.6,
+     "accuracy": 0.7643979057591623,
+     "confidence": 0.7369756282605239,
+     "ece": 0.05721976987715954,
+     "excess_ece": -0.006326412535348866,
+     "nll": 0.7792145357463889
+    },
+    "task T (calibration half)": {
+     "T": 2.4149462062920684,
+     "accuracy": 0.7643979057591623,
+     "confidence": 0.7670761434973683,
+     "ece": 0.05126345314300675,
+     "excess_ece": -0.008509840295617827,
+     "nll": 0.7713223048583474
+    }
+   },
+   "labelled": {
+    "T, 100 labels": {
+     "accuracy": 0.7643979057591623,
+     "excess_ece": -0.004850647219958255,
+     "coverage": 0.9137172774869109,
+     "size": 1.8500000000000003,
+     "singletons": 0.48261780104712043,
+     "automated": 0.187434554973822,
+     "error": 0.025476430594475432,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T, all labels": {
+     "accuracy": 0.7643979057591623,
+     "excess_ece": -0.008503689371384522,
+     "coverage": 0.9162303664921465,
+     "size": 1.7146596858638747,
+     "singletons": 0.5052356020942409,
+     "automated": 0.468586387434555,
+     "error": 0.0670391061452514,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T + bias, 100 labels": {
+     "accuracy": 0.777277486910995,
+     "excess_ece": -0.00034584317976134635,
+     "coverage": 0.9165968586387436,
+     "size": 1.7993717277486914,
+     "singletons": 0.5229842931937172,
+     "automated": 0.156282722513089,
+     "error": 0.02493768666421965,
+     "violation": 0.02,
+     "draws": 50,
+     "violations": 1
+    },
+    "T + bias, all labels": {
+     "accuracy": 0.774869109947644,
+     "excess_ece": -0.013090321326161709,
+     "coverage": 0.9099476439790574,
+     "size": 1.6065968586387434,
+     "singletons": 0.5789005235602095,
+     "automated": 0.451413612565445,
+     "error": 0.06900701578768514,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    }
+   },
+   "coverage_check": {
+    "accuracy": 0.774869109947644,
+    "excess_ece": -0.013090321294533636,
+    "coverage": 0.9109947643979057,
+    "size": 1.6361256544502618,
+    "singletons": 0.5602094240837696,
+    "automated": 0.0,
+    "error": 0.0,
+    "violation": false
+   },
+   "rules": {
+    "T, 100 labels": {
+     "one sequence": {
+      "automated": 0.187434554973822,
+      "error": 0.025476430594475432,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.187434554973822,
+      "error": 0.025476430594475432,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T, all labels": {
+     "one sequence": {
+      "automated": 0.468586387434555,
+      "error": 0.0670391061452514,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.468586387434555,
+      "error": 0.0670391061452514,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T + bias, 100 labels": {
+     "one sequence": {
+      "automated": 0.156282722513089,
+      "error": 0.02493768666421965,
+      "violations": 1,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.156282722513089,
+      "error": 0.02493768666421965,
+      "violations": 1,
+      "draws": 50
+     }
+    },
+    "T + bias, all labels": {
+     "one sequence": {
+      "automated": 0.46753926701570675,
+      "error": 0.07031916171833595,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.451413612565445,
+      "error": 0.06900701578768514,
+      "violations": 0,
+      "draws": 50
+     }
+    }
+   }
+  },
+  "stackexchange_site": {
+   "options": 10,
+   "examples": 903,
+   "calibration": 451,
+   "test": 452,
+   "family": "topic",
+   "option_mass": 0.9492271879525842,
+   "served_model": [
+    "glm-5.3-flash"
+   ],
+   "dropped": {
+    "failed": 0,
+    "repeated": 0,
+    "gold not an option or no probability": 0
+   },
+   "zero_label": {
+    "raw": {
+     "T": 1.0,
+     "accuracy": 0.9579646017699115,
+     "confidence": 0.9847410801290155,
+     "ece": 0.02702053425040862,
+     "excess_ece": 0.021413173293399895,
+     "nll": 0.16946771143049896
+    },
+    "global T": {
+     "T": 2.1477,
+     "accuracy": 0.9579646017699115,
+     "confidence": 0.9175310793021402,
+     "ece": 0.04256531813770366,
+     "excess_ece": 0.008098793299489086,
+     "nll": 0.16443097579381355
+    },
+    "option formula (default)": {
+     "T": 2.196803903499328,
+     "accuracy": 0.9579646017699115,
+     "confidence": 0.9118076757474796,
+     "ece": 0.04728208957767917,
+     "excess_ece": 0.011619222509098859,
+     "nll": 0.1693617865430381
+    },
+    "family T": {
+     "T": 2.6,
+     "accuracy": 0.9579646017699115,
+     "confidence": 0.8567376237785357,
+     "ece": 0.10122697799137578,
+     "excess_ece": 0.053129275926499915,
+     "nll": 0.2229557179512464
+    },
+    "task T (calibration half)": {
+     "T": 1.7536267617373666,
+     "accuracy": 0.9579646017699115,
+     "confidence": 0.9541670721885976,
+     "ece": 0.019700203376589828,
+     "excess_ece": -0.003631248818166094,
+     "nll": 0.13915376352719952
+    }
+   },
+   "labelled": {
+    "T, 100 labels": {
+     "accuracy": 0.9579646017699115,
+     "excess_ece": -0.0011968778401850204,
+     "coverage": 0.9579646017699115,
+     "size": 1.0,
+     "singletons": 1.0,
+     "automated": 0.5982300884955752,
+     "error": 0.01844139691574342,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T, all labels": {
+     "accuracy": 0.9579646017699115,
+     "excess_ece": -0.003874373891854406,
+     "coverage": 0.9579646017699115,
+     "size": 1.0,
+     "singletons": 1.0,
+     "automated": 0.9977876106194691,
+     "error": 0.03991130820399113,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T + bias, 100 labels": {
+     "accuracy": 0.9564601769911502,
+     "excess_ece": 0.0011367007193193552,
+     "coverage": 0.9565044247787609,
+     "size": 1.000132743362832,
+     "singletons": 0.9998672566371681,
+     "automated": 0.3104867256637169,
+     "error": 0.010245414992182171,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T + bias, all labels": {
+     "accuracy": 0.9535398230088493,
+     "excess_ece": 0.005924031773492853,
+     "coverage": 0.9535398230088493,
+     "size": 1.0,
+     "singletons": 1.0,
+     "automated": 1.0,
+     "error": 0.046460176991150445,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    }
+   },
+   "coverage_check": {
+    "accuracy": 0.9535398230088495,
+    "excess_ece": 0.005924031782104225,
+    "coverage": 0.9535398230088495,
+    "size": 1.0,
+    "singletons": 1.0,
+    "automated": 0.0,
+    "error": 0.0,
+    "violation": false
+   },
+   "rules": {
+    "T, 100 labels": {
+     "one sequence": {
+      "automated": 0.5982300884955752,
+      "error": 0.01844139691574342,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.5982300884955752,
+      "error": 0.01844139691574342,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T, all labels": {
+     "one sequence": {
+      "automated": 0.9977876106194691,
+      "error": 0.03991130820399113,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.9977876106194691,
+      "error": 0.03991130820399113,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T + bias, 100 labels": {
+     "one sequence": {
+      "automated": 0.3104867256637169,
+      "error": 0.010245414992182171,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.3104867256637169,
+      "error": 0.010245414992182171,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T + bias, all labels": {
+     "one sequence": {
+      "automated": 0.9408407079646017,
+      "error": 0.04367256637168142,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 1.0,
+      "error": 0.046460176991150445,
+      "violations": 0,
+      "draws": 50
+     }
+    }
+   }
+  },
+  "github_pr": {
+   "options": 4,
+   "examples": 965,
+   "calibration": 482,
+   "test": 483,
+   "family": "intent",
+   "option_mass": 0.9908114841494426,
+   "served_model": [
+    "glm-5.3-flash"
+   ],
+   "dropped": {
+    "failed": 0,
+    "repeated": 0,
+    "gold not an option or no probability": 0
+   },
+   "zero_label": {
+    "raw": {
+     "T": 1.0,
+     "accuracy": 0.7660455486542443,
+     "confidence": 0.9656029790483011,
+     "ece": 0.19955743039405682,
+     "excess_ece": 0.18925865182611626,
+     "nll": 1.6193203464914991
+    },
+    "global T": {
+     "T": 2.1477,
+     "accuracy": 0.7660455486542443,
+     "confidence": 0.9028692494526797,
+     "ece": 0.13682370079843537,
+     "excess_ece": 0.10562510458251773,
+     "nll": 0.8533918875322459
+    },
+    "option formula (default)": {
+     "T": 2.3552376340472896,
+     "accuracy": 0.7660455486542443,
+     "confidence": 0.8879269567197012,
+     "ece": 0.12188140806545697,
+     "excess_ece": 0.08709098754727562,
+     "nll": 0.8069232993249165
+    },
+    "family T": {
+     "T": 1.76,
+     "accuracy": 0.7660455486542443,
+     "confidence": 0.9276846164533121,
+     "ece": 0.16163906779906786,
+     "excess_ece": 0.1380094101789688,
+     "nll": 0.9848172470671229
+    },
+    "task T (calibration half)": {
+     "T": 3.764424233839537,
+     "accuracy": 0.7660455486542443,
+     "confidence": 0.7704906390591844,
+     "ece": 0.0663204824645712,
+     "excess_ece": 0.01285315984544827,
+     "nll": 0.7038245800240559
+    }
+   },
+   "labelled": {
+    "T, 100 labels": {
+     "accuracy": 0.7660455486542445,
+     "excess_ece": 0.01864639717407878,
+     "coverage": 0.8995031055900623,
+     "size": 1.8474948240165627,
+     "singletons": 0.4842650103519668,
+     "automated": 0.0,
+     "error": 0.0,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T, all labels": {
+     "accuracy": 0.7660455486542445,
+     "excess_ece": 0.012535693496989648,
+     "coverage": 0.9047619047619048,
+     "size": 1.8571428571428574,
+     "singletons": 0.44927536231884063,
+     "automated": 0.0,
+     "error": 0.0,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T + bias, 100 labels": {
+     "accuracy": 0.7872049689440993,
+     "excess_ece": 0.005195570590439211,
+     "coverage": 0.9241821946169773,
+     "size": 1.8783022774327125,
+     "singletons": 0.555527950310559,
+     "automated": 0.03312629399585921,
+     "error": 0.005004066326355483,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    },
+    "T + bias, all labels": {
+     "accuracy": 0.7991718426501037,
+     "excess_ece": 0.005616630632112916,
+     "coverage": 0.9240165631469981,
+     "size": 1.784679089026915,
+     "singletons": 0.5690269151138715,
+     "automated": 0.27987577639751554,
+     "error": 0.035385305051578136,
+     "violation": 0.0,
+     "draws": 50,
+     "violations": 0
+    }
+   },
+   "coverage_check": {
+    "accuracy": 0.7991718426501035,
+    "excess_ece": 0.005616630632113179,
+    "coverage": 0.9254658385093167,
+    "size": 1.8095238095238095,
+    "singletons": 0.5631469979296067,
+    "automated": 0.0,
+    "error": 0.0,
+    "violation": false
+   },
+   "rules": {
+    "T, 100 labels": {
+     "one sequence": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T, all labels": {
+     "one sequence": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.0,
+      "error": 0.0,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T + bias, 100 labels": {
+     "one sequence": {
+      "automated": 0.03312629399585921,
+      "error": 0.005004066326355483,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.03312629399585921,
+      "error": 0.005004066326355483,
+      "violations": 0,
+      "draws": 50
+     }
+    },
+    "T + bias, all labels": {
+     "one sequence": {
+      "automated": 0.07196687370600414,
+      "error": 0.01342488455291368,
+      "violations": 0,
+      "draws": 50
+     },
+     "two sequences": {
+      "automated": 0.27987577639751554,
+      "error": 0.035385305051578136,
+      "violations": 0,
+      "draws": 50
+     }
+    }
+   }
+  }
+ }
+}

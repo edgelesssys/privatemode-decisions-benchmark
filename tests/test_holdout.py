@@ -92,19 +92,20 @@ def test_texts_survive_export_and_fetch(tmp_path, monkeypatch):
     monkeypatch.setattr(holdout_data, "CACHE", cache)
     monkeypatch.setattr(holdout_data, "TASKS", {"shipped": ("Which?", ["a", "b"]),
                                                 "refetched": ("Which?", ["a", "b"])})
-    monkeypatch.setattr(holdout_data, "SHIPPED", ("shipped",))
     cache.mkdir()
     (cache / "shipped.jsonl").write_text("".join(
         json.dumps({"id": k, "text": t}) + "\n" for k, t in texts["shipped"].items()))
     release = tmp_path / "holdout-texts.jsonl"
-    holdout_data.export(release)
+    holdout_data.export(release, ("shipped",))
     assert {json.loads(line)["license"] for line in release.read_text().splitlines()} == {
         "CC BY 4.0", "CC BY"}
     edited = dict(texts["refetched"], **{"github:o/r#2": "edited since"})
     monkeypatch.setattr(holdout_data, "REFETCH", {"refetched": lambda name, ids: edited})
     for path in cache.iterdir():
         path.unlink()
-    holdout_data.fetch(release.as_uri())
+    with pytest.raises(SystemExit, match="absent: not in"):   # a task its release lacks
+        holdout_data.fetch(release.as_uri(), ["absent"])
+    holdout_data.fetch(release.as_uri(), ["shipped", "refetched"])
     assert [t.state for t in holdout_data.load("shipped")] == list(texts["shipped"].values())
     with pytest.raises(SystemExit, match="changed"):
         holdout_data.load("refetched")
@@ -188,3 +189,67 @@ def test_the_share_of_gain_is_on_plain_ece_like_part_one():
             "method": {"ece": 0.15, "excess_ece": 0.00},
             "task T (calibration half)": {"ece": 0.10, "excess_ece": 0.00}}}
     assert holdout.share_of_gain({"a": task(), "b": task()}, "method") == pytest.approx(0.5)
+
+
+def ruled(one=0.3, two=0.3, violations=0) -> dict:
+    """One task's rule comparison, as ``compare_rules`` writes it."""
+    fit = lambda auto, v: {"automated": auto, "error": 0.05, "violations": v, "draws": 50}  # noqa: E731
+    return {"rules": {f"{b}, {n} labels": {"one sequence": fit(one if n == "all" else 0.1, 0),
+                                           "two sequences": fit(two if n == "all" else 0.1,
+                                                                violations if n == "all" else 0)}
+                      for b in ("T", "T + bias") for n in (LABELS, "all")}}
+
+
+@pytest.mark.parametrize("tasks, stays", [
+    ([ruled(), ruled()], True),                            # no cost, no gain
+    ([ruled(two=0.5), ruled(one=0.4, two=0.3)], True),      # a loss on one task, a gain on average
+    ([ruled(two=0.2), ruled()], False),                     # less automation on average
+    # Both fits of both tasks: 4 x 50 draws.
+    ([ruled(violations=5), ruled(violations=5)], True),     # 20 of 200 draws over: exactly 10%
+    ([ruled(violations=6), ruled(violations=6)], False),    # 24 of 200 draws over: 12%
+])
+def test_the_fresh_decision(tasks, stays):
+    lines = holdout.decision({f"t{i}": t for i, t in enumerate(tasks)})
+    assert ("**The second sequence stays.**" in lines) is stays
+
+
+def wrong_at_the_top(n: int):
+    """``n`` answers, most confident first, with three wrong near the top and
+    errors growing below: the case of privatemode-decisions#4."""
+    conf = [1 - i / n for i in range(n)]
+    right = [True] * n
+    for i in (3, 11, 19):
+        right[i] = False
+    for i in range(n * 3 // 5, n, 2):
+        right[i] = False
+    return conf, right
+
+
+def test_one_sequence_is_the_rule_before_the_late_start():
+    lib = holdout.lib
+    many, few = wrong_at_the_top(500), wrong_at_the_top(100)
+    two = [lib._automation_threshold(*data, 0.1, 0.1) for data in (many, few)]
+    with holdout.one_sequence():
+        one = [lib._automation_threshold(*data, 0.1, 0.1) for data in (many, few)]
+    assert one[0] == float("inf") and two[0] < 1   # 500: the first test fails, the late one passes
+    assert one[1] == two[1]                         # 100: below the switch, the same rule
+    assert lib.LATE_START == 0.25
+
+
+def test_one_sequence_restores_the_late_start_after_an_error():
+    with pytest.raises(RuntimeError), holdout.one_sequence():
+        raise RuntimeError
+    assert holdout.lib.LATE_START == 0.25
+
+
+def test_in_window_drops_only_arxiv_papers_from_before_the_window():
+    import numpy as np
+    from bench import calibration as c
+
+    def kept(name):
+        n = len(json.loads((holdout_data.FROZEN / f"{name}.json").read_text())["examples"])
+        data = c.Dataset(name, ["a"], np.arange(n), np.ones((n, 1)), np.zeros(n, int))
+        return len(holdout.in_window(name, data).y), n
+
+    assert kept("arxiv_cs") == (763, 1000)
+    assert kept("github_pr")[0] == kept("github_pr")[1]

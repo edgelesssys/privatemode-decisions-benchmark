@@ -8,3 +8,6 @@ __pycache__/
 # release instead (see results/README.md), and results/suite.md is rebuilt
 # from them with one command.
 results/*/*.jsonl
+
+# Local runs; published as a release.
+runs/
