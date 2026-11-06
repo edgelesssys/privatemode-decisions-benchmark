@@ -81,6 +81,33 @@ def test_automation_threshold(data, max_error):
         fitted.threshold, abs=1e-12)
 
 
+@pytest.mark.parametrize("n", [100, 172, 173, 186, 500, 2000])
+@pytest.mark.parametrize("max_error", [0.05, 0.10, 0.20])
+def test_automation_threshold_on_both_sequences(n, max_error):
+    # The fixtures have 300 answers each; these cover both sides of the
+    # switch to two sequences, and wrong answers at the top that stop the
+    # first one, as the library's own tests do.
+    rng = np.random.default_rng(n)
+    conf = np.sort(rng.random(n))[::-1]
+    for top_errors in ([], [3, 11, 19], [30], [45, 46]):
+        right = rng.random(n) > np.linspace(0.0, 0.4, n)
+        right[[i for i in top_errors if i < n]] = False
+        assert c.automation_threshold(conf, right, max_error, 0.1) == library._automation_threshold(
+            list(conf), list(right), max_error, 0.1)
+
+
+@pytest.mark.parametrize("max_error, delta, n, wrong", [
+    (0.2, 0.1, 86, 13),   # the first n with two sequences (late = 2 * smallest)
+    (0.1, 0.5, 53, 16),   # a late start moved up to the fewest answers that pass at its share
+])
+def test_automation_threshold_where_the_switch_decides(max_error, delta, n, wrong):
+    conf = np.linspace(1, 0, n)
+    right = np.ones(n, bool)
+    right[wrong] = False
+    assert c.automation_threshold(conf, right, max_error, delta) == library._automation_threshold(
+        list(conf), list(right), max_error, delta)
+
+
 def test_ece(data):
     P, y, answers, labels = data
     assert c.ece(P, y) == pytest.approx(library.evaluate(answers, labels)["ece"], abs=1e-12)
@@ -124,6 +151,8 @@ def test_the_fit_constants_match_the_library():
     assert c.BIAS_STRENGTH == library.BIAS_STRENGTH
     assert calibrate_part3.SHRINKAGE == library.SHRINKAGE
     assert calibrate_part3.STRENGTH == library.BIAS_STRENGTH
+    assert c.LATE_START == library.LATE_START
+    assert c.LATE_DELTA == library.LATE_DELTA
 
 
 def test_prediction_sets_match_the_library(data):
