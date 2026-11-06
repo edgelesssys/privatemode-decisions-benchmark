@@ -92,19 +92,20 @@ def test_texts_survive_export_and_fetch(tmp_path, monkeypatch):
     monkeypatch.setattr(holdout_data, "CACHE", cache)
     monkeypatch.setattr(holdout_data, "TASKS", {"shipped": ("Which?", ["a", "b"]),
                                                 "refetched": ("Which?", ["a", "b"])})
-    monkeypatch.setattr(holdout_data, "SHIPPED", ("shipped",))
     cache.mkdir()
     (cache / "shipped.jsonl").write_text("".join(
         json.dumps({"id": k, "text": t}) + "\n" for k, t in texts["shipped"].items()))
     release = tmp_path / "holdout-texts.jsonl"
-    holdout_data.export(release)
+    holdout_data.export(release, ("shipped",))
     assert {json.loads(line)["license"] for line in release.read_text().splitlines()} == {
         "CC BY 4.0", "CC BY"}
     edited = dict(texts["refetched"], **{"github:o/r#2": "edited since"})
     monkeypatch.setattr(holdout_data, "REFETCH", {"refetched": lambda name, ids: edited})
     for path in cache.iterdir():
         path.unlink()
-    holdout_data.fetch(release.as_uri())
+    with pytest.raises(SystemExit, match="absent: not in"):   # a task its release lacks
+        holdout_data.fetch(release.as_uri(), ["absent"])
+    holdout_data.fetch(release.as_uri(), ["shipped", "refetched"])
     assert [t.state for t in holdout_data.load("shipped")] == list(texts["shipped"].values())
     with pytest.raises(SystemExit, match="changed"):
         holdout_data.load("refetched")

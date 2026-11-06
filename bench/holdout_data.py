@@ -73,9 +73,6 @@ SHIPPED = ("arxiv_field", "pubmed_study")
 #: The released texts, one JSON line each: task, id, licence, source, text.
 TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
              "calibration-2026-09-26/holdout-texts.jsonl")
-#: The Hugging Face datasets' commits at build time (unchanged since
-#: 2024-02-23). The datasets-server serves only the latest revision, so
-#: ``build_hf`` checks that it still is this one.
 #: The fresh set's abstracts (CC BY, CC0), in a release of their own; until
 #: it is published they exist only in the cache of the machine that built them.
 FRESH_SHIPPED = ("biorxiv_subject", "arxiv_cs")
@@ -83,6 +80,9 @@ FRESH_TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchma
                    "calibration-fresh-2026-11-06/holdout-texts.jsonl")
 #: Per set: the release its abstracts come from, and which tasks they are.
 RELEASES = {"first": (TEXTS_URL, SHIPPED), "fresh": (FRESH_TEXTS_URL, FRESH_SHIPPED)}
+#: The Hugging Face datasets' commits at build time (unchanged since
+#: 2024-02-23). The datasets-server serves only the latest revision, so
+#: ``build_hf`` checks that it still is this one.
 HF_REVISIONS = {"zeroshot/twitter-financial-news-topic": "acbc8af2a35ccf0916124efcbe9e6cf25f191012",
                 "zeroshot/twitter-financial-news-sentiment": "ccbe24de388e287beb92dd393a335c376b350ac3"}
 
@@ -594,13 +594,13 @@ REFETCH = {"fin_topic": refetch_hf, "fin_sentiment": refetch_hf, "github_issue":
            "github_pr": refetch_github, "stackexchange_site": refetch_stackexchange}
 
 
-def fetch(url: str = TEXTS_URL, names: list[str] | None = None) -> None:
-    """The tasks' texts (all by default) into the cache, one file per task:
-    the released ones from ``url``, the others by id from their sources."""
+def fetch(url: str, names: list[str]) -> None:
+    """The tasks' texts into the cache, one file per task: the released
+    ones from ``url``, the others by id from their sources."""
     with urllib.request.urlopen(url, timeout=300) as response:
         rows = [json.loads(line) for line in response.read().decode().splitlines() if line.strip()]
     CACHE.mkdir(parents=True, exist_ok=True)
-    for name in names or TASKS:
+    for name in names:
         if name in REFETCH:
             ids = [e["id"] for e in json.loads((FROZEN / f"{name}.json").read_text())["examples"]]
             texts = REFETCH[name](name, ids)
@@ -623,12 +623,11 @@ def source(i: str) -> str:
             "biorxiv": f"https://doi.org/{ident}", "medrxiv": f"https://doi.org/{ident}"}[kind]
 
 
-def export(path: Path, shipped: tuple[str, ...] | None = None) -> None:
-    """The released tasks' cached texts (the first set's by default) as one
-    file, each checked against its hash, with its licence and source for
-    attribution."""
+def export(path: Path, shipped: tuple[str, ...]) -> None:
+    """The released tasks' cached texts as one file, each checked against its
+    hash, with its licence and source for attribution."""
     lines = []
-    for name in shipped or SHIPPED:
+    for name in shipped:
         frozen = json.loads((FROZEN / f"{name}.json").read_text())
         texts = {t.index: t.state for t in load(name)}
         lines += [json.dumps({"task": name, "id": e["id"], "license": LICENCES[e["license"]],
