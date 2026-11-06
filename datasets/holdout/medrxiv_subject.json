@@ -1,0 +1,3728 @@
+{
+ "task": "medrxiv_subject",
+ "question": "Which subject category is this preprint in?",
+ "options": [
+  "Cardiovascular medicine",
+  "Endocrinology",
+  "Epidemiology",
+  "Genetic and genomic medicine",
+  "Health economics",
+  "Health informatics",
+  "Health policy",
+  "Health systems and quality improvement",
+  "Hiv aids",
+  "Infectious diseases",
+  "Neurology",
+  "Nutrition",
+  "Obstetrics and gynecology",
+  "Occupational and environmental health",
+  "Oncology",
+  "Pediatrics",
+  "Psychiatry and clinical psychology",
+  "Public and global health",
+  "Radiology and imaging",
+  "Rehabilitation medicine and physical therapy",
+  "Sexual and reproductive health"
+ ],
+ "counts": {
+  "Cardiovascular medicine": 25,
+  "Endocrinology": 25,
+  "Epidemiology": 25,
+  "Genetic and genomic medicine": 25,
+  "Health economics": 25,
+  "Health informatics": 25,
+  "Health policy": 25,
+  "Health systems and quality improvement": 25,
+  "Hiv aids": 25,
+  "Infectious diseases": 25,
+  "Neurology": 25,
+  "Nutrition": 25,
+  "Obstetrics and gynecology": 25,
+  "Occupational and environmental health": 25,
+  "Oncology": 25,
+  "Pediatrics": 25,
+  "Psychiatry and clinical psychology": 25,
+  "Public and global health": 25,
+  "Radiology and imaging": 25,
+  "Rehabilitation medicine and physical therapy": 25,
+  "Sexual and reproductive health": 25
+ },
+ "built": "2026-11-06",
+ "examples": [
+  {
+   "index": 0,
+   "id": "medrxiv:10.64898/2026.08.26.26361189",
+   "label": "Cardiovascular medicine",
+   "sha256": "e17223bc1d7f35d0ba3251b940c350cd9726829924142e207c5bfc6a7b061483",
+   "license": "cc by"
+  },
+  {
+   "index": 1,
+   "id": "medrxiv:10.64898/2026.09.01.26360987",
+   "label": "Cardiovascular medicine",
+   "sha256": "ba504d27d5d460cc5b7440bcbe04a024d32a85946077d9e7fdfa77ea432c28f0",
+   "license": "cc by"
+  },
+  {
+   "index": 2,
+   "id": "medrxiv:10.64898/2026.07.05.26355867",
+   "label": "Cardiovascular medicine",
+   "sha256": "6e15740c7d1204b7c09a44be4fe13a1f13d2fa106128a71715c305681ccb39ea",
+   "license": "cc by"
+  },
+  {
+   "index": 3,
+   "id": "medrxiv:10.64898/2026.08.04.26359685",
+   "label": "Cardiovascular medicine",
+   "sha256": "9957a7bfc435d296c44e383c8c604a0d38ef04412d8d66122043f39f31e53f4f",
+   "license": "cc by"
+  },
+  {
+   "index": 4,
+   "id": "medrxiv:10.64898/2026.09.21.26363576",
+   "label": "Cardiovascular medicine",
+   "sha256": "94759961c7a58d02b792426c06e1a3ca0c136e77f4eac9b713045d8802af95fd",
+   "license": "cc by"
+  },
+  {
+   "index": 5,
+   "id": "medrxiv:10.64898/2026.09.14.26363023",
+   "label": "Cardiovascular medicine",
+   "sha256": "7507b6ef759b8c90495884278738993d2e23f8fb019cde820995759fa833411a",
+   "license": "cc by"
+  },
+  {
+   "index": 6,
+   "id": "medrxiv:10.64898/2026.08.30.26361746",
+   "label": "Cardiovascular medicine",
+   "sha256": "41bdc821b93f2e6e9455e0fa53c80002b6275b1688d1390279092e2c470ab79b",
+   "license": "cc by"
+  },
+  {
+   "index": 7,
+   "id": "medrxiv:10.64898/2026.08.13.26360411",
+   "label": "Cardiovascular medicine",
+   "sha256": "8b2b04893edd548472384bf7a6dba5393f3f329cbdd023129d9077d0a6a43683",
+   "license": "cc by"
+  },
+  {
+   "index": 8,
+   "id": "medrxiv:10.64898/2026.09.14.26363013",
+   "label": "Cardiovascular medicine",
+   "sha256": "c292cb6e23ff4c0531fb82f60e7b5ee89badabc0c9244a237b5a4cf091f55987",
+   "license": "cc by"
+  },
+  {
+   "index": 9,
+   "id": "medrxiv:10.64898/2026.08.21.26361021",
+   "label": "Cardiovascular medicine",
+   "sha256": "3f2e0b71a1adcf9a7fa3e0b49e415e7d8256f83a1f63ab81b4bca49836d55c0f",
+   "license": "cc by"
+  },
+  {
+   "index": 10,
+   "id": "medrxiv:10.64898/2026.10.08.26365067",
+   "label": "Cardiovascular medicine",
+   "sha256": "b6a691d5be0cd8f4feef5af9280cf3a9ab60f8fabd9dadee7ab5c484393b5aa8",
+   "license": "cc by"
+  },
+  {
+   "index": 11,
+   "id": "medrxiv:10.64898/2026.07.24.26358896",
+   "label": "Cardiovascular medicine",
+   "sha256": "26c21dd3fabd3546de39879d3cd62a8152672f6ebf109fe2bb827320ca2d6fa3",
+   "license": "cc by"
+  },
+  {
+   "index": 12,
+   "id": "medrxiv:10.64898/2026.09.21.26363546",
+   "label": "Cardiovascular medicine",
+   "sha256": "737e8f3efe19994fe96e40ba952e2609f5400b388de3870a9d4b9951b195a8c4",
+   "license": "cc by"
+  },
+  {
+   "index": 13,
+   "id": "medrxiv:10.64898/2026.07.15.26358084",
+   "label": "Cardiovascular medicine",
+   "sha256": "789b246e2c4290ba1313941e12102f523b927785c1a9db3f19367a451287eeca",
+   "license": "cc by"
+  },
+  {
+   "index": 14,
+   "id": "medrxiv:10.64898/2026.08.07.26359994",
+   "label": "Cardiovascular medicine",
+   "sha256": "74dd58d2d0d7d792220ff99869df723a91bf34c28e122876186c711c18af811e",
+   "license": "cc by"
+  },
+  {
+   "index": 15,
+   "id": "medrxiv:10.64898/2026.10.12.26365300",
+   "label": "Cardiovascular medicine",
+   "sha256": "44b35287c795509a026d897c31373622b135b80e8c109d8712648a7c952ff902",
+   "license": "cc by"
+  },
+  {
+   "index": 16,
+   "id": "medrxiv:10.64898/2026.07.10.26357788",
+   "label": "Cardiovascular medicine",
+   "sha256": "74ee20d4b9dc2b6deb1d3b41e4c702d24f6313edde36b4a38b7956f722b94585",
+   "license": "cc by"
+  },
+  {
+   "index": 17,
+   "id": "medrxiv:10.64898/2026.08.04.26359681",
+   "label": "Cardiovascular medicine",
+   "sha256": "bc382b6c2b6d13973235a81c6397357fd1ecb0ef5d99c88622339516bde03b5a",
+   "license": "cc by"
+  },
+  {
+   "index": 18,
+   "id": "medrxiv:10.64898/2026.09.24.26363864",
+   "label": "Cardiovascular medicine",
+   "sha256": "5e0b4ef5728178c81ad2f8ed481daa9e19a95911a90a7f3b68f4ba7e975a6a75",
+   "license": "cc by"
+  },
+  {
+   "index": 19,
+   "id": "medrxiv:10.64898/2026.07.15.26358091",
+   "label": "Cardiovascular medicine",
+   "sha256": "e0c7e238cecf93b317dcb544bd82def7621550e6fa754a45bc77dde2e5ec9a41",
+   "license": "cc by"
+  },
+  {
+   "index": 20,
+   "id": "medrxiv:10.64898/2026.08.16.26360545",
+   "label": "Cardiovascular medicine",
+   "sha256": "a79dd11ea386adf4c5b9cddf5b495c4fe62acf57d5d1a3ae5c85d5ace007b95d",
+   "license": "cc by"
+  },
+  {
+   "index": 21,
+   "id": "medrxiv:10.64898/2026.10.12.26365337",
+   "label": "Cardiovascular medicine",
+   "sha256": "0b37bfb4ab8c5bdc10429a6f497803d21326ff50a6cb950b3c0aed9de890c16b",
+   "license": "cc by"
+  },
+  {
+   "index": 22,
+   "id": "medrxiv:10.64898/2026.07.09.26357611",
+   "label": "Cardiovascular medicine",
+   "sha256": "672a4ebb717d1cc2e2e0f812184d4f4856577fff0cf34b4d91a5dbf6227b29ec",
+   "license": "cc by"
+  },
+  {
+   "index": 23,
+   "id": "medrxiv:10.64898/2026.08.19.26360852",
+   "label": "Cardiovascular medicine",
+   "sha256": "aa466e40e30d80e3cfdfffcd5af4af8be0ebab110fb073b1266331441cb8608e",
+   "license": "cc by"
+  },
+  {
+   "index": 24,
+   "id": "medrxiv:10.64898/2026.09.11.26362862",
+   "label": "Cardiovascular medicine",
+   "sha256": "5eb3cd12813d34066185a07c064efed00ff967a0582f00c4d6966cf4f261cc08",
+   "license": "cc by"
+  },
+  {
+   "index": 25,
+   "id": "medrxiv:10.64898/2026.07.22.26358682",
+   "label": "Endocrinology",
+   "sha256": "94d87ba220132824996ac545d013abf0f39aa2aec48aa1656ecfcc43153f726b",
+   "license": "cc by"
+  },
+  {
+   "index": 26,
+   "id": "medrxiv:10.64898/2026.08.14.26360480",
+   "label": "Endocrinology",
+   "sha256": "a40595cd9847d311943a0920080abb7075827303e0893ee7335b61c00d5b112a",
+   "license": "cc by"
+  },
+  {
+   "index": 27,
+   "id": "medrxiv:10.64898/2026.08.18.26360751",
+   "label": "Endocrinology",
+   "sha256": "73f17910b4b86b05beb51ac28a7f63cc64b45d2a237ec42d2a79dd1ae2dd9e29",
+   "license": "cc by"
+  },
+  {
+   "index": 28,
+   "id": "medrxiv:10.64898/2026.07.29.26359228",
+   "label": "Endocrinology",
+   "sha256": "4e445b186ca14693530c8a90616bef3d484c85d8b2ece713edb094528d4591a8",
+   "license": "cc by"
+  },
+  {
+   "index": 29,
+   "id": "medrxiv:10.64898/2026.09.04.26361064",
+   "label": "Endocrinology",
+   "sha256": "4477a591175efbd1df2b30d4e668d4b4537c2a546bca6b31a1c02201f3926249",
+   "license": "cc by"
+  },
+  {
+   "index": 30,
+   "id": "medrxiv:10.64898/2026.09.09.26362693",
+   "label": "Endocrinology",
+   "sha256": "32df24b8c3c2dcbf54f9a802dc8bf10465a122e0825f0450a5676733f45682a7",
+   "license": "cc by"
+  },
+  {
+   "index": 31,
+   "id": "medrxiv:10.64898/2026.10.23.26366288",
+   "label": "Endocrinology",
+   "sha256": "a672c8b8559e612ade3c5f17a846ce34f5f5585311de3cebd91eab5c67baac2c",
+   "license": "cc by"
+  },
+  {
+   "index": 32,
+   "id": "medrxiv:10.64898/2026.08.28.26361368",
+   "label": "Endocrinology",
+   "sha256": "43ea1cdb466d758fb47f78e5eb888661b05a0f06e526e592c55b8333ef401502",
+   "license": "cc by"
+  },
+  {
+   "index": 33,
+   "id": "medrxiv:10.64898/2026.08.25.26361367",
+   "label": "Endocrinology",
+   "sha256": "9c084439ca19604e5db9019036c6cbf43bed58646d26436b491e359b9df9a254",
+   "license": "cc by"
+  },
+  {
+   "index": 34,
+   "id": "medrxiv:10.64898/2026.08.19.26360795",
+   "label": "Endocrinology",
+   "sha256": "fa4e728387d2967e6c1c16f44051075dff2a398d82678bc446db7b58dd2410d5",
+   "license": "cc by"
+  },
+  {
+   "index": 35,
+   "id": "medrxiv:10.64898/2026.08.26.26361479",
+   "label": "Endocrinology",
+   "sha256": "7c34bfc5e6cb039934288aefc5abfcf4e39142c84c80e7721e5fc1a715857601",
+   "license": "cc by"
+  },
+  {
+   "index": 36,
+   "id": "medrxiv:10.64898/2026.07.28.26359098",
+   "label": "Endocrinology",
+   "sha256": "da3ffcf932e9f064cd738bcf11e763e789ca1c9959bd485e866744040f41e3d0",
+   "license": "cc by"
+  },
+  {
+   "index": 37,
+   "id": "medrxiv:10.64898/2026.07.10.26357756",
+   "label": "Endocrinology",
+   "sha256": "f0d27c3a0f3e73ef89a4b18104e80050feae17a2d3ec9e65adc2b0c88818dff5",
+   "license": "cc by"
+  },
+  {
+   "index": 38,
+   "id": "medrxiv:10.64898/2026.10.01.26364472",
+   "label": "Endocrinology",
+   "sha256": "83d4a097f2bcf8c20e872cfdcd365786300d83b163306c49fe52f9ea6c267756",
+   "license": "cc by"
+  },
+  {
+   "index": 39,
+   "id": "medrxiv:10.64898/2026.07.09.26357636",
+   "label": "Endocrinology",
+   "sha256": "b32ef37cb651bb4acd5c22ecbea32fe5ae548672680d7b34d9851d60dfd8f869",
+   "license": "cc by"
+  },
+  {
+   "index": 40,
+   "id": "medrxiv:10.64898/2026.07.13.26357916",
+   "label": "Endocrinology",
+   "sha256": "c7439666486465a03b36c2554e476ebdc7aec8bfa3b6ae092704d45951cd91e0",
+   "license": "cc by"
+  },
+  {
+   "index": 41,
+   "id": "medrxiv:10.64898/2026.08.16.26359665",
+   "label": "Endocrinology",
+   "sha256": "e13d1c99976f0754c0124d84ef462df99b22441612eebb876af63a66048e34db",
+   "license": "cc by"
+  },
+  {
+   "index": 42,
+   "id": "medrxiv:10.64898/2026.10.20.26366000",
+   "label": "Endocrinology",
+   "sha256": "1f4e6a6e5067b2213e78b2523cc35993114d17bd5fd5ab4a18a57a8ba75fb2d2",
+   "license": "cc by"
+  },
+  {
+   "index": 43,
+   "id": "medrxiv:10.64898/2026.10.16.26364676",
+   "label": "Endocrinology",
+   "sha256": "7ffbb50d5857a5eb59d4438a26c3d8b46ff51435a55d4a797df493fa5497295d",
+   "license": "cc by"
+  },
+  {
+   "index": 44,
+   "id": "medrxiv:10.64898/2026.09.16.26363258",
+   "label": "Endocrinology",
+   "sha256": "36f34bef12a71f6ef7042a2ee851a1c90c6c482578ef957756214c0e75092bb6",
+   "license": "cc by"
+  },
+  {
+   "index": 45,
+   "id": "medrxiv:10.64898/2026.10.15.26365690",
+   "label": "Endocrinology",
+   "sha256": "590fbd7585955645c3a5fddb6f7281f7e7b44e723f92b29b0c15203f1333a63b",
+   "license": "cc by"
+  },
+  {
+   "index": 46,
+   "id": "medrxiv:10.64898/2026.09.15.26363172",
+   "label": "Endocrinology",
+   "sha256": "4476a53f45a7c6832974c2f2ee2cd0b3eab63ae1c7503c6d7112e8f3d29eb94c",
+   "license": "cc by"
+  },
+  {
+   "index": 47,
+   "id": "medrxiv:10.64898/2026.09.02.26362084",
+   "label": "Endocrinology",
+   "sha256": "d9d62e9e68e7f4b2dafbd65ac3a304136e635150bf01a62d26790cbe57c606ce",
+   "license": "cc by"
+  },
+  {
+   "index": 48,
+   "id": "medrxiv:10.64898/2026.07.27.26358997",
+   "label": "Endocrinology",
+   "sha256": "b18e0cb6683706465b0246f0d6e04a41d0e8c698d27a2c01b6f98d365b9e322a",
+   "license": "cc by"
+  },
+  {
+   "index": 49,
+   "id": "medrxiv:10.64898/2026.07.22.26358644",
+   "label": "Endocrinology",
+   "sha256": "84a261f44939c7755dffe1d16aaede25e89a1633b426623f63efe6f7d3a2c12b",
+   "license": "cc by"
+  },
+  {
+   "index": 50,
+   "id": "medrxiv:10.64898/2026.08.12.26360302",
+   "label": "Epidemiology",
+   "sha256": "331fe68fc3bc0ee05d1a39db3958ea7b690550832fecc95cb009c0c98dfaf5cb",
+   "license": "cc by"
+  },
+  {
+   "index": 51,
+   "id": "medrxiv:10.64898/2026.08.26.26361387",
+   "label": "Epidemiology",
+   "sha256": "6a392b7b232e7cd91b052de29148c983e543703231378d34f770ee49c54749e8",
+   "license": "cc by"
+  },
+  {
+   "index": 52,
+   "id": "medrxiv:10.64898/2026.07.08.26357532",
+   "label": "Epidemiology",
+   "sha256": "88361e44213657a36ca57e03e3f7d8d4bcb5a9fafcce07f8592154b27d811854",
+   "license": "cc by"
+  },
+  {
+   "index": 53,
+   "id": "medrxiv:10.64898/2026.07.28.26359159",
+   "label": "Epidemiology",
+   "sha256": "15146b7f69c30aaedb37ddac23a8670927b77ec0d0d86eda62f99798bdb74a4f",
+   "license": "cc by"
+  },
+  {
+   "index": 54,
+   "id": "medrxiv:10.64898/2026.10.19.26365487",
+   "label": "Epidemiology",
+   "sha256": "1e662cbae3dd446d71f719df742cc8a6247b3bbf591728cdf51adf07c0beabd6",
+   "license": "cc by"
+  },
+  {
+   "index": 55,
+   "id": "medrxiv:10.64898/2026.08.06.26359848",
+   "label": "Epidemiology",
+   "sha256": "f1d0f8c02c8e02a4190ecc0c52fa18a88c0508fd2f3b56da57463e2c32a1c6a2",
+   "license": "cc by"
+  },
+  {
+   "index": 56,
+   "id": "medrxiv:10.64898/2026.08.12.26360261",
+   "label": "Epidemiology",
+   "sha256": "ff71787963d5fc62f8dce0c000ef0631617edbe1b7592cb95b02625b9efe2c22",
+   "license": "cc by"
+  },
+  {
+   "index": 57,
+   "id": "medrxiv:10.64898/2026.07.21.26358401",
+   "label": "Epidemiology",
+   "sha256": "a1fea6d0fe28a048f7bd8865b89d3837ccb6643549e378adaebeb766e6e9b615",
+   "license": "cc by"
+  },
+  {
+   "index": 58,
+   "id": "medrxiv:10.64898/2026.10.12.26365352",
+   "label": "Epidemiology",
+   "sha256": "da856b5849c60966dbf3200b2444997bb0d7ab84dca7befa236ea79eb1325b74",
+   "license": "cc by"
+  },
+  {
+   "index": 59,
+   "id": "medrxiv:10.64898/2026.09.15.26363118",
+   "label": "Epidemiology",
+   "sha256": "0dac249481bd91f090927930b7417d6922e0935a55951acb6634aa824fdfe84f",
+   "license": "cc by"
+  },
+  {
+   "index": 60,
+   "id": "medrxiv:10.64898/2026.07.13.26357918",
+   "label": "Epidemiology",
+   "sha256": "2e81846c88932059b6a1bb785bb6036599cb198f3c455400ff1c979d9bbaecbc",
+   "license": "cc by"
+  },
+  {
+   "index": 61,
+   "id": "medrxiv:10.64898/2026.07.11.26357811",
+   "label": "Epidemiology",
+   "sha256": "3d0921cfb08a6d164b1e0bb00a3e5cb21587b1f57ee61edbf2b60b6d3adf5301",
+   "license": "cc by"
+  },
+  {
+   "index": 62,
+   "id": "medrxiv:10.64898/2026.08.25.26361355",
+   "label": "Epidemiology",
+   "sha256": "9581f3fa3a0215e2d0ffa530d5160a1a08b8ec74b8e805fe5b4bdd1f8fb11304",
+   "license": "cc by"
+  },
+  {
+   "index": 63,
+   "id": "medrxiv:10.64898/2026.10.01.26364469",
+   "label": "Epidemiology",
+   "sha256": "6f0aec0779cf877db8456b4789b6e38010e2a72d8327352c8b4692385c1778a8",
+   "license": "cc by"
+  },
+  {
+   "index": 64,
+   "id": "medrxiv:10.64898/2026.09.25.26364016",
+   "label": "Epidemiology",
+   "sha256": "a1fdea8880e4df29cc9ed398c89f03b95127a8840529563e0bf5c85b35f766ba",
+   "license": "cc by"
+  },
+  {
+   "index": 65,
+   "id": "medrxiv:10.64898/2026.07.15.26358208",
+   "label": "Epidemiology",
+   "sha256": "5c51196820b0acab128d604cd413fbf3a00a021fb0079a52e5d4b8fd685e090b",
+   "license": "cc by"
+  },
+  {
+   "index": 66,
+   "id": "medrxiv:10.64898/2026.08.22.26361103",
+   "label": "Epidemiology",
+   "sha256": "6fa364812dc6dd8808d89083d3846a6f6bcacdd70e2500490b2e90090d60ef4f",
+   "license": "cc by"
+  },
+  {
+   "index": 67,
+   "id": "medrxiv:10.64898/2026.10.14.26365553",
+   "label": "Epidemiology",
+   "sha256": "d2304d0d18dd8752fbd275ec28e01ed028bbfcc8d12cce8ada5ed0492d9b2379",
+   "license": "cc by"
+  },
+  {
+   "index": 68,
+   "id": "medrxiv:10.64898/2026.08.19.26360839",
+   "label": "Epidemiology",
+   "sha256": "21c258364cdc171e02d0eac95d115416925b1fe6569630b5aacedc368c8bd6dd",
+   "license": "cc by"
+  },
+  {
+   "index": 69,
+   "id": "medrxiv:10.64898/2026.07.17.26358090",
+   "label": "Epidemiology",
+   "sha256": "a0c57bc308f5c682d042f917e7ad44ec1c52c3ae4ab3d2cd28e07c2f3cea1761",
+   "license": "cc by"
+  },
+  {
+   "index": 70,
+   "id": "medrxiv:10.64898/2026.10.14.26365028",
+   "label": "Epidemiology",
+   "sha256": "71336dc222cfbc35d379b68431a34aa2924cef45f0d733a53a7261e98d1d5666",
+   "license": "cc by"
+  },
+  {
+   "index": 71,
+   "id": "medrxiv:10.64898/2026.08.26.26361486",
+   "label": "Epidemiology",
+   "sha256": "c8f5718dd77a041fee8c680d22c86f03b5bcae78bc1a4249124100068e13bb5c",
+   "license": "cc by"
+  },
+  {
+   "index": 72,
+   "id": "medrxiv:10.64898/2026.10.09.26365189",
+   "label": "Epidemiology",
+   "sha256": "2d706e63e864edf300ec1e161e9e314cfee79846fb86eefc67de554c8a2c9ef3",
+   "license": "cc by"
+  },
+  {
+   "index": 73,
+   "id": "medrxiv:10.64898/2026.08.03.26359543",
+   "label": "Epidemiology",
+   "sha256": "1eae8b5818a5162cf677a4349b076920a5172c55f05cb662f414c7eb91989a00",
+   "license": "cc by"
+  },
+  {
+   "index": 74,
+   "id": "medrxiv:10.64898/2026.10.27.26366597",
+   "label": "Epidemiology",
+   "sha256": "a4b1c932cf7078160b270466a555a6056cca6e9cba7ae65561ef22c0ca5a3a21",
+   "license": "cc by"
+  },
+  {
+   "index": 75,
+   "id": "medrxiv:10.64898/2026.10.26.26365902",
+   "label": "Genetic and genomic medicine",
+   "sha256": "5b9490a5c229f271b25b5fbd62a9fa74734f9b43baea0f8dc534578cf31c46ac",
+   "license": "cc by"
+  },
+  {
+   "index": 76,
+   "id": "medrxiv:10.64898/2026.09.02.26362007",
+   "label": "Genetic and genomic medicine",
+   "sha256": "42e9d32356cd865c0963ab568e67bfd47536676794d40a2df6b1fcfa664a345a",
+   "license": "cc by"
+  },
+  {
+   "index": 77,
+   "id": "medrxiv:10.64898/2026.10.02.26364607",
+   "label": "Genetic and genomic medicine",
+   "sha256": "39ea6afee6cb2a425d6b26d59e5d536342a7df226823ce132f8b547cd3d5f963",
+   "license": "cc by"
+  },
+  {
+   "index": 78,
+   "id": "medrxiv:10.64898/2026.07.14.26358031",
+   "label": "Genetic and genomic medicine",
+   "sha256": "3ede37dcdbc016ecd03562834b067fde26dc1bc7d871a80623be8b7d3b0a7f54",
+   "license": "cc by"
+  },
+  {
+   "index": 79,
+   "id": "medrxiv:10.64898/2026.09.21.26362150",
+   "label": "Genetic and genomic medicine",
+   "sha256": "f29b2b6a7ab31937a6fe171432dced713c5afb2d1e6a1e79ab8dbc52f1b81d06",
+   "license": "cc by"
+  },
+  {
+   "index": 80,
+   "id": "medrxiv:10.64898/2026.09.08.26362503",
+   "label": "Genetic and genomic medicine",
+   "sha256": "1ac2d6459ad6e0b0449e45c98a9b359bf76ba85f46df3046153c8d5bd4f24778",
+   "license": "cc by"
+  },
+  {
+   "index": 81,
+   "id": "medrxiv:10.64898/2026.08.21.26361030",
+   "label": "Genetic and genomic medicine",
+   "sha256": "e10a7a6a3ca8bea24e288564145bd23a641140046dba56c719c72c398d2f6f18",
+   "license": "cc by"
+  },
+  {
+   "index": 82,
+   "id": "medrxiv:10.64898/2026.09.02.26362069",
+   "label": "Genetic and genomic medicine",
+   "sha256": "79196ff0eae978d10a5a577be199282c74401ff3bf51f418bf7b9b5a0ab5a5be",
+   "license": "cc by"
+  },
+  {
+   "index": 83,
+   "id": "medrxiv:10.64898/2026.08.09.26360047",
+   "label": "Genetic and genomic medicine",
+   "sha256": "aa86ba110f994231ab0e4f3a07e9eb659804687137b1d9617ec0b49d677fc8e1",
+   "license": "cc by"
+  },
+  {
+   "index": 84,
+   "id": "medrxiv:10.64898/2026.08.11.26360205",
+   "label": "Genetic and genomic medicine",
+   "sha256": "7c2ca11811dff4c8c84c0fc18bd1a42bb6357592ecf847d8760d899106fcd1c6",
+   "license": "cc by"
+  },
+  {
+   "index": 85,
+   "id": "medrxiv:10.64898/2026.10.22.26365648",
+   "label": "Genetic and genomic medicine",
+   "sha256": "18f06d44f8bfb2885ab2705be4d16434c311fd3725537b85d131ea1a51cca173",
+   "license": "cc by"
+  },
+  {
+   "index": 86,
+   "id": "medrxiv:10.64898/2026.07.04.26357214",
+   "label": "Genetic and genomic medicine",
+   "sha256": "8a03e98a3f45318946d918a531e713abfa7e2ff05c15d96af10316f4022e234d",
+   "license": "cc by"
+  },
+  {
+   "index": 87,
+   "id": "medrxiv:10.64898/2026.08.25.26361359",
+   "label": "Genetic and genomic medicine",
+   "sha256": "fe80093873bff5b4bbc28e9b5a7780d46aebd4997c255f195dbabbc81c2d17ec",
+   "license": "cc by"
+  },
+  {
+   "index": 88,
+   "id": "medrxiv:10.64898/2026.10.09.26365070",
+   "label": "Genetic and genomic medicine",
+   "sha256": "e0f70c3b6ee4e336ec2f9b0dc90250e034a91469248ae548cd4b60f1adea0214",
+   "license": "cc by"
+  },
+  {
+   "index": 89,
+   "id": "medrxiv:10.64898/2026.07.10.26357796",
+   "label": "Genetic and genomic medicine",
+   "sha256": "45f3c46a1960f66e96949f3f9a1c40c1f2f1438ba37786396c9df9ea6758b8b8",
+   "license": "cc by"
+  },
+  {
+   "index": 90,
+   "id": "medrxiv:10.64898/2026.07.14.26357682",
+   "label": "Genetic and genomic medicine",
+   "sha256": "4ad73257f722d49b4cd46c3a728e32e5f2c7e8a14d83183c09478ad7dd6741e0",
+   "license": "cc by"
+  },
+  {
+   "index": 91,
+   "id": "medrxiv:10.64898/2026.07.29.26359248",
+   "label": "Genetic and genomic medicine",
+   "sha256": "90043a8583fed109c92cd855fd75354128a36b82bcbbf6323d4ca749e26dc866",
+   "license": "cc by"
+  },
+  {
+   "index": 92,
+   "id": "medrxiv:10.64898/2026.08.04.26358901",
+   "label": "Genetic and genomic medicine",
+   "sha256": "fc1f0fe416445a52222a4616a02319d59a8f25816eb3a2b856b45d3cad3fe4de",
+   "license": "cc by"
+  },
+  {
+   "index": 93,
+   "id": "medrxiv:10.64898/2026.10.08.26365030",
+   "label": "Genetic and genomic medicine",
+   "sha256": "46bcc3609661fc59d2c00875952ad81009bc9ffd7358a319c7be883271f2d8a4",
+   "license": "cc by"
+  },
+  {
+   "index": 94,
+   "id": "medrxiv:10.64898/2026.07.02.26357101",
+   "label": "Genetic and genomic medicine",
+   "sha256": "284b66414df98bf76493dc3cb0078deff3c4b26a65e79b531700423ded566c2c",
+   "license": "cc by"
+  },
+  {
+   "index": 95,
+   "id": "medrxiv:10.64898/2026.09.25.26363706",
+   "label": "Genetic and genomic medicine",
+   "sha256": "02639ee1ced3cee6210808d530ec957f9e0edfa468216df74a056a3455661581",
+   "license": "cc by"
+  },
+  {
+   "index": 96,
+   "id": "medrxiv:10.64898/2026.07.06.26357220",
+   "label": "Genetic and genomic medicine",
+   "sha256": "c11ed58ef59a0ce258837202223f3b4d0a14e1e0a7bd36d6f9df4b457f0bfe66",
+   "license": "cc by"
+  },
+  {
+   "index": 97,
+   "id": "medrxiv:10.64898/2026.10.05.26364218",
+   "label": "Genetic and genomic medicine",
+   "sha256": "45a3f46ef48a2e752ac9838f183bb0f7a69ca887d8cd778f0e34140ce7f76c67",
+   "license": "cc by"
+  },
+  {
+   "index": 98,
+   "id": "medrxiv:10.64898/2026.09.11.26362811",
+   "label": "Genetic and genomic medicine",
+   "sha256": "c1683a566b21ca9c5200d326a6c99320d2423d309073aa051196b00b39020723",
+   "license": "cc by"
+  },
+  {
+   "index": 99,
+   "id": "medrxiv:10.64898/2026.10.15.26365665",
+   "label": "Genetic and genomic medicine",
+   "sha256": "7b1a22dc19ebcce219fa512c6c275847f8303c4bc71b85228278d8f6c5b7b49d",
+   "license": "cc by"
+  },
+  {
+   "index": 100,
+   "id": "medrxiv:10.64898/2026.09.29.26362732",
+   "label": "Health economics",
+   "sha256": "1d925dfc29a340e3df4c2c5773ec750e7c1f94d6bcecb026f26ae809d673e070",
+   "license": "cc by"
+  },
+  {
+   "index": 101,
+   "id": "medrxiv:10.64898/2026.09.02.26362073",
+   "label": "Health economics",
+   "sha256": "5c23be291429ecbdb93f9078a3c015f614ff301a87aed187d4b46561efb5ab7e",
+   "license": "cc by"
+  },
+  {
+   "index": 102,
+   "id": "medrxiv:10.64898/2026.09.01.26361987",
+   "label": "Health economics",
+   "sha256": "7f825a944c1c2aba8dd34d76bf2def2958beefce77d3bfaeb57e91dc176494b0",
+   "license": "cc by"
+  },
+  {
+   "index": 103,
+   "id": "medrxiv:10.64898/2026.10.21.26366190",
+   "label": "Health economics",
+   "sha256": "6932cd6b223c6aac0172cd02c56a8a68f22eb63bab36d989db5cbe86adc8bec8",
+   "license": "cc by"
+  },
+  {
+   "index": 104,
+   "id": "medrxiv:10.64898/2026.08.04.26359670",
+   "label": "Health economics",
+   "sha256": "c17513a59a0ff443a15557a179880b5cca985af71b5ed62fbc347e2db772ed59",
+   "license": "cc by"
+  },
+  {
+   "index": 105,
+   "id": "medrxiv:10.64898/2026.10.05.26364765",
+   "label": "Health economics",
+   "sha256": "7ef1cfd5cd91c3aa720031f4b096b22ab3484d52f4e7d55ef470b11b043b2882",
+   "license": "cc by"
+  },
+  {
+   "index": 106,
+   "id": "medrxiv:10.64898/2026.07.27.26359045",
+   "label": "Health economics",
+   "sha256": "c38f87d17a04c7a8428365f546c31014d838e18d1394df7156afa3e7947df5c0",
+   "license": "cc by"
+  },
+  {
+   "index": 107,
+   "id": "medrxiv:10.64898/2026.09.16.26363246",
+   "label": "Health economics",
+   "sha256": "adb6be7bcd2ef2c0f7e36d9607d9382a03ce0b2deef6cbd2d9e80659a4140bf2",
+   "license": "cc by"
+  },
+  {
+   "index": 108,
+   "id": "medrxiv:10.64898/2026.09.03.26362213",
+   "label": "Health economics",
+   "sha256": "ada81274d32658bfade483e75a5634c952d5794371c2312ac8804d5bcbf3d70b",
+   "license": "cc by"
+  },
+  {
+   "index": 109,
+   "id": "medrxiv:10.64898/2026.08.26.26361314",
+   "label": "Health economics",
+   "sha256": "ca775301d8ba24871dc13f06bcec95f2269820765d16666c6b482c587879dde7",
+   "license": "cc by"
+  },
+  {
+   "index": 110,
+   "id": "medrxiv:10.64898/2026.09.23.26363845",
+   "label": "Health economics",
+   "sha256": "f82b9873c1794ad81722030a5e29a66ed569341de4c746318d983e430e15484b",
+   "license": "cc by"
+  },
+  {
+   "index": 111,
+   "id": "medrxiv:10.64898/2026.08.08.26360003",
+   "label": "Health economics",
+   "sha256": "d868be7d80385838e1b0167daf5f27930ee49b78ea8d1d8efa77ad415ecb96f4",
+   "license": "cc by"
+  },
+  {
+   "index": 112,
+   "id": "medrxiv:10.64898/2026.08.26.26361383",
+   "label": "Health economics",
+   "sha256": "616c31fc9dcb9092952a19713ce066f4bb2433b24f2546477dc2a651f0c16b50",
+   "license": "cc by"
+  },
+  {
+   "index": 113,
+   "id": "medrxiv:10.64898/2026.09.01.26361983",
+   "label": "Health economics",
+   "sha256": "553f9827f31ff337d4c9d5b73abc6b56e778bd4c7e25f7a96f6b88276640d0c9",
+   "license": "cc by"
+  },
+  {
+   "index": 114,
+   "id": "medrxiv:10.64898/2026.08.17.26360536",
+   "label": "Health economics",
+   "sha256": "809f5d9547df349286ca77c8584b807dc93304410aee11295d1e7c124d9f380e",
+   "license": "cc by"
+  },
+  {
+   "index": 115,
+   "id": "medrxiv:10.64898/2026.07.13.26357974",
+   "label": "Health economics",
+   "sha256": "5e3bb2cc82be6ce4d070f3f132cf6c1e3956e67d4adf6cf5ed1819c9802ca7a3",
+   "license": "cc by"
+  },
+  {
+   "index": 116,
+   "id": "medrxiv:10.64898/2026.08.14.26360436",
+   "label": "Health economics",
+   "sha256": "298d4398a905d8a7ea125b7fa3699a23054c41bc478978c52489a2969c525160",
+   "license": "cc by"
+  },
+  {
+   "index": 117,
+   "id": "medrxiv:10.64898/2026.07.22.26358736",
+   "label": "Health economics",
+   "sha256": "08d1e4e54661ada50a52b48f89a67fa3726bb4505bbb4218bb60425dab0ccb98",
+   "license": "cc by"
+  },
+  {
+   "index": 118,
+   "id": "medrxiv:10.64898/2026.10.15.26365639",
+   "label": "Health economics",
+   "sha256": "21f0f228e6b9c215711efabfb2718da4ea1af85f6df47ca6522649f8e364cd11",
+   "license": "cc by"
+  },
+  {
+   "index": 119,
+   "id": "medrxiv:10.64898/2026.08.12.26360337",
+   "label": "Health economics",
+   "sha256": "04dcabcceffcf8eded24ebfe0dbce500dcc993761d6fbd4152dfa30880071624",
+   "license": "cc by"
+  },
+  {
+   "index": 120,
+   "id": "medrxiv:10.64898/2026.10.19.26365973",
+   "label": "Health economics",
+   "sha256": "0f6377334b512d44dea10c5a4d283b62a2410dbab1e0ef69f97933e596b1de2c",
+   "license": "cc by"
+  },
+  {
+   "index": 121,
+   "id": "medrxiv:10.64898/2026.07.27.26359030",
+   "label": "Health economics",
+   "sha256": "ea83ad64ddda962ceb0784c0b04f4eedb06ce5aae8673bf4b9b20b09274d5275",
+   "license": "cc by"
+  },
+  {
+   "index": 122,
+   "id": "medrxiv:10.64898/2026.09.07.26362464",
+   "label": "Health economics",
+   "sha256": "842c6d7a93d9eab3de07a4437eaa8f4face3b47dbab6f29633d59f0bfb35eb75",
+   "license": "cc by"
+  },
+  {
+   "index": 123,
+   "id": "medrxiv:10.64898/2026.08.24.26361278",
+   "label": "Health economics",
+   "sha256": "f638bf7bd3f19e6718130bcfa2ed20678a8be81403ad05590723205ae896fcc5",
+   "license": "cc by"
+  },
+  {
+   "index": 124,
+   "id": "medrxiv:10.64898/2026.07.08.26357577",
+   "label": "Health economics",
+   "sha256": "422820e90e9eed1f4ae20f1117cdaaff021379a9b989ea042d24998c62d3100f",
+   "license": "cc by"
+  },
+  {
+   "index": 125,
+   "id": "medrxiv:10.64898/2026.08.14.26360390",
+   "label": "Health informatics",
+   "sha256": "d6a871d33490489776a5207acca98b814dc28ed935eb4e57bdb857a885cb32a8",
+   "license": "cc by"
+  },
+  {
+   "index": 126,
+   "id": "medrxiv:10.64898/2026.07.14.26357506",
+   "label": "Health informatics",
+   "sha256": "bfbf1cafdb01e5e102fe28eddb80db0b8da7da8bfe6095a32ee9226a58cb672e",
+   "license": "cc by"
+  },
+  {
+   "index": 127,
+   "id": "medrxiv:10.64898/2026.08.06.26359847",
+   "label": "Health informatics",
+   "sha256": "02a4077bd9f0708429a8b2bd1d73e80f1e2e462380b1dfa431c1f6aa5236244a",
+   "license": "cc by"
+  },
+  {
+   "index": 128,
+   "id": "medrxiv:10.64898/2026.08.30.26361745",
+   "label": "Health informatics",
+   "sha256": "9339df11200fccad7d4195f70295c5a60729b8c167716e1f5051e894f60b590a",
+   "license": "cc by"
+  },
+  {
+   "index": 129,
+   "id": "medrxiv:10.64898/2026.07.26.26358983",
+   "label": "Health informatics",
+   "sha256": "9d3fb4160321f8f278a9b7a7dab4f1a260302f74bd0a007af2735af5e7e57f53",
+   "license": "cc by"
+  },
+  {
+   "index": 130,
+   "id": "medrxiv:10.64898/2026.08.24.26361254",
+   "label": "Health informatics",
+   "sha256": "515796708fe0b6c33a6bb5e37da48f7d0246602dafe9b43d56df90ff38759848",
+   "license": "cc by"
+  },
+  {
+   "index": 131,
+   "id": "medrxiv:10.64898/2026.09.08.26362556",
+   "label": "Health informatics",
+   "sha256": "8c86e7e6daff78dae593fbcc8dcdbb8f38665b6bbbc1d8a6e0e9e4cad77f03ba",
+   "license": "cc by"
+  },
+  {
+   "index": 132,
+   "id": "medrxiv:10.64898/2026.07.04.26357263",
+   "label": "Health informatics",
+   "sha256": "2e45e1b95bf7e5d2525444b9ba9fe4a41248e4f4cec5439a8d9a729d5a716a13",
+   "license": "cc by"
+  },
+  {
+   "index": 133,
+   "id": "medrxiv:10.64898/2026.07.11.26357840",
+   "label": "Health informatics",
+   "sha256": "ba7744f51aa4b347e77396045b17ea65cff5aad64588e90f6f834b7df34fe9ac",
+   "license": "cc by"
+  },
+  {
+   "index": 134,
+   "id": "medrxiv:10.64898/2026.07.19.26358425",
+   "label": "Health informatics",
+   "sha256": "4239eaa0c7b682f18963165afac790a464eb539093f9260e266ceac8889decf0",
+   "license": "cc by"
+  },
+  {
+   "index": 135,
+   "id": "medrxiv:10.64898/2026.10.29.26366505",
+   "label": "Health informatics",
+   "sha256": "f4c9ecb88d59f87435b1d6990617fb971796cac1dd9be4fce93ebc4fa64c8622",
+   "license": "cc by"
+  },
+  {
+   "index": 136,
+   "id": "medrxiv:10.64898/2026.07.02.26357115",
+   "label": "Health informatics",
+   "sha256": "cb3bc87470c0c3901d7814ddce18eca6f46995f994620576486cf255d9d25c38",
+   "license": "cc by"
+  },
+  {
+   "index": 137,
+   "id": "medrxiv:10.64898/2026.10.06.26364884",
+   "label": "Health informatics",
+   "sha256": "605f0f8c2950ba0684d37ddbbd195c0170cc7d3e45cad0eb8b5f7b96013d2a9d",
+   "license": "cc by"
+  },
+  {
+   "index": 138,
+   "id": "medrxiv:10.64898/2026.10.14.26365587",
+   "label": "Health informatics",
+   "sha256": "c387c09a5a15cf6338c1a038dd03a45a56f45edaa4a59af7c8d4b0bb79132959",
+   "license": "cc by"
+  },
+  {
+   "index": 139,
+   "id": "medrxiv:10.64898/2026.10.01.26364038",
+   "label": "Health informatics",
+   "sha256": "aa56e5bf3adf3baf43c47bb1e16de2fec2bfc73ab48c3b0cefa2f46a90d6b96c",
+   "license": "cc by"
+  },
+  {
+   "index": 140,
+   "id": "medrxiv:10.64898/2026.10.09.26365165",
+   "label": "Health informatics",
+   "sha256": "86bafeb2dbb5050ad436759d916e3154c3dfd7a3592501e74772203baae33f45",
+   "license": "cc by"
+  },
+  {
+   "index": 141,
+   "id": "medrxiv:10.64898/2026.07.06.26357375",
+   "label": "Health informatics",
+   "sha256": "1a5e9da505302c76920c94e9798bc534d639817217c697fad9862ef6bd592526",
+   "license": "cc by"
+  },
+  {
+   "index": 142,
+   "id": "medrxiv:10.64898/2026.06.30.26356941",
+   "label": "Health informatics",
+   "sha256": "e1fb274b0ebb3e65009b6c90596c4e5d4d4785fff538c5390c89df5607009ec6",
+   "license": "cc by"
+  },
+  {
+   "index": 143,
+   "id": "medrxiv:10.64898/2026.07.15.26355314",
+   "label": "Health informatics",
+   "sha256": "286f1026a2c45c5d51448761b2e594fcf5b55a34ab102e045f62e4a6c2caa17c",
+   "license": "cc by"
+  },
+  {
+   "index": 144,
+   "id": "medrxiv:10.64898/2026.08.03.26359595",
+   "label": "Health informatics",
+   "sha256": "90af19df18e61e2c1e56c5f06e60333aa1e436b40c3fab601fa376b33aa8d486",
+   "license": "cc by"
+  },
+  {
+   "index": 145,
+   "id": "medrxiv:10.64898/2026.10.09.26365173",
+   "label": "Health informatics",
+   "sha256": "52a8c184306e18e8d3b69ff93047b7cd1df1161ad17cdb3e9a2af961b9ed8fea",
+   "license": "cc by"
+  },
+  {
+   "index": 146,
+   "id": "medrxiv:10.64898/2026.10.06.26364907",
+   "label": "Health informatics",
+   "sha256": "9b70b40c4056c4ca69a94dc77f667ab7ed282375500c13a862fee3b2a1d6068a",
+   "license": "cc by"
+  },
+  {
+   "index": 147,
+   "id": "medrxiv:10.64898/2026.07.14.26358020",
+   "label": "Health informatics",
+   "sha256": "afece4e66316f13acab471d7023c3dfe170fa53bc84b7a829953531b7ba44c88",
+   "license": "cc by"
+  },
+  {
+   "index": 148,
+   "id": "medrxiv:10.64898/2026.09.01.26361960",
+   "label": "Health informatics",
+   "sha256": "85ecb506c79295d5a64c367b82bef380da2fe9985e8fa68d9328fe84f73b763b",
+   "license": "cc by"
+  },
+  {
+   "index": 149,
+   "id": "medrxiv:10.64898/2026.07.09.26357705",
+   "label": "Health informatics",
+   "sha256": "9f539f2ecadd7e0cbac17e8c26d168e52fa001ea3e47d5e9efe65cf30d44c339",
+   "license": "cc by"
+  },
+  {
+   "index": 150,
+   "id": "medrxiv:10.64898/2026.08.24.26361195",
+   "label": "Health policy",
+   "sha256": "d88b85367152276cb8a17ec268ecb04b4c88030ff5ccfa89d6707985ba1d8ba2",
+   "license": "cc by"
+  },
+  {
+   "index": 151,
+   "id": "medrxiv:10.64898/2026.10.09.26365127",
+   "label": "Health policy",
+   "sha256": "18a214a352cb1b5381786b04c5eb11a9120f9f40907fde8ab7b32cefbc7b47eb",
+   "license": "cc by"
+  },
+  {
+   "index": 152,
+   "id": "medrxiv:10.64898/2026.07.11.26357817",
+   "label": "Health policy",
+   "sha256": "151a66f4fffb86db6f245b81f608ac20c42b22c1b2981ba480312cb4d27f0c6a",
+   "license": "cc by"
+  },
+  {
+   "index": 153,
+   "id": "medrxiv:10.64898/2026.07.09.26356719",
+   "label": "Health policy",
+   "sha256": "5e3c541d2d8a290b373eb3571243bb97512c9c11d9b568405d8919baa58349ca",
+   "license": "cc by"
+  },
+  {
+   "index": 154,
+   "id": "medrxiv:10.64898/2026.09.17.26363313",
+   "label": "Health policy",
+   "sha256": "e11592317ce9dffb50ddb757b381f1d9c3a7d443a3a149c3afdeb7637a4c50c7",
+   "license": "cc by"
+  },
+  {
+   "index": 155,
+   "id": "medrxiv:10.64898/2026.06.30.26356457",
+   "label": "Health policy",
+   "sha256": "22bbc83d5ef47bc7e6d95d14f93741b8df1e27932ec061d86dd30d862dd99d8e",
+   "license": "cc by"
+  },
+  {
+   "index": 156,
+   "id": "medrxiv:10.64898/2026.07.29.26359233",
+   "label": "Health policy",
+   "sha256": "38ad032918583ee03c47367cacc55f9220feefe42eeab782610f8a23a2115873",
+   "license": "cc by"
+  },
+  {
+   "index": 157,
+   "id": "medrxiv:10.64898/2026.07.22.26358730",
+   "label": "Health policy",
+   "sha256": "ba40fbc8794827ebab9c94379cdbffa6aa6b7868d729a2955780b6a4be4e1554",
+   "license": "cc by"
+  },
+  {
+   "index": 158,
+   "id": "medrxiv:10.64898/2026.10.22.26366200",
+   "label": "Health policy",
+   "sha256": "4fd2200e412be0fdd5eef984a89cadcab81a360b76d07f5bb0d5ba8c7736198c",
+   "license": "cc by"
+  },
+  {
+   "index": 159,
+   "id": "medrxiv:10.64898/2026.09.04.26361720",
+   "label": "Health policy",
+   "sha256": "67c79ed217ef6387e40ea85b25fe57e300c2ce3064e645c351115e8677945063",
+   "license": "cc by"
+  },
+  {
+   "index": 160,
+   "id": "medrxiv:10.64898/2026.09.30.26364434",
+   "label": "Health policy",
+   "sha256": "0b2a393b58a3bd1b634399030257abece55f9d49a659d2b04d87d94733e90d9e",
+   "license": "cc by"
+  },
+  {
+   "index": 161,
+   "id": "medrxiv:10.64898/2026.10.23.26366099",
+   "label": "Health policy",
+   "sha256": "38985314c4fbf0cf06021c639866b661b1ced007ab29a03b86b14aa38f8d3596",
+   "license": "cc by"
+  },
+  {
+   "index": 162,
+   "id": "medrxiv:10.64898/2026.09.30.26364447",
+   "label": "Health policy",
+   "sha256": "10f7e9c3674b8fd8c65a5a956ecda8f67f754fba71f9b10206458cb3ca4564fd",
+   "license": "cc by"
+  },
+  {
+   "index": 163,
+   "id": "medrxiv:10.64898/2026.08.26.26361003",
+   "label": "Health policy",
+   "sha256": "a163bb003232ac6a8e952d9a1a05cdcd309c89a88e4c829e0a31e147b5972749",
+   "license": "cc by"
+  },
+  {
+   "index": 164,
+   "id": "medrxiv:10.64898/2026.09.23.26363788",
+   "label": "Health policy",
+   "sha256": "0f65e0407ae4f82c74accd95209c1a48d18bd39632edff39eb0443a06c82350f",
+   "license": "cc by"
+  },
+  {
+   "index": 165,
+   "id": "medrxiv:10.64898/2026.09.09.26362679",
+   "label": "Health policy",
+   "sha256": "ca9424a764444ca2a69bf81120bffb8d7b2534adca75814d5901db7f07f7515c",
+   "license": "cc by"
+  },
+  {
+   "index": 166,
+   "id": "medrxiv:10.64898/2026.07.16.26358242",
+   "label": "Health policy",
+   "sha256": "a9b09793341ddcf9ce98124c8849139780259d0697fc71d133205c4f94f8e562",
+   "license": "cc by"
+  },
+  {
+   "index": 167,
+   "id": "medrxiv:10.64898/2026.09.16.26363207",
+   "label": "Health policy",
+   "sha256": "9073b2439cd21ff1d81ab1c35801cda86675193e6c3159b54c5a93757e0901eb",
+   "license": "cc by"
+  },
+  {
+   "index": 168,
+   "id": "medrxiv:10.64898/2026.09.18.26363058",
+   "label": "Health policy",
+   "sha256": "bd5d3a2392e191922151ab0e3d62bca9c5c593456a27e14246d78cf9848363fa",
+   "license": "cc by"
+  },
+  {
+   "index": 169,
+   "id": "medrxiv:10.64898/2026.08.25.26361308",
+   "label": "Health policy",
+   "sha256": "d004ca1a20df7ae62333cda4838ee2a0f2aaeeb6263429d236859b276cd75ab9",
+   "license": "cc by"
+  },
+  {
+   "index": 170,
+   "id": "medrxiv:10.64898/2026.08.28.26361597",
+   "label": "Health policy",
+   "sha256": "eb55d22ca9a05f3f31f1f0ac0bc94bf5f57f5b7cf9729cbea4bb100b60f8193a",
+   "license": "cc by"
+  },
+  {
+   "index": 171,
+   "id": "medrxiv:10.64898/2026.09.29.26364281",
+   "label": "Health policy",
+   "sha256": "8b0f3a44c0ed44c08f6b160a2ca9e67f48681efd6eb16efbdb3ed3d6a1086e87",
+   "license": "cc by"
+  },
+  {
+   "index": 172,
+   "id": "medrxiv:10.64898/2026.10.08.26365076",
+   "label": "Health policy",
+   "sha256": "34fff5b97e4712d18730dccd33c631c8ec1f6f88df8f9c956b84d007ea12c595",
+   "license": "cc by"
+  },
+  {
+   "index": 173,
+   "id": "medrxiv:10.64898/2026.08.19.26360851",
+   "label": "Health policy",
+   "sha256": "ef9105369be1342e85dde63ce42ca56874dd911308806186449a487ad62cd2b4",
+   "license": "cc by"
+  },
+  {
+   "index": 174,
+   "id": "medrxiv:10.64898/2026.09.11.26362857",
+   "label": "Health policy",
+   "sha256": "57d6f3e56065f60bd821e39ca50cdea66b62619e9dd4f0256ea9eaec194bd5cb",
+   "license": "cc by"
+  },
+  {
+   "index": 175,
+   "id": "medrxiv:10.64898/2026.10.13.26365431",
+   "label": "Health systems and quality improvement",
+   "sha256": "8d247d765fd6d6423d4877c31484a65f0fdf9064c2308146a347e0f604c7a8cd",
+   "license": "cc by"
+  },
+  {
+   "index": 176,
+   "id": "medrxiv:10.64898/2026.10.05.26364760",
+   "label": "Health systems and quality improvement",
+   "sha256": "96bbad9a70a8a9a41e9084f1835c9fe2346e831c28726afe6469d672872da4da",
+   "license": "cc by"
+  },
+  {
+   "index": 177,
+   "id": "medrxiv:10.64898/2026.07.07.26357184",
+   "label": "Health systems and quality improvement",
+   "sha256": "1708f63af044c72339c80b9bc20781df0f3049218361d7bc798234a5f57f4582",
+   "license": "cc by"
+  },
+  {
+   "index": 178,
+   "id": "medrxiv:10.64898/2026.07.22.26358636",
+   "label": "Health systems and quality improvement",
+   "sha256": "5c0a1226d0f37959907692fb1080a9977ce1a3b4ff2e28e56608fa845a3a7169",
+   "license": "cc by"
+  },
+  {
+   "index": 179,
+   "id": "medrxiv:10.64898/2026.09.12.26362911",
+   "label": "Health systems and quality improvement",
+   "sha256": "60bb5102237f1aa4cbfa1b394c6d6bb4c8393ce9d73ab5747e93528bbe1a9cd1",
+   "license": "cc by"
+  },
+  {
+   "index": 180,
+   "id": "medrxiv:10.64898/2026.08.05.26359541",
+   "label": "Health systems and quality improvement",
+   "sha256": "f36949ebfe7c06fb1ca273fd7d3dcfade712b17d6bf481d5feecd1b391ac983e",
+   "license": "cc by"
+  },
+  {
+   "index": 181,
+   "id": "medrxiv:10.64898/2026.08.26.26361390",
+   "label": "Health systems and quality improvement",
+   "sha256": "1f7c194f721a9298a15a559046be59220bacb26238fbe21c9126b5efe5b03139",
+   "license": "cc by"
+  },
+  {
+   "index": 182,
+   "id": "medrxiv:10.64898/2026.09.10.26362761",
+   "label": "Health systems and quality improvement",
+   "sha256": "783f438c6e3ca412a6df6ff5ef6f183cb4ef6d3fef724c8ae2bd36e33afc7ce4",
+   "license": "cc by"
+  },
+  {
+   "index": 183,
+   "id": "medrxiv:10.64898/2026.09.29.26364370",
+   "label": "Health systems and quality improvement",
+   "sha256": "1d2bca9a3957186033e3ce70fb46653c6cd80efaf317ed62e12f9b36314f4fee",
+   "license": "cc by"
+  },
+  {
+   "index": 184,
+   "id": "medrxiv:10.64898/2026.09.10.26362765",
+   "label": "Health systems and quality improvement",
+   "sha256": "7756da6d74f1932ba571ccf025e4f637da1884b543b5b506ef324b3fb0be7079",
+   "license": "cc by"
+  },
+  {
+   "index": 185,
+   "id": "medrxiv:10.64898/2026.08.18.26360659",
+   "label": "Health systems and quality improvement",
+   "sha256": "0a03787f63107bfc127154355c06706783a9504be0b599f7c9d3831ba3f85441",
+   "license": "cc by"
+  },
+  {
+   "index": 186,
+   "id": "medrxiv:10.64898/2026.09.15.26363107",
+   "label": "Health systems and quality improvement",
+   "sha256": "6381f3d4dbf82053fdf20fe7351be0d8ff99aa876a7bfe7be33e57bde21cabbb",
+   "license": "cc by"
+  },
+  {
+   "index": 187,
+   "id": "medrxiv:10.64898/2026.10.12.26365363",
+   "label": "Health systems and quality improvement",
+   "sha256": "715c720edbc4305392420179716a08e628bae8b30458b38bcdfaf05bdd32041d",
+   "license": "cc by"
+  },
+  {
+   "index": 188,
+   "id": "medrxiv:10.64898/2026.09.01.26361953",
+   "label": "Health systems and quality improvement",
+   "sha256": "c2a76a1ce175c63faf1ea6bbec926adf45a032d3fd114c75e4bb14fd241db671",
+   "license": "cc by"
+  },
+  {
+   "index": 189,
+   "id": "medrxiv:10.64898/2026.07.17.26358263",
+   "label": "Health systems and quality improvement",
+   "sha256": "14172ce73d6f6c02b43d90e0ef0ab3acfa079216d5530383db5f5814e70f96d7",
+   "license": "cc by"
+  },
+  {
+   "index": 190,
+   "id": "medrxiv:10.64898/2026.09.10.26362630",
+   "label": "Health systems and quality improvement",
+   "sha256": "a950d15a292ee012b703269b54bd2e2a7b215156b31a6f745418724d77ac73d6",
+   "license": "cc by"
+  },
+  {
+   "index": 191,
+   "id": "medrxiv:10.64898/2026.09.09.26362600",
+   "label": "Health systems and quality improvement",
+   "sha256": "59a9add7d075045852382107da7f50d4388e6dd2054bffdba7c4a60494481ff7",
+   "license": "cc by"
+  },
+  {
+   "index": 192,
+   "id": "medrxiv:10.64898/2026.07.22.26358728",
+   "label": "Health systems and quality improvement",
+   "sha256": "f0e36931310e7ef4a00475d49a9a715719f78bb43ad90347387273c467d67270",
+   "license": "cc by"
+  },
+  {
+   "index": 193,
+   "id": "medrxiv:10.64898/2026.09.11.26362889",
+   "label": "Health systems and quality improvement",
+   "sha256": "cfff34e0bc2f4a57c5856ec84bba518ccc6241ef6353553ef60ce076895f8c65",
+   "license": "cc by"
+  },
+  {
+   "index": 194,
+   "id": "medrxiv:10.64898/2026.06.30.26356974",
+   "label": "Health systems and quality improvement",
+   "sha256": "b549b0520f0cc23fc041f0b0ed04cc257d7a3e6242664e436cbff5de211ce293",
+   "license": "cc by"
+  },
+  {
+   "index": 195,
+   "id": "medrxiv:10.64898/2026.10.21.26366109",
+   "label": "Health systems and quality improvement",
+   "sha256": "6e70d7269e9d82c8bdebbc42ca38d77389c490e295e9b0102d2ec3d0f0e85561",
+   "license": "cc by"
+  },
+  {
+   "index": 196,
+   "id": "medrxiv:10.64898/2026.09.15.26363185",
+   "label": "Health systems and quality improvement",
+   "sha256": "acc9ef6f4cdde80273fb980cdbe87a95029746fdbbdc42ab1ab6f9818df3998b",
+   "license": "cc by"
+  },
+  {
+   "index": 197,
+   "id": "medrxiv:10.64898/2026.09.25.26363989",
+   "label": "Health systems and quality improvement",
+   "sha256": "7624d614f141c0e57013136eb21ab0fefd35c2ef7f62472bde54535e771d6ece",
+   "license": "cc by"
+  },
+  {
+   "index": 198,
+   "id": "medrxiv:10.64898/2026.09.11.26362863",
+   "label": "Health systems and quality improvement",
+   "sha256": "672c556fa85f8e21b666d3504eb2b880f7623750cc4169ed58635debf8e6afa1",
+   "license": "cc by"
+  },
+  {
+   "index": 199,
+   "id": "medrxiv:10.64898/2026.08.03.26359628",
+   "label": "Health systems and quality improvement",
+   "sha256": "3f36239927b25b2ee847e7004eabcf4ffc74345fe5524c2e05100a740ef9589f",
+   "license": "cc by"
+  },
+  {
+   "index": 200,
+   "id": "medrxiv:10.64898/2026.09.22.26363748",
+   "label": "Hiv aids",
+   "sha256": "2634e82caf69529efdb393331a2bc4e08040497752943635f58adcbad87fc8ed",
+   "license": "cc by"
+  },
+  {
+   "index": 201,
+   "id": "medrxiv:10.64898/2026.08.10.26360062",
+   "label": "Hiv aids",
+   "sha256": "547d53c401038bc60165e3eb87bd0dfe59b12abb3c38d0e510af9b6bc7c67eb9",
+   "license": "cc by"
+  },
+  {
+   "index": 202,
+   "id": "medrxiv:10.64898/2026.07.22.26358726",
+   "label": "Hiv aids",
+   "sha256": "33b79ff93ff284a6fcb153609a6a75e001660e8c826d248fd88e30a96a96964b",
+   "license": "cc by"
+  },
+  {
+   "index": 203,
+   "id": "medrxiv:10.64898/2026.10.08.26365025",
+   "label": "Hiv aids",
+   "sha256": "58252ddb8ca6f2deb900b1cbe015cc57a3ed21bbacfd8290bc3ca678737554ae",
+   "license": "cc by"
+  },
+  {
+   "index": 204,
+   "id": "medrxiv:10.64898/2026.08.30.26361753",
+   "label": "Hiv aids",
+   "sha256": "bf10c2699c0e52f17afcf0bfa063a62334cfbc52b7a65b49bae7ab13d34699d5",
+   "license": "cc by"
+  },
+  {
+   "index": 205,
+   "id": "medrxiv:10.64898/2026.10.15.26365601",
+   "label": "Hiv aids",
+   "sha256": "1685467e573b662ed1cddf5549fd97fdfa277ab1b2ada56c3e9427e60929db43",
+   "license": "cc by"
+  },
+  {
+   "index": 206,
+   "id": "medrxiv:10.64898/2026.07.31.26359204",
+   "label": "Hiv aids",
+   "sha256": "13d389ac2ff8b79d8cc32eb119a17a6e00f9793558037e4d17b0c561b34afc90",
+   "license": "cc by"
+  },
+  {
+   "index": 207,
+   "id": "medrxiv:10.64898/2026.06.28.26356788",
+   "label": "Hiv aids",
+   "sha256": "7a2f1426bda2df284c9124e34d947b611b98bd94a62415d5c0e33da97235c6ba",
+   "license": "cc by"
+  },
+  {
+   "index": 208,
+   "id": "medrxiv:10.64898/2026.09.03.26362133",
+   "label": "Hiv aids",
+   "sha256": "a73080e86b17a9d31592a0f1e5e9ae2f0d16b93771a25fe1946f44000e14850b",
+   "license": "cc by"
+  },
+  {
+   "index": 209,
+   "id": "medrxiv:10.64898/2026.08.24.26360985",
+   "label": "Hiv aids",
+   "sha256": "55e65e55c6b2346363c07c3ab30ffb9cd79e5bb053293cb1275810c7b209dd4e",
+   "license": "cc by"
+  },
+  {
+   "index": 210,
+   "id": "medrxiv:10.64898/2026.10.01.26364483",
+   "label": "Hiv aids",
+   "sha256": "e30222006166f726b59004c3cd5e188cd4cb443912957baeae98f72582cbe442",
+   "license": "cc by"
+  },
+  {
+   "index": 211,
+   "id": "medrxiv:10.64898/2026.09.14.26363087",
+   "label": "Hiv aids",
+   "sha256": "79bc987c5c80e40573d25070d56a131e9fc3f1b61f9efc23e7edafac350c20c2",
+   "license": "cc by"
+  },
+  {
+   "index": 212,
+   "id": "medrxiv:10.64898/2026.08.13.26360358",
+   "label": "Hiv aids",
+   "sha256": "4f89db737a7c5860cf88edf8816eae10194483eaedfa43737287707d46b2cd90",
+   "license": "cc by"
+  },
+  {
+   "index": 213,
+   "id": "medrxiv:10.64898/2026.08.19.26360772",
+   "label": "Hiv aids",
+   "sha256": "622a50eae90585fea75ec981ef57fb198f89e6b99b1bcdc500c5da8bd8e7ded0",
+   "license": "cc by"
+  },
+  {
+   "index": 214,
+   "id": "medrxiv:10.64898/2026.08.20.26360906",
+   "label": "Hiv aids",
+   "sha256": "a32de8cd8c1b5cfcd67385cf9a3a37a143dae6ffa15163ff5999c3b80c821184",
+   "license": "cc by"
+  },
+  {
+   "index": 215,
+   "id": "medrxiv:10.64898/2026.10.22.26366194",
+   "label": "Hiv aids",
+   "sha256": "f413f50a955de2cbc4e7f09350d9155aadfeb593decdadd4c8076132bb856daa",
+   "license": "cc by"
+  },
+  {
+   "index": 216,
+   "id": "medrxiv:10.64898/2026.07.29.26359226",
+   "label": "Hiv aids",
+   "sha256": "5a1d2e6da365a60aae79bee637c45cae196825fbf43f92803bbd8c76b4e2a18a",
+   "license": "cc by"
+  },
+  {
+   "index": 217,
+   "id": "medrxiv:10.64898/2026.08.10.26360082",
+   "label": "Hiv aids",
+   "sha256": "d62f85c2f6b035a3a81b4de49d4a6972cc7bf794663de9ac8c793392442093ef",
+   "license": "cc by"
+  },
+  {
+   "index": 218,
+   "id": "medrxiv:10.64898/2026.09.27.26364124",
+   "label": "Hiv aids",
+   "sha256": "94fb23d09a1628f20d198aa6ed3faeb42714e7697eaed44b1f9fd93a2ea9a293",
+   "license": "cc by"
+  },
+  {
+   "index": 219,
+   "id": "medrxiv:10.64898/2026.10.13.26365391",
+   "label": "Hiv aids",
+   "sha256": "4125445bedb7334a7d43f93e0fd1ffaec1d5c7678a9062c5acd5fa32f2521a31",
+   "license": "cc by"
+  },
+  {
+   "index": 220,
+   "id": "medrxiv:10.64898/2026.08.05.26359761",
+   "label": "Hiv aids",
+   "sha256": "2a57dd7d9cf8103d922872619ecebfd7cd1e0f831c67985e207f05e078226179",
+   "license": "cc by"
+  },
+  {
+   "index": 221,
+   "id": "medrxiv:10.64898/2026.08.19.26360868",
+   "label": "Hiv aids",
+   "sha256": "dd5cdb4dc2fe966c4e4c3626ee6dab3abcd5eb9ab8a79f8677d202b5da9ef9c7",
+   "license": "cc by"
+  },
+  {
+   "index": 222,
+   "id": "medrxiv:10.64898/2026.07.13.26357907",
+   "label": "Hiv aids",
+   "sha256": "f6a8d1eb6214bb97253f9d9cbe99e490809cc843cefedb6324c0d8c765f26b01",
+   "license": "cc by"
+  },
+  {
+   "index": 223,
+   "id": "medrxiv:10.64898/2026.07.30.26359343",
+   "label": "Hiv aids",
+   "sha256": "d4f35e35f34d3d8e2324a6991bfdba2f88614ebc13cea970b7806fdd8c3b7e77",
+   "license": "cc by"
+  },
+  {
+   "index": 224,
+   "id": "medrxiv:10.64898/2026.10.18.26365861",
+   "label": "Hiv aids",
+   "sha256": "217a3695809cc2a1464a5a45e5984cc2eb6837437ae7be9ca4a2909bdfc54de7",
+   "license": "cc by"
+  },
+  {
+   "index": 225,
+   "id": "medrxiv:10.64898/2026.07.03.26357226",
+   "label": "Infectious diseases",
+   "sha256": "6c4393be99843e3da7c8b984ef953b6f674804226e8e1e8531ac4b53028b5d27",
+   "license": "cc by"
+  },
+  {
+   "index": 226,
+   "id": "medrxiv:10.64898/2026.10.16.26365750",
+   "label": "Infectious diseases",
+   "sha256": "d0ff6ba0674a44f3482a8ce904b379089653b6eece768085b199d98993363f34",
+   "license": "cc by"
+  },
+  {
+   "index": 227,
+   "id": "medrxiv:10.64898/2026.08.27.26361401",
+   "label": "Infectious diseases",
+   "sha256": "5a70ca3efa1fe437604437fb6d08a697b0fbaba9ab0839c0b0f2490668180bb3",
+   "license": "cc by"
+  },
+  {
+   "index": 228,
+   "id": "medrxiv:10.64898/2026.07.23.26358609",
+   "label": "Infectious diseases",
+   "sha256": "290f8ebac281445dd3a9d3414a068e41b224076c78cdd2e71815f516c70c79a4",
+   "license": "cc by"
+  },
+  {
+   "index": 229,
+   "id": "medrxiv:10.64898/2026.08.17.26360599",
+   "label": "Infectious diseases",
+   "sha256": "acc4708edaa3c8b9088a3344d455b9a908768289b5511f62519ec8bb107ccd59",
+   "license": "cc by"
+  },
+  {
+   "index": 230,
+   "id": "medrxiv:10.64898/2026.10.02.26364627",
+   "label": "Infectious diseases",
+   "sha256": "63c171fc391d82116792ec5abcb62609b1deb5be42d74dda3b8abe508ed601a4",
+   "license": "cc by"
+  },
+  {
+   "index": 231,
+   "id": "medrxiv:10.64898/2026.09.10.26362725",
+   "label": "Infectious diseases",
+   "sha256": "6aca2d10d13a6fc53211e16089b22aa7765159b4ee76278eae3324a56cc74e8d",
+   "license": "cc by"
+  },
+  {
+   "index": 232,
+   "id": "medrxiv:10.64898/2026.10.23.26366133",
+   "label": "Infectious diseases",
+   "sha256": "8a70f32890d55ac7f843f4a3f1d4393c379737a8ca9c84c498ece836d4ad3ebc",
+   "license": "cc by"
+  },
+  {
+   "index": 233,
+   "id": "medrxiv:10.64898/2026.08.28.26361601",
+   "label": "Infectious diseases",
+   "sha256": "c20db17a6957d567edb6aa6617af058ed43bb0e75b6f75adf505c2bae8da37ff",
+   "license": "cc by"
+  },
+  {
+   "index": 234,
+   "id": "medrxiv:10.64898/2026.09.10.26362730",
+   "label": "Infectious diseases",
+   "sha256": "0155d920957eb219a004e1d231e24f0e02a061e1cd383f2d413ba6ae0c524dec",
+   "license": "cc by"
+  },
+  {
+   "index": 235,
+   "id": "medrxiv:10.64898/2026.10.22.26366162",
+   "label": "Infectious diseases",
+   "sha256": "3666b24ceb2eae3a01e43f483bea1052d678c651a9a6c1c639af8d98e3927b31",
+   "license": "cc by"
+  },
+  {
+   "index": 236,
+   "id": "medrxiv:10.64898/2026.07.21.26358587",
+   "label": "Infectious diseases",
+   "sha256": "186211c83f7a7e6de837e8c44bd2043f879a568d63c72348103b7b254d279b33",
+   "license": "cc by"
+  },
+  {
+   "index": 237,
+   "id": "medrxiv:10.64898/2026.09.01.26361896",
+   "label": "Infectious diseases",
+   "sha256": "0ab453853875abef2ffaf8d4e49e3bfee0c46d5caf072cbe74ccb1e0bf011a5c",
+   "license": "cc by"
+  },
+  {
+   "index": 238,
+   "id": "medrxiv:10.64898/2026.09.15.26363097",
+   "label": "Infectious diseases",
+   "sha256": "20afbbebbeb80661263c3777b3058a1b9aa69c9d6439e92ece2f0cf87fce7b64",
+   "license": "cc by"
+  },
+  {
+   "index": 239,
+   "id": "medrxiv:10.64898/2026.09.23.26363796",
+   "label": "Infectious diseases",
+   "sha256": "99db618dfdb71af032b25b9eef2d9c64da6661a3fea3c44c2ee9a3c4490e9b66",
+   "license": "cc by"
+  },
+  {
+   "index": 240,
+   "id": "medrxiv:10.64898/2026.07.08.26357545",
+   "label": "Infectious diseases",
+   "sha256": "dbf62e514f6fae0862fc52517ebd70be860c18705f4d34c1aa3a0f30bbef9043",
+   "license": "cc by"
+  },
+  {
+   "index": 241,
+   "id": "medrxiv:10.64898/2026.06.25.26356472",
+   "label": "Infectious diseases",
+   "sha256": "2c3fceaa935c8eb970d9ddc0e3404de7980a32e67e6b1cdaf02f0adb7e23289d",
+   "license": "cc by"
+  },
+  {
+   "index": 242,
+   "id": "medrxiv:10.64898/2026.08.07.26359686",
+   "label": "Infectious diseases",
+   "sha256": "6deabde35ad1c23a68506dbfad05afb1816e7bb247cb4f76cd95c07caf56fd2b",
+   "license": "cc by"
+  },
+  {
+   "index": 243,
+   "id": "medrxiv:10.64898/2026.09.03.26362164",
+   "label": "Infectious diseases",
+   "sha256": "f820c430e0d383136694058442c6588093160c5427d9ab1c1b6d7a9633822317",
+   "license": "cc by"
+  },
+  {
+   "index": 244,
+   "id": "medrxiv:10.64898/2026.07.29.26358751",
+   "label": "Infectious diseases",
+   "sha256": "e691ceb848a26c931033ba2f84b94e6867794dd2658cbb94ef1efd258cb45853",
+   "license": "cc by"
+  },
+  {
+   "index": 245,
+   "id": "medrxiv:10.64898/2026.10.27.26366573",
+   "label": "Infectious diseases",
+   "sha256": "5c783a3d44fde962e58c5ffb4c42c2b9455acfdbf5f1688665d759febf7f0060",
+   "license": "cc by"
+  },
+  {
+   "index": 246,
+   "id": "medrxiv:10.64898/2026.08.12.26360317",
+   "label": "Infectious diseases",
+   "sha256": "74c7b045868cd23ed9f54f8d4260b4c4e522f3a1e25b997c62f51658d6636bf7",
+   "license": "cc by"
+  },
+  {
+   "index": 247,
+   "id": "medrxiv:10.64898/2026.09.27.26364088",
+   "label": "Infectious diseases",
+   "sha256": "c79bf5657e66a480453ab85230f10c3c5f5915631d56208c73ba6a9ac381c8c2",
+   "license": "cc by"
+  },
+  {
+   "index": 248,
+   "id": "medrxiv:10.64898/2026.09.14.26362805",
+   "label": "Infectious diseases",
+   "sha256": "e2dfe939b3bae03d3a56156eccfd19331c39056ac0ffa1c8a9f59252c50917ec",
+   "license": "cc by"
+  },
+  {
+   "index": 249,
+   "id": "medrxiv:10.64898/2026.10.23.26366021",
+   "label": "Infectious diseases",
+   "sha256": "d9892db464d5ed121d384b419f3ae984dcaa69444996b1b70f4588e90d35b843",
+   "license": "cc by"
+  },
+  {
+   "index": 250,
+   "id": "medrxiv:10.64898/2026.07.04.26357287",
+   "label": "Neurology",
+   "sha256": "96a17c034d656418de010fa6ca70e156d15236d6fdfbf708c951d2dc09d3b8df",
+   "license": "cc by"
+  },
+  {
+   "index": 251,
+   "id": "medrxiv:10.64898/2026.09.18.26363446",
+   "label": "Neurology",
+   "sha256": "d6da658c31844ebf3035190e2a2f2672c5cfdae05c63f8afbeb440bc2cf756fd",
+   "license": "cc by"
+  },
+  {
+   "index": 252,
+   "id": "medrxiv:10.64898/2026.10.26.26366535",
+   "label": "Neurology",
+   "sha256": "8917633d86408dc11e48d75ae4d9af7c2f24681da46a8367a1c16411a5d2fd6b",
+   "license": "cc by"
+  },
+  {
+   "index": 253,
+   "id": "medrxiv:10.64898/2026.09.23.26363840",
+   "label": "Neurology",
+   "sha256": "9189d10cec568c6fe745d94946c421a7811baa3c99da1c3a86a580cc0bd584f7",
+   "license": "cc by"
+  },
+  {
+   "index": 254,
+   "id": "medrxiv:10.64898/2026.07.07.26357255",
+   "label": "Neurology",
+   "sha256": "5fce1969aeee71edc8252c79e54db2b3e8c6683f8d5cfab92370d4f6291db013",
+   "license": "cc by"
+  },
+  {
+   "index": 255,
+   "id": "medrxiv:10.64898/2026.07.29.26359263",
+   "label": "Neurology",
+   "sha256": "210bc54aedd39093dd9fa81b6e6e772a665d43302e03c3c947e0b5d6cd065b83",
+   "license": "cc by"
+  },
+  {
+   "index": 256,
+   "id": "medrxiv:10.64898/2026.09.29.26363951",
+   "label": "Neurology",
+   "sha256": "34b8153daa5ec49e9024357d2a922e86bbe4c0f260bff9259637700968e08b38",
+   "license": "cc by"
+  },
+  {
+   "index": 257,
+   "id": "medrxiv:10.64898/2026.07.10.26357747",
+   "label": "Neurology",
+   "sha256": "3110d06d52a5b86e6743e2d689f9cf35f746b41a4ac3f75a7d0c720d57360357",
+   "license": "cc by"
+  },
+  {
+   "index": 258,
+   "id": "medrxiv:10.64898/2026.08.18.26360513",
+   "label": "Neurology",
+   "sha256": "f2d1606fcc4ab9b505647021fd12ec2e9361ead9be0e480f5ac988be650ed218",
+   "license": "cc by"
+  },
+  {
+   "index": 259,
+   "id": "medrxiv:10.64898/2026.07.28.26359146",
+   "label": "Neurology",
+   "sha256": "fcd281958afcf8100867a5f296b9d5651c28f458a3f1fcdf7f9689286853d52f",
+   "license": "cc by"
+  },
+  {
+   "index": 260,
+   "id": "medrxiv:10.64898/2026.10.23.26366257",
+   "label": "Neurology",
+   "sha256": "abd6a764ee74fc4d3ae270f19d88a153c8e5613db3a484288d51fa8772b4f545",
+   "license": "cc by"
+  },
+  {
+   "index": 261,
+   "id": "medrxiv:10.64898/2026.10.18.26365832",
+   "label": "Neurology",
+   "sha256": "00008bd5f2556972446af2dfc9d233da15c7da89b6451053a5660830cec843c3",
+   "license": "cc by"
+  },
+  {
+   "index": 262,
+   "id": "medrxiv:10.64898/2026.10.09.26365112",
+   "label": "Neurology",
+   "sha256": "7b47a6885e12156cafac45dd59f4df8412a09c728344663f9a0c84fdc21fff1c",
+   "license": "cc by"
+  },
+  {
+   "index": 263,
+   "id": "medrxiv:10.64898/2026.06.25.26356549",
+   "label": "Neurology",
+   "sha256": "7b8fd521923a3ec4e136c42bdca0fb5fa1ff5f13928ec62d6da862b7e4583de5",
+   "license": "cc by"
+  },
+  {
+   "index": 264,
+   "id": "medrxiv:10.64898/2026.07.04.26357296",
+   "label": "Neurology",
+   "sha256": "59d79e886f974225c36808bb0d54f8ef5c880fe712da93e959720400fae3f0a8",
+   "license": "cc by"
+  },
+  {
+   "index": 265,
+   "id": "medrxiv:10.64898/2026.10.12.26365339",
+   "label": "Neurology",
+   "sha256": "ca8708dd1e341b1104e10a168acee2b02611489b2d3ed417c6bfe5090197562e",
+   "license": "cc by"
+  },
+  {
+   "index": 266,
+   "id": "medrxiv:10.64898/2026.08.31.26361810",
+   "label": "Neurology",
+   "sha256": "0f11b50ee112fe6e1420e4b0b2dd1255c8baf8f72c52036c36aa85c6830f2b4a",
+   "license": "cc by"
+  },
+  {
+   "index": 267,
+   "id": "medrxiv:10.64898/2026.08.26.26361491",
+   "label": "Neurology",
+   "sha256": "2c90d262dc57457f0ad323ef12260baf740b6c60cacf7337a62bcedcbd86cf33",
+   "license": "cc by"
+  },
+  {
+   "index": 268,
+   "id": "medrxiv:10.64898/2026.10.05.26364594",
+   "label": "Neurology",
+   "sha256": "c1aab42e131d695692ea7cc20b4376648cee9817be931dadd4f2027eae93586f",
+   "license": "cc by"
+  },
+  {
+   "index": 269,
+   "id": "medrxiv:10.64898/2026.07.07.26357445",
+   "label": "Neurology",
+   "sha256": "29fd6dd6e36107257abffc109d312d59e4dd5e4ee4191fd5b0480dcb4fdef958",
+   "license": "cc by"
+  },
+  {
+   "index": 270,
+   "id": "medrxiv:10.64898/2026.09.23.26363703",
+   "label": "Neurology",
+   "sha256": "59f07ddc5486b4c040a6608ed2b3f39aea97d568bbd9d1e0a1280ad35006ccd3",
+   "license": "cc by"
+  },
+  {
+   "index": 271,
+   "id": "medrxiv:10.64898/2026.07.22.26357347",
+   "label": "Neurology",
+   "sha256": "97a415291c1343315dfc672cb7091ee6c4efa6af65e5662db625360c0de33c80",
+   "license": "cc by"
+  },
+  {
+   "index": 272,
+   "id": "medrxiv:10.64898/2026.08.19.26360591",
+   "label": "Neurology",
+   "sha256": "de80dd25a32087cc1cf61e22b357583a4a00b2060bb67c9da2478fdc7e59e7bf",
+   "license": "cc by"
+  },
+  {
+   "index": 273,
+   "id": "medrxiv:10.64898/2026.10.08.26365079",
+   "label": "Neurology",
+   "sha256": "6b44698b9802f03508c308930e0471cb4c708039d1ad96463fcbf437b11a45da",
+   "license": "cc by"
+  },
+  {
+   "index": 274,
+   "id": "medrxiv:10.64898/2026.08.27.26361425",
+   "label": "Neurology",
+   "sha256": "ebeeb1e346836a3d1f4aa73ea8f47c0b9b8647c6482e4fdf3fca1aba5f5604fb",
+   "license": "cc by"
+  },
+  {
+   "index": 275,
+   "id": "medrxiv:10.64898/2026.07.07.26357449",
+   "label": "Nutrition",
+   "sha256": "3769ac5b2ca7bcc678127af53465f7ec79e000ce3f554f5c1a93224e668738e0",
+   "license": "cc by"
+  },
+  {
+   "index": 276,
+   "id": "medrxiv:10.64898/2026.07.11.26357806",
+   "label": "Nutrition",
+   "sha256": "3fa4c48feec8d0af1477c829b73d3bfbe4164e07bde3675b5bd703527240bfe3",
+   "license": "cc by"
+  },
+  {
+   "index": 277,
+   "id": "medrxiv:10.64898/2026.06.30.26356853",
+   "label": "Nutrition",
+   "sha256": "074bb28ce05d38185e0fade10e98452a4f9849978bd6797cfbf46ef9f1b8ffc0",
+   "license": "cc by"
+  },
+  {
+   "index": 278,
+   "id": "medrxiv:10.64898/2026.09.22.26363746",
+   "label": "Nutrition",
+   "sha256": "e193718cb46dd74647bf882f6d6cf40f558ef18130ab2fad6992f53f124f5be8",
+   "license": "cc by"
+  },
+  {
+   "index": 279,
+   "id": "medrxiv:10.64898/2026.09.24.26363967",
+   "label": "Nutrition",
+   "sha256": "abea9290e7b83342c80978952f9251b77076cf52b148b5068a48158818f93e61",
+   "license": "cc by"
+  },
+  {
+   "index": 280,
+   "id": "medrxiv:10.64898/2026.07.15.26358181",
+   "label": "Nutrition",
+   "sha256": "70f62bcae2a4d8440dab65f5b154170af84f18fb615d0cec7b67f01923bf08eb",
+   "license": "cc by"
+  },
+  {
+   "index": 281,
+   "id": "medrxiv:10.64898/2026.10.13.26365381",
+   "label": "Nutrition",
+   "sha256": "02d143bc6848f873a6ec0af60a916501a531c93c067d038230a214a22ecbd268",
+   "license": "cc by"
+  },
+  {
+   "index": 282,
+   "id": "medrxiv:10.64898/2026.07.07.26357503",
+   "label": "Nutrition",
+   "sha256": "eee498433c8498c72591210dc10783799e8563b57bf2836c691d368c45b67186",
+   "license": "cc by"
+  },
+  {
+   "index": 283,
+   "id": "medrxiv:10.64898/2026.10.05.26364809",
+   "label": "Nutrition",
+   "sha256": "5b1f3645382c26d1bd8f0b92657d1f75159cc12224ee4a172efdff34e54c1e7d",
+   "license": "cc by"
+  },
+  {
+   "index": 284,
+   "id": "medrxiv:10.64898/2026.09.19.26363474",
+   "label": "Nutrition",
+   "sha256": "badb1118c3a999227bc9ed1992aed88b1e5a082da3823b63d235510711f40aa3",
+   "license": "cc by"
+  },
+  {
+   "index": 285,
+   "id": "medrxiv:10.64898/2026.09.22.26363621",
+   "label": "Nutrition",
+   "sha256": "f67d4930f12df9790312f6f377d0e0ef51478f618114622dd0b8a4805f34aecd",
+   "license": "cc by"
+  },
+  {
+   "index": 286,
+   "id": "medrxiv:10.64898/2026.09.28.26364174",
+   "label": "Nutrition",
+   "sha256": "6ff0ce573615bdeb53faf01ecb30f6f92c9d45900360ea747c803e2473e351d7",
+   "license": "cc by"
+  },
+  {
+   "index": 287,
+   "id": "medrxiv:10.64898/2026.09.14.26362991",
+   "label": "Nutrition",
+   "sha256": "990fa5954bd9272004908a370bd1427eec5224e35b17d610111a2b4acd595159",
+   "license": "cc by"
+  },
+  {
+   "index": 288,
+   "id": "medrxiv:10.64898/2026.08.28.26361595",
+   "label": "Nutrition",
+   "sha256": "29da55167c1a1dda2a61bbbfd03ddb844e7a1e14d040dd26c692652e95220cc9",
+   "license": "cc by"
+  },
+  {
+   "index": 289,
+   "id": "medrxiv:10.64898/2026.09.09.26362652",
+   "label": "Nutrition",
+   "sha256": "20115d36c5911f16c54bb7b60c356a9e2cc2b7f37ac1bc1a8a5a22aedcc4bb93",
+   "license": "cc by"
+  },
+  {
+   "index": 290,
+   "id": "medrxiv:10.64898/2026.07.02.26357185",
+   "label": "Nutrition",
+   "sha256": "a34f6bb3c190401ec6e3d54c1326a4f397c4a30ef90911e1b25dc6327e3bc0c2",
+   "license": "cc by"
+  },
+  {
+   "index": 291,
+   "id": "medrxiv:10.64898/2026.09.29.26364268",
+   "label": "Nutrition",
+   "sha256": "9f4fb3f1ae3f6a19601e96f784714dc26fa126f6f1aae42e5584e4ed2286aac8",
+   "license": "cc by"
+  },
+  {
+   "index": 292,
+   "id": "medrxiv:10.64898/2026.09.13.26362958",
+   "label": "Nutrition",
+   "sha256": "3f51697789f2b08840a96fa0ad0640a23f2ef50bd4aa6cb35cfbcc48a782ad80",
+   "license": "cc by"
+  },
+  {
+   "index": 293,
+   "id": "medrxiv:10.64898/2026.09.20.26363532",
+   "label": "Nutrition",
+   "sha256": "7a6a0de0912771b462d18a0295d34baadd7baa8f1f2ecf5786c3ba752330605e",
+   "license": "cc by"
+  },
+  {
+   "index": 294,
+   "id": "medrxiv:10.64898/2026.07.13.26357913",
+   "label": "Nutrition",
+   "sha256": "a7d0a5ef83d5fb8bf5220ee81317c2821013ca76a24103600336606e414b7c1c",
+   "license": "cc by"
+  },
+  {
+   "index": 295,
+   "id": "medrxiv:10.64898/2026.10.26.26366503",
+   "label": "Nutrition",
+   "sha256": "dc735278e97fb123fb2fafc079f3c5708555a76413ad5e4e4f158f9e288913af",
+   "license": "cc by"
+  },
+  {
+   "index": 296,
+   "id": "medrxiv:10.64898/2026.07.22.26358749",
+   "label": "Nutrition",
+   "sha256": "0269dcbd42e418bd67d1ef1ba58bddc72d05f82e66c27b1c62cdb3219a1989d4",
+   "license": "cc by"
+  },
+  {
+   "index": 297,
+   "id": "medrxiv:10.64898/2026.07.01.26356915",
+   "label": "Nutrition",
+   "sha256": "ab2161999a5cd4adfbf91f1610f34d746b802da3a353fdc8f6be9925f6ab3701",
+   "license": "cc by"
+  },
+  {
+   "index": 298,
+   "id": "medrxiv:10.64898/2026.07.01.26356557",
+   "label": "Nutrition",
+   "sha256": "fb79d541c8ef1779233d161940746f5e4bf32af02f144410f5e14153dd99ac2f",
+   "license": "cc by"
+  },
+  {
+   "index": 299,
+   "id": "medrxiv:10.64898/2026.07.09.26357618",
+   "label": "Nutrition",
+   "sha256": "5075fd33c30decc6eb04e1ab9d7f9c3c7d743ae3cf7fd4abe758b23279f1af79",
+   "license": "cc by"
+  },
+  {
+   "index": 300,
+   "id": "medrxiv:10.64898/2026.08.24.26361193",
+   "label": "Obstetrics and gynecology",
+   "sha256": "b79e659020fe2ecb485f9c4d26b6fe130f6decbf5886fb53f835166f529f83f0",
+   "license": "cc by"
+  },
+  {
+   "index": 301,
+   "id": "medrxiv:10.64898/2026.09.30.26364393",
+   "label": "Obstetrics and gynecology",
+   "sha256": "3e602b51de407af7527e3d1cdd76bc899ff975f64f5e7f251f5e5ff4babcf3be",
+   "license": "cc by"
+  },
+  {
+   "index": 302,
+   "id": "medrxiv:10.64898/2026.07.10.26357771",
+   "label": "Obstetrics and gynecology",
+   "sha256": "b5f5c80304df65b2e3842c6936d9fc0be3d5b144957a7cf1616985aba6e5d421",
+   "license": "cc by"
+  },
+  {
+   "index": 303,
+   "id": "medrxiv:10.64898/2026.07.01.26356192",
+   "label": "Obstetrics and gynecology",
+   "sha256": "4c1168d8c99fbe0b0ab997d47a98f30d9a35a953e73ab2576039853ab54371ad",
+   "license": "cc by"
+  },
+  {
+   "index": 304,
+   "id": "medrxiv:10.64898/2026.07.21.26358423",
+   "label": "Obstetrics and gynecology",
+   "sha256": "796ea0e7700517f79fa2bdab58d2fb047195c278372e006ac690a65ec2d025d5",
+   "license": "cc by"
+  },
+  {
+   "index": 305,
+   "id": "medrxiv:10.64898/2026.08.25.26360981",
+   "label": "Obstetrics and gynecology",
+   "sha256": "b834de3c20dcdc950d0684d4ce27f53f6f307646d5959bd89e60bc1d4467d6c9",
+   "license": "cc by"
+  },
+  {
+   "index": 306,
+   "id": "medrxiv:10.64898/2026.07.12.26357853",
+   "label": "Obstetrics and gynecology",
+   "sha256": "8ce6fca788294c90bdb8e21f76f47ac0cec811bad4c7a5b0526aa6232b6aea22",
+   "license": "cc by"
+  },
+  {
+   "index": 307,
+   "id": "medrxiv:10.64898/2026.07.18.26358404",
+   "label": "Obstetrics and gynecology",
+   "sha256": "cbbbe1ea838ebd9bb5da8420490a9befe8208cc35f9f983b74210d0ac4ce153c",
+   "license": "cc by"
+  },
+  {
+   "index": 308,
+   "id": "medrxiv:10.64898/2026.07.12.26357884",
+   "label": "Obstetrics and gynecology",
+   "sha256": "9800fc8b3198df654eb8e5ae6b49e2e005b44cf89d11ff5d8236fab99387230d",
+   "license": "cc by"
+  },
+  {
+   "index": 309,
+   "id": "medrxiv:10.64898/2026.09.18.26363356",
+   "label": "Obstetrics and gynecology",
+   "sha256": "22eec5c1f1af82f7b660d50794aa7aa66afdc391675d2ba1898ec2386a69638d",
+   "license": "cc by"
+  },
+  {
+   "index": 310,
+   "id": "medrxiv:10.64898/2026.08.18.26360660",
+   "label": "Obstetrics and gynecology",
+   "sha256": "4f9a0998020dd1ee8ec7ec1318f1cc6b2f93da63569d4cd0c823a58e7c463391",
+   "license": "cc by"
+  },
+  {
+   "index": 311,
+   "id": "medrxiv:10.64898/2026.10.21.26366170",
+   "label": "Obstetrics and gynecology",
+   "sha256": "aa302a6332acfd0038e281560e236b159e53432fdb24c3a1d086a18d93125ac5",
+   "license": "cc by"
+  },
+  {
+   "index": 312,
+   "id": "medrxiv:10.64898/2026.07.16.26358229",
+   "label": "Obstetrics and gynecology",
+   "sha256": "f6b7ede1ceffb80f7653d1afdfab68d955e38d6c750ddc837912dbf2ea5e78b1",
+   "license": "cc by"
+  },
+  {
+   "index": 313,
+   "id": "medrxiv:10.64898/2026.10.05.26364820",
+   "label": "Obstetrics and gynecology",
+   "sha256": "ef27f4a74312a048d85322c6b8a34f111463f422d0747cbe8ba92dfc07fa1c26",
+   "license": "cc by"
+  },
+  {
+   "index": 314,
+   "id": "medrxiv:10.64898/2026.10.06.26364926",
+   "label": "Obstetrics and gynecology",
+   "sha256": "c977b6373934fc5bdd5d3481037b6ceaa4e35b20425ff7ac4bd5ac54075de51b",
+   "license": "cc by"
+  },
+  {
+   "index": 315,
+   "id": "medrxiv:10.64898/2026.07.02.26357097",
+   "label": "Obstetrics and gynecology",
+   "sha256": "a1efa557f0ff83ef8c3872c1468d42c914265a8a7af591da385a49f6fa171564",
+   "license": "cc by"
+  },
+  {
+   "index": 316,
+   "id": "medrxiv:10.64898/2026.09.14.26360890",
+   "label": "Obstetrics and gynecology",
+   "sha256": "2666f8aef1f6cc3705e381d0996b8cf180a7296590b0e4542e99c5226ff2a239",
+   "license": "cc by"
+  },
+  {
+   "index": 317,
+   "id": "medrxiv:10.64898/2026.07.12.26357849",
+   "label": "Obstetrics and gynecology",
+   "sha256": "d10cfdf080047afb71c082132f2734c2c33a066971751eb247d35f2c3d1c55c3",
+   "license": "cc by"
+  },
+  {
+   "index": 318,
+   "id": "medrxiv:10.64898/2026.08.12.26360328",
+   "label": "Obstetrics and gynecology",
+   "sha256": "184cbec8054f5987feeee83ad6644a107f10a022d1d2c342c42e4ab8132c6ea2",
+   "license": "cc by"
+  },
+  {
+   "index": 319,
+   "id": "medrxiv:10.64898/2026.09.28.26364144",
+   "label": "Obstetrics and gynecology",
+   "sha256": "6238193e92447f3aff463a167f2dfc0243d8d100c78e575e81f908d2f8999d20",
+   "license": "cc by"
+  },
+  {
+   "index": 320,
+   "id": "medrxiv:10.64898/2026.09.28.26364140",
+   "label": "Obstetrics and gynecology",
+   "sha256": "a0a55b18ade0d4db1d2f72e177e37939e129cef58bf4ce7478a7f23416cdaf89",
+   "license": "cc by"
+  },
+  {
+   "index": 321,
+   "id": "medrxiv:10.64898/2026.07.16.26358262",
+   "label": "Obstetrics and gynecology",
+   "sha256": "70c947fe33de7ca887a8b348f77c6a06cf3eb07d0d95d4be5674b8e8e34a3578",
+   "license": "cc by"
+  },
+  {
+   "index": 322,
+   "id": "medrxiv:10.64898/2026.07.16.26358280",
+   "label": "Obstetrics and gynecology",
+   "sha256": "c638ccb949c40021885c8d58d1f0e0d754b5048ae2b9b38ef02b154d03d80a70",
+   "license": "cc by"
+  },
+  {
+   "index": 323,
+   "id": "medrxiv:10.64898/2026.07.21.26358548",
+   "label": "Obstetrics and gynecology",
+   "sha256": "2897cac1ca848adb4c5d54312b1004abe8ba791d1885c71cbf56173b7d2fdeb7",
+   "license": "cc by"
+  },
+  {
+   "index": 324,
+   "id": "medrxiv:10.64898/2026.08.25.26361309",
+   "label": "Obstetrics and gynecology",
+   "sha256": "8a581e162b161303e5ed57903a5669cd115b8e8f9c97c8be51cff6f08eb6f8e5",
+   "license": "cc by"
+  },
+  {
+   "index": 325,
+   "id": "medrxiv:10.64898/2026.10.15.26365611",
+   "label": "Occupational and environmental health",
+   "sha256": "973a0d2aa2c8bbdd2053c42ee2ac7dcc918c500e90518d7696aff26c4dd62cf7",
+   "license": "cc by"
+  },
+  {
+   "index": 326,
+   "id": "medrxiv:10.64898/2026.10.14.26365571",
+   "label": "Occupational and environmental health",
+   "sha256": "0cfffd8a3e6fb6d17021ac7c91e6438a93311fc5902c57d17c17a42716dd2b79",
+   "license": "cc by"
+  },
+  {
+   "index": 327,
+   "id": "medrxiv:10.64898/2026.10.12.26365229",
+   "label": "Occupational and environmental health",
+   "sha256": "2e6a0303064251959f6cd82b69a3a2c1fa5c3cda9e6043c0c99cabfde825cd2d",
+   "license": "cc by"
+  },
+  {
+   "index": 328,
+   "id": "medrxiv:10.64898/2026.10.12.26365281",
+   "label": "Occupational and environmental health",
+   "sha256": "16cc919d47f91ed84ff8f80f876d7b82a0812d43bb6f99faa0a404e9f9ca34e7",
+   "license": "cc by"
+  },
+  {
+   "index": 329,
+   "id": "medrxiv:10.64898/2026.09.30.26364391",
+   "label": "Occupational and environmental health",
+   "sha256": "603858cae952e4ae3b7cc7434c165443855df7b0568837dd600bb6522d8476c7",
+   "license": "cc by"
+  },
+  {
+   "index": 330,
+   "id": "medrxiv:10.64898/2026.10.29.26366631",
+   "label": "Occupational and environmental health",
+   "sha256": "183d0e224e15a011452f297b16eef6589285cfed441328f9db8f2750abe8ca85",
+   "license": "cc by"
+  },
+  {
+   "index": 331,
+   "id": "medrxiv:10.64898/2026.09.19.26362890",
+   "label": "Occupational and environmental health",
+   "sha256": "d20040d8d3661e9fc2b0b14d86e4e3a50d3a24bda90060000b905fb6ff3fdd42",
+   "license": "cc by"
+  },
+  {
+   "index": 332,
+   "id": "medrxiv:10.64898/2026.09.18.26363404",
+   "label": "Occupational and environmental health",
+   "sha256": "8ba26022c73ea33d38847601add2269c340cb3a1a5c7ae05fa7a0a46478e0bc2",
+   "license": "cc by"
+  },
+  {
+   "index": 333,
+   "id": "medrxiv:10.64898/2026.09.08.26362521",
+   "label": "Occupational and environmental health",
+   "sha256": "a14a9e531138f2f3b5ec09774b16cd67bde7deb0b382917ed3c4b621161d1a81",
+   "license": "cc by"
+  },
+  {
+   "index": 334,
+   "id": "medrxiv:10.64898/2026.10.04.26364727",
+   "label": "Occupational and environmental health",
+   "sha256": "30408e74c4de45d4061b537161d47052e7a3becc16cd7e5d195f8700fbc2e6f4",
+   "license": "cc by"
+  },
+  {
+   "index": 335,
+   "id": "medrxiv:10.64898/2026.08.06.26359845",
+   "label": "Occupational and environmental health",
+   "sha256": "9e9ce4d1b7d9a5c033d71660e8db7691b4cfea0d07ed557619b4f03b9df521c6",
+   "license": "cc by"
+  },
+  {
+   "index": 336,
+   "id": "medrxiv:10.64898/2026.08.19.26360866",
+   "label": "Occupational and environmental health",
+   "sha256": "cd4bd1a159f4e4bb201e92ffd9810104dd8de6eeef1c3f7968ea5842c303d7db",
+   "license": "cc by"
+  },
+  {
+   "index": 337,
+   "id": "medrxiv:10.64898/2026.10.27.26366313",
+   "label": "Occupational and environmental health",
+   "sha256": "a44a524771dca9c30253642aadb2ce02a25b0d45ad4c44c664c8b72728e9f599",
+   "license": "cc by"
+  },
+  {
+   "index": 338,
+   "id": "medrxiv:10.64898/2026.08.21.26361010",
+   "label": "Occupational and environmental health",
+   "sha256": "ec83f274e36a518082700c7f68bdd8149abdb99b1b9c79ed329435b6df3cca83",
+   "license": "cc by"
+  },
+  {
+   "index": 339,
+   "id": "medrxiv:10.64898/2026.07.30.26359338",
+   "label": "Occupational and environmental health",
+   "sha256": "63a5c0b741a01af93542421c8f5f025df82db449acc35562d04c59deb112ef9d",
+   "license": "cc by"
+  },
+  {
+   "index": 340,
+   "id": "medrxiv:10.64898/2026.07.07.26356427",
+   "label": "Occupational and environmental health",
+   "sha256": "4b23675a6dd8a45dac022d768b3a9e2774f8edc86bf3bf28bef96885fc947334",
+   "license": "cc by"
+  },
+  {
+   "index": 341,
+   "id": "medrxiv:10.64898/2026.07.23.26358519",
+   "label": "Occupational and environmental health",
+   "sha256": "01ca62275e377d840085d7eda80ebe457a54cb33ac873b686515c666350470cf",
+   "license": "cc by"
+  },
+  {
+   "index": 342,
+   "id": "medrxiv:10.64898/2026.09.01.26361906",
+   "label": "Occupational and environmental health",
+   "sha256": "71ade27cd6ed0731f5bf423696539a59104ad1670a152df87112850aad1ac1b4",
+   "license": "cc by"
+  },
+  {
+   "index": 343,
+   "id": "medrxiv:10.64898/2026.09.09.26361541",
+   "label": "Occupational and environmental health",
+   "sha256": "9b48149fc4b47659a710f5430994e09e24f4b7bd404e706166963ee6d1cb888b",
+   "license": "cc by"
+  },
+  {
+   "index": 344,
+   "id": "medrxiv:10.64898/2026.10.02.26364615",
+   "label": "Occupational and environmental health",
+   "sha256": "5b28e210e9e117e977c57747b2034ffc92f2d8e1bde3993abe6cb9d8dbc16acb",
+   "license": "cc by"
+  },
+  {
+   "index": 345,
+   "id": "medrxiv:10.64898/2026.10.16.26365757",
+   "label": "Occupational and environmental health",
+   "sha256": "eab08289cd4c319a93898fcc33a22b8b6c24f44700b38598b19957ffbe2a2d5d",
+   "license": "cc by"
+  },
+  {
+   "index": 346,
+   "id": "medrxiv:10.64898/2026.10.13.26365467",
+   "label": "Occupational and environmental health",
+   "sha256": "d0edd265091ecd3b4424cabcd919e5c114b618fe523b9ed998d1c9443cfc11e6",
+   "license": "cc by"
+  },
+  {
+   "index": 347,
+   "id": "medrxiv:10.64898/2026.10.07.26364935",
+   "label": "Occupational and environmental health",
+   "sha256": "47e398f6b2d9226ad04abad7569736d8c4fc3ab47f6ba911cbb10e37cfe86014",
+   "license": "cc by"
+  },
+  {
+   "index": 348,
+   "id": "medrxiv:10.64898/2026.08.20.26360559",
+   "label": "Occupational and environmental health",
+   "sha256": "abb60339a9a5b2732ee2e25b68227101e1665ba747b8342dde4dce27071d5e9a",
+   "license": "cc by"
+  },
+  {
+   "index": 349,
+   "id": "medrxiv:10.64898/2026.07.28.26359183",
+   "label": "Occupational and environmental health",
+   "sha256": "84b37e4c4957e34007bf1eee7faae5f8f49e333053e776d3692b92dec9341465",
+   "license": "cc by"
+  },
+  {
+   "index": 350,
+   "id": "medrxiv:10.64898/2026.07.02.26357095",
+   "label": "Oncology",
+   "sha256": "b5bcbaad92a62341bdcf6deeefbeacdbaa9f6ef292ccfedd7575ed93ee60bbfe",
+   "license": "cc by"
+  },
+  {
+   "index": 351,
+   "id": "medrxiv:10.64898/2026.07.02.26357107",
+   "label": "Oncology",
+   "sha256": "975a21773f2bebf537e7594b251c72bf7276784720dfd338936e493789d9f1e8",
+   "license": "cc by"
+  },
+  {
+   "index": 352,
+   "id": "medrxiv:10.64898/2026.08.12.26360308",
+   "label": "Oncology",
+   "sha256": "e58f0999e69778cdb344bc3508f3babb7d2b2e21cedf8e0a07ce67227c36b271",
+   "license": "cc by"
+  },
+  {
+   "index": 353,
+   "id": "medrxiv:10.64898/2026.07.16.26358297",
+   "label": "Oncology",
+   "sha256": "0eca645237a7cdba15b68e97cd56163047f947f3e39ddab7946b694184536bd5",
+   "license": "cc by"
+  },
+  {
+   "index": 354,
+   "id": "medrxiv:10.64898/2026.07.16.26358254",
+   "label": "Oncology",
+   "sha256": "b0c9250f50034eeb011b008ff1d3adb49a05a22735b4a9ed52781b22b6807074",
+   "license": "cc by"
+  },
+  {
+   "index": 355,
+   "id": "medrxiv:10.64898/2026.08.14.26360437",
+   "label": "Oncology",
+   "sha256": "e956186d165f6327dc1dae376dc4dd21a98e37355919245ea45cfa90d2b36368",
+   "license": "cc by"
+  },
+  {
+   "index": 356,
+   "id": "medrxiv:10.64898/2026.09.14.26363060",
+   "label": "Oncology",
+   "sha256": "88d7185add8be9ddac1bceffaa3eb84e2041265cbc307c44df49665be973acb4",
+   "license": "cc by"
+  },
+  {
+   "index": 357,
+   "id": "medrxiv:10.64898/2026.09.23.26363766",
+   "label": "Oncology",
+   "sha256": "135082325c19c5363755f4493e443a9439a56185a8d33be859bea06d891a7bde",
+   "license": "cc by"
+  },
+  {
+   "index": 358,
+   "id": "medrxiv:10.64898/2026.07.13.26357987",
+   "label": "Oncology",
+   "sha256": "0ed8bc26a37dfeb07c7f0ad7f73a7d2c2902c219c58e33f87a8a1d49ac73e0b9",
+   "license": "cc by"
+  },
+  {
+   "index": 359,
+   "id": "medrxiv:10.64898/2026.10.14.26365244",
+   "label": "Oncology",
+   "sha256": "e202a51881c620a0a9f3521dcd1ceca5cc446f328a219b33ec3f4217446801f2",
+   "license": "cc by"
+  },
+  {
+   "index": 360,
+   "id": "medrxiv:10.64898/2026.07.13.26357901",
+   "label": "Oncology",
+   "sha256": "7264ade99eefe78104b5822f48af3301aba7723b225171cc265625883570e218",
+   "license": "cc by"
+  },
+  {
+   "index": 361,
+   "id": "medrxiv:10.64898/2026.10.07.26364961",
+   "label": "Oncology",
+   "sha256": "14965be12e3d39b9d43b04befbec439cd37b3945aed605ab7bc24acee49fba90",
+   "license": "cc by"
+  },
+  {
+   "index": 362,
+   "id": "medrxiv:10.64898/2026.10.13.26365440",
+   "label": "Oncology",
+   "sha256": "43791de5a65d3360fab0febd4860bf2b182adbd9b40088f77606f1138235a971",
+   "license": "cc by"
+  },
+  {
+   "index": 363,
+   "id": "medrxiv:10.64898/2026.07.13.26357981",
+   "label": "Oncology",
+   "sha256": "378b9ed8be5cfbc297c0b55cf531c9721853a5212a466c1ec9a28c3b2c23dd0f",
+   "license": "cc by"
+  },
+  {
+   "index": 364,
+   "id": "medrxiv:10.64898/2026.10.04.26364705",
+   "label": "Oncology",
+   "sha256": "29efd9dbe61a80f97162cfe56e45359151c0d1bd4b4aaaf5047666268daf40d0",
+   "license": "cc by"
+  },
+  {
+   "index": 365,
+   "id": "medrxiv:10.64898/2026.07.01.26357015",
+   "label": "Oncology",
+   "sha256": "f51b609617e7c94ac80f2ea77253882e0013ee4eb376a5b8a044801e9eb2d2da",
+   "license": "cc by"
+  },
+  {
+   "index": 366,
+   "id": "medrxiv:10.64898/2026.10.14.26365509",
+   "label": "Oncology",
+   "sha256": "a9a3518c4ad4a6ea25576cc08615cfcc2818ad407abdcc41fd34a54735225873",
+   "license": "cc by"
+  },
+  {
+   "index": 367,
+   "id": "medrxiv:10.64898/2026.07.09.26357625",
+   "label": "Oncology",
+   "sha256": "6ce597c683208236b50ed59abf9a0cbdf465554438279891e3bf8afc4835a337",
+   "license": "cc by"
+  },
+  {
+   "index": 368,
+   "id": "medrxiv:10.64898/2026.09.29.26364331",
+   "label": "Oncology",
+   "sha256": "08b4198cdcd3a8feaa4ce6170795c24569250742e323d4e784fb07b3e530d2eb",
+   "license": "cc by"
+  },
+  {
+   "index": 369,
+   "id": "medrxiv:10.64898/2026.08.11.26360188",
+   "label": "Oncology",
+   "sha256": "526e50924e9847933fc52a3e98464750f378cb58c172c23c50720ec94ee3b24d",
+   "license": "cc by"
+  },
+  {
+   "index": 370,
+   "id": "medrxiv:10.64898/2026.10.09.26364958",
+   "label": "Oncology",
+   "sha256": "36fa3328f09b27ea404631f36824559b79e9863308091e60561a0a4aa244545f",
+   "license": "cc by"
+  },
+  {
+   "index": 371,
+   "id": "medrxiv:10.64898/2026.10.28.26366700",
+   "label": "Oncology",
+   "sha256": "4707dd1de64fbe54295cc28c4c294eb0f1a795fe7bc18ee680550631d7d76678",
+   "license": "cc by"
+  },
+  {
+   "index": 372,
+   "id": "medrxiv:10.64898/2026.10.04.26364693",
+   "label": "Oncology",
+   "sha256": "8b8843d0b4fb9a5434b400ebf9b5cecae9edafa2d53b9d8116118104f6889e7e",
+   "license": "cc by"
+  },
+  {
+   "index": 373,
+   "id": "medrxiv:10.64898/2026.07.31.26359397",
+   "label": "Oncology",
+   "sha256": "6a5733c4417f564470f01216bf9832ee8362b113cc73fa353793f10974161ccd",
+   "license": "cc by"
+  },
+  {
+   "index": 374,
+   "id": "medrxiv:10.64898/2026.07.21.26358307",
+   "label": "Oncology",
+   "sha256": "2d1dc659de30d28ce3684d9b64f1ebd37b77a2796684eab8b07b9195059e4eb2",
+   "license": "cc by"
+  },
+  {
+   "index": 375,
+   "id": "medrxiv:10.64898/2026.09.15.26363153",
+   "label": "Pediatrics",
+   "sha256": "b0c2d8929b003998737795a51c8acb66392916621884303c243e28cf6cba64c5",
+   "license": "cc by"
+  },
+  {
+   "index": 376,
+   "id": "medrxiv:10.64898/2026.09.29.26364267",
+   "label": "Pediatrics",
+   "sha256": "41ceab99c01125179e40ada31a627349c98e70c7e6c21fe6652d05911aaefca8",
+   "license": "cc by"
+  },
+  {
+   "index": 377,
+   "id": "medrxiv:10.64898/2026.07.15.26358132",
+   "label": "Pediatrics",
+   "sha256": "3ece1adc343a9a63fee23497755e868f690e698e076a903ba923dff7a23c2785",
+   "license": "cc by"
+  },
+  {
+   "index": 378,
+   "id": "medrxiv:10.64898/2026.10.12.26365328",
+   "label": "Pediatrics",
+   "sha256": "6ffe6165c89aced87b9a5046570142105b04cc7eba112a44360815786410bdf0",
+   "license": "cc by"
+  },
+  {
+   "index": 379,
+   "id": "medrxiv:10.64898/2026.09.10.26362791",
+   "label": "Pediatrics",
+   "sha256": "4d0e425457809245306de4a41b5c810be875f8976d055a63ffea998f924f173e",
+   "license": "cc by"
+  },
+  {
+   "index": 380,
+   "id": "medrxiv:10.64898/2026.09.08.26362587",
+   "label": "Pediatrics",
+   "sha256": "b9c87b5ed0744532e6d3347dc0055e9d860023cce475368acf874326c3714c79",
+   "license": "cc by"
+  },
+  {
+   "index": 381,
+   "id": "medrxiv:10.64898/2026.10.02.26364571",
+   "label": "Pediatrics",
+   "sha256": "166b38d30aadcba7ca70a14ffa1573a16e352536f263de5275442b36fc453153",
+   "license": "cc by"
+  },
+  {
+   "index": 382,
+   "id": "medrxiv:10.64898/2026.08.28.26361619",
+   "label": "Pediatrics",
+   "sha256": "03d23877e2537ba9d0053d44cc2f70905f57ba3d582da68256dc074473b77a0a",
+   "license": "cc by"
+  },
+  {
+   "index": 383,
+   "id": "medrxiv:10.64898/2026.09.28.26364198",
+   "label": "Pediatrics",
+   "sha256": "76673dbfcdf7dcde9bcae09aefaebe3a02b2e33a5dd82e50410714193c8aa8fb",
+   "license": "cc by"
+  },
+  {
+   "index": 384,
+   "id": "medrxiv:10.64898/2026.10.09.26365109",
+   "label": "Pediatrics",
+   "sha256": "7b2dd217982a06779dcb5b5edb802d3371de830eb4b98a8813918b01b5f3b66f",
+   "license": "cc by"
+  },
+  {
+   "index": 385,
+   "id": "medrxiv:10.64898/2026.10.13.26365388",
+   "label": "Pediatrics",
+   "sha256": "3b4ae87fbcc33c10667803bda8fc83e047fa8c32482a48930752e87c14136803",
+   "license": "cc by"
+  },
+  {
+   "index": 386,
+   "id": "medrxiv:10.64898/2026.09.25.26364017",
+   "label": "Pediatrics",
+   "sha256": "4bed70956205f8df0bc608e77a7487c185a0c777d261140ff69f0a55e23884b9",
+   "license": "cc by"
+  },
+  {
+   "index": 387,
+   "id": "medrxiv:10.64898/2026.09.25.26363955",
+   "label": "Pediatrics",
+   "sha256": "88a96fed748aebad17fdd2c86274cd9f34b0df3364fb1453b635a32651a85e5a",
+   "license": "cc by"
+  },
+  {
+   "index": 388,
+   "id": "medrxiv:10.64898/2026.09.01.26361418",
+   "label": "Pediatrics",
+   "sha256": "acd32426deb002640edca85444f14679e63d1d2084a07fc3efc37f4d62089beb",
+   "license": "cc by"
+  },
+  {
+   "index": 389,
+   "id": "medrxiv:10.64898/2026.07.03.26357202",
+   "label": "Pediatrics",
+   "sha256": "4476f73ebb96c0f457cd02240e0b2386f043180c03be8a6d771a368ab1988df7",
+   "license": "cc by"
+  },
+  {
+   "index": 390,
+   "id": "medrxiv:10.64898/2026.08.25.26361317",
+   "label": "Pediatrics",
+   "sha256": "1e55c1b56baeb94437e08a495711e4fd1ee8762a5bdb39d24f2e626a769271a1",
+   "license": "cc by"
+  },
+  {
+   "index": 391,
+   "id": "medrxiv:10.64898/2026.09.27.26364139",
+   "label": "Pediatrics",
+   "sha256": "8a38dee7e7bd3a7676d84d1848a31c98a30b4d6007482f98c5a6a601318ce19b",
+   "license": "cc by"
+  },
+  {
+   "index": 392,
+   "id": "medrxiv:10.64898/2026.07.15.26358161",
+   "label": "Pediatrics",
+   "sha256": "40ef3df58c3aa06374fa9f6a4c5bb7724a4284741571986687093502a28e93cf",
+   "license": "cc by"
+  },
+  {
+   "index": 393,
+   "id": "medrxiv:10.64898/2026.09.02.26362009",
+   "label": "Pediatrics",
+   "sha256": "ccb2f9a7b674c3904f6fb6489976a7e09ce83f06fc196e47b0029d711c5c758b",
+   "license": "cc by"
+  },
+  {
+   "index": 394,
+   "id": "medrxiv:10.64898/2026.07.07.26357452",
+   "label": "Pediatrics",
+   "sha256": "c0271b81354e7ab394dc50d45f77b720ef2985d337d286c4beedd6f518b05e60",
+   "license": "cc by"
+  },
+  {
+   "index": 395,
+   "id": "medrxiv:10.64898/2026.09.09.26360534",
+   "label": "Pediatrics",
+   "sha256": "9cdeca20b321fab9b3663372144927fde4b97dd6be3ecee543383e74100a5b27",
+   "license": "cc by"
+  },
+  {
+   "index": 396,
+   "id": "medrxiv:10.64898/2026.10.08.26365058",
+   "label": "Pediatrics",
+   "sha256": "d4bf668de5b37d3cc0ef9eca737c6299edbe97946b8f4060c6e28eb9698ca347",
+   "license": "cc by"
+  },
+  {
+   "index": 397,
+   "id": "medrxiv:10.64898/2026.07.29.26359237",
+   "label": "Pediatrics",
+   "sha256": "81c6172f7db2a068cb92f49ba226399a6afd91ab00babd92906b448c15575305",
+   "license": "cc by"
+  },
+  {
+   "index": 398,
+   "id": "medrxiv:10.64898/2026.09.15.26362093",
+   "label": "Pediatrics",
+   "sha256": "a2f1ef6227006d1c61252b9c6b863af75664af43e9077b7a06b545d95c4dbf9b",
+   "license": "cc by"
+  },
+  {
+   "index": 399,
+   "id": "medrxiv:10.64898/2026.08.31.26361659",
+   "label": "Pediatrics",
+   "sha256": "30e37802972dd4f66a91b2d43dca3a4c23627380b3606b3e8951511496ac28b3",
+   "license": "cc by"
+  },
+  {
+   "index": 400,
+   "id": "medrxiv:10.64898/2026.07.14.26358066",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "d0747d9d53d800088a9a4346fbbc730c1ec1377b3f5f0639ef813d22baf08617",
+   "license": "cc by"
+  },
+  {
+   "index": 401,
+   "id": "medrxiv:10.64898/2026.08.08.26359861",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "47a40b9b2a8c9ba6210651ac3e3ca892ecb41604692335a480367f0875726f00",
+   "license": "cc by"
+  },
+  {
+   "index": 402,
+   "id": "medrxiv:10.64898/2026.08.13.26360194",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "afd0d537de18709ac821e5c92a2f5245f63e9a740324c07c29250b4047aadd83",
+   "license": "cc by"
+  },
+  {
+   "index": 403,
+   "id": "medrxiv:10.64898/2026.07.10.26357744",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "40a1e687fb6bef439f6178a3d431e5515c00693b41952b875bbc3123f0b8ef51",
+   "license": "cc by"
+  },
+  {
+   "index": 404,
+   "id": "medrxiv:10.64898/2026.09.25.26364048",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "47d553bf7337fbda5da5aa01eef9af543493470f6e802268d875cd356a107652",
+   "license": "cc by"
+  },
+  {
+   "index": 405,
+   "id": "medrxiv:10.64898/2026.06.29.26356816",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "01b2b0ec71aa4367b2b6c4d839e59e41467bc67d4966b3d1291f8efcd1e3854a",
+   "license": "cc by"
+  },
+  {
+   "index": 406,
+   "id": "medrxiv:10.64898/2026.07.15.26358139",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "e5e5b35f11e4739fb6cc6e0622ce66d06f4f6655d15ffc0847601aec697bc8ef",
+   "license": "cc by"
+  },
+  {
+   "index": 407,
+   "id": "medrxiv:10.64898/2026.09.28.26364160",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "4f46082a9233beb3c2462825a8d89332a0755ddb5499e6a9fd570cb058112a7d",
+   "license": "cc by"
+  },
+  {
+   "index": 408,
+   "id": "medrxiv:10.64898/2026.10.18.26365834",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "c56362735ab027ec534fda520c5c55892c8ea87c5bb6fde4923c2667990599f7",
+   "license": "cc by"
+  },
+  {
+   "index": 409,
+   "id": "medrxiv:10.64898/2026.09.01.26359217",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "fb9c9a1c4f74a824be06bab1dca46d618ed81bc0fc27928b978c5daf6b53df97",
+   "license": "cc by"
+  },
+  {
+   "index": 410,
+   "id": "medrxiv:10.64898/2026.10.05.26364794",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "e661c8c0fe419171a2bedbd7a558ddad83728a0d221e23cf48764f3a81308267",
+   "license": "cc by"
+  },
+  {
+   "index": 411,
+   "id": "medrxiv:10.64898/2026.10.12.26365151",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "f1a1c8a014464a14d82779f82794299857d3ebdde6da27eb1d622002c5b0b22d",
+   "license": "cc by"
+  },
+  {
+   "index": 412,
+   "id": "medrxiv:10.64898/2026.08.12.26360339",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "290963f60169e531209c1ad699d45bfd97b758a0429bdac6f8ebb481c803c3f2",
+   "license": "cc by"
+  },
+  {
+   "index": 413,
+   "id": "medrxiv:10.64898/2026.10.01.26364506",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "38210b40dae319e5f14eb460e136bd0bc6ea47eb69618457442f3c9dc565da95",
+   "license": "cc by"
+  },
+  {
+   "index": 414,
+   "id": "medrxiv:10.64898/2026.10.28.26366683",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "cfc312606a262c9821e37c3dd46a9001fdfddc3b545152909ea786d6d318feb7",
+   "license": "cc by"
+  },
+  {
+   "index": 415,
+   "id": "medrxiv:10.64898/2026.09.21.26363541",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "c47ab73d53cc46eb9c534b3f3b148e77c0d650b5f5292f332af9f3edec36a39d",
+   "license": "cc by"
+  },
+  {
+   "index": 416,
+   "id": "medrxiv:10.64898/2026.10.27.26366559",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "0f8084b2d514dbdddf97c4703d86459fc9584939fda97dd129f7fbd2f1fec71d",
+   "license": "cc by"
+  },
+  {
+   "index": 417,
+   "id": "medrxiv:10.64898/2026.08.19.26360769",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "60167d714ab95b60775ee9f92380b28915dac5ea88c9699dadb63d138d0d73e2",
+   "license": "cc by"
+  },
+  {
+   "index": 418,
+   "id": "medrxiv:10.64898/2026.07.29.26359223",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "38daee5abe2e776a2ade790c186797ecf47a775242d52f5bde2af5bb56414025",
+   "license": "cc by"
+  },
+  {
+   "index": 419,
+   "id": "medrxiv:10.64898/2026.10.02.26364621",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "d18a364c0818f150672b91b19e261667cb7b5d6c619b1e263ef5f1e01d95f2d7",
+   "license": "cc by"
+  },
+  {
+   "index": 420,
+   "id": "medrxiv:10.64898/2026.07.15.26358127",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "7c38bf189aca961d29b7d4620fda81884705d3f542debbf0e8d47782a09389a2",
+   "license": "cc by"
+  },
+  {
+   "index": 421,
+   "id": "medrxiv:10.64898/2026.08.03.26359559",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "0cdb740b6c486d1753cfbe47e197f48adfe18d5b903a24901380537007a677ea",
+   "license": "cc by"
+  },
+  {
+   "index": 422,
+   "id": "medrxiv:10.64898/2026.07.10.26357470",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "73a8199edeb22cf9658c7069062038ca882e7a24d4d17e9ee53b7732c1b7448b",
+   "license": "cc by"
+  },
+  {
+   "index": 423,
+   "id": "medrxiv:10.64898/2026.07.02.26357108",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "285524104a33e444678b7c783e6703bcc8c2cea6ef5d736573b848246fff9635",
+   "license": "cc by"
+  },
+  {
+   "index": 424,
+   "id": "medrxiv:10.64898/2026.09.30.26364387",
+   "label": "Psychiatry and clinical psychology",
+   "sha256": "ed0481861a1e94500039bdfe4afbcf233efa612bad0593e145d11fd90d9c5cd5",
+   "license": "cc by"
+  },
+  {
+   "index": 425,
+   "id": "medrxiv:10.64898/2026.07.02.26357099",
+   "label": "Public and global health",
+   "sha256": "53e2b7a64c399a09b3cc90945c568d11c82b6fb350a0d7b17ca3bb31946bf01d",
+   "license": "cc by"
+  },
+  {
+   "index": 426,
+   "id": "medrxiv:10.64898/2026.10.16.26365712",
+   "label": "Public and global health",
+   "sha256": "e9c852a72c2352aaba61bf48a7f6e523f22a171f6358ce85485e78b0cf3e8387",
+   "license": "cc by"
+  },
+  {
+   "index": 427,
+   "id": "medrxiv:10.64898/2026.08.12.26360290",
+   "label": "Public and global health",
+   "sha256": "aaa516f9e2ff63e1a002660cd717a5db87cf9e35d9e522f2443635e4de1bd904",
+   "license": "cc by"
+  },
+  {
+   "index": 428,
+   "id": "medrxiv:10.64898/2026.07.22.26358727",
+   "label": "Public and global health",
+   "sha256": "d8e8c8ea434a1c12b0452c1d1c55eed13cd709a3f857edb7027ee2ff340e964b",
+   "license": "cc by"
+  },
+  {
+   "index": 429,
+   "id": "medrxiv:10.64898/2026.08.23.26361167",
+   "label": "Public and global health",
+   "sha256": "17f1d3cd32b1da3bb19f5457851564a240a2c6e928da533cffa90e8da5aa8e17",
+   "license": "cc by"
+  },
+  {
+   "index": 430,
+   "id": "medrxiv:10.64898/2026.08.12.26360242",
+   "label": "Public and global health",
+   "sha256": "1befefe7547bbd0ac16d36aa4fd56709e345d8b9c570d5fafedb3e13dde8773d",
+   "license": "cc by"
+  },
+  {
+   "index": 431,
+   "id": "medrxiv:10.64898/2026.07.25.26358649",
+   "label": "Public and global health",
+   "sha256": "eaf2de03e3cce53214d2317de234191caf60cefc02ff422eb8e6d0a57004ef76",
+   "license": "cc by"
+  },
+  {
+   "index": 432,
+   "id": "medrxiv:10.64898/2026.07.21.26358551",
+   "label": "Public and global health",
+   "sha256": "ca0e30b215f0dd2fbd45c8f0be802913e7190cd302a3f9ae708f62d0958a34e3",
+   "license": "cc by"
+  },
+  {
+   "index": 433,
+   "id": "medrxiv:10.64898/2026.09.07.26361905",
+   "label": "Public and global health",
+   "sha256": "46515c065513d981f85cc2735d82e4668ca9214f5f7663c41866888b79fe1c9a",
+   "license": "cc by"
+  },
+  {
+   "index": 434,
+   "id": "medrxiv:10.64898/2026.07.01.26357076",
+   "label": "Public and global health",
+   "sha256": "80f883f40f0ad108e462029f737872e05a45faa8e74d0408cb46225f1f60a6fe",
+   "license": "cc by"
+  },
+  {
+   "index": 435,
+   "id": "medrxiv:10.64898/2026.10.21.26366107",
+   "label": "Public and global health",
+   "sha256": "784b058cb4f13c88f655ce3489c0297359bfbdb50fbdcc384b35168827edda8b",
+   "license": "cc by"
+  },
+  {
+   "index": 436,
+   "id": "medrxiv:10.64898/2026.09.29.26364307",
+   "label": "Public and global health",
+   "sha256": "455465574adf12c3de4a952de6a6fc4673a5bcf93de9d9908cd6a46a2d09c3cc",
+   "license": "cc by"
+  },
+  {
+   "index": 437,
+   "id": "medrxiv:10.64898/2026.07.21.26358582",
+   "label": "Public and global health",
+   "sha256": "5d9f9ed890d285226f38ae5f1ec634eee2f2cc887571fe3a7c5233967afc5af6",
+   "license": "cc by"
+  },
+  {
+   "index": 438,
+   "id": "medrxiv:10.64898/2026.09.03.26362190",
+   "label": "Public and global health",
+   "sha256": "46f8860b18e382dc91fa48b95b708965d4ef1e9e364616d3c91e196e895a579b",
+   "license": "cc by"
+  },
+  {
+   "index": 439,
+   "id": "medrxiv:10.64898/2026.07.13.26357999",
+   "label": "Public and global health",
+   "sha256": "a490ff3be3b1da66a451c1161a567050f0f8c4f2f3f6233bf4f7f296d95b4d8f",
+   "license": "cc by"
+  },
+  {
+   "index": 440,
+   "id": "medrxiv:10.64898/2026.07.07.26357437",
+   "label": "Public and global health",
+   "sha256": "6b3d55e95ad964703f28c88a540fdafadff6efdee7483eeabfe7a93ec448bddb",
+   "license": "cc by"
+  },
+  {
+   "index": 441,
+   "id": "medrxiv:10.64898/2026.07.20.26358281",
+   "label": "Public and global health",
+   "sha256": "6cce71378ef0238f4f3856fd3b8007b74cb6a82322f5bdef329990619b4ce0b7",
+   "license": "cc by"
+  },
+  {
+   "index": 442,
+   "id": "medrxiv:10.64898/2026.08.18.26360750",
+   "label": "Public and global health",
+   "sha256": "6646a6f95a7ffbfa975291576711e9798c81478bbf879d30e6f064012942ec74",
+   "license": "cc by"
+  },
+  {
+   "index": 443,
+   "id": "medrxiv:10.64898/2026.08.06.26359924",
+   "label": "Public and global health",
+   "sha256": "40c3405312e8fdd3420e3df50e4abb56b534154b37f4c76237cb7b1bf979be77",
+   "license": "cc by"
+  },
+  {
+   "index": 444,
+   "id": "medrxiv:10.64898/2026.08.05.26359835",
+   "label": "Public and global health",
+   "sha256": "37f880766d763dcf77c187ad8aa2b99c6fa5c6c048fd224e8f9954ea7d2e5464",
+   "license": "cc by"
+  },
+  {
+   "index": 445,
+   "id": "medrxiv:10.64898/2026.08.28.26360696",
+   "label": "Public and global health",
+   "sha256": "f9970d6b5e3f8f0b5beab8d673226246ca3204b82f876ad2f4bd1a1efc535cef",
+   "license": "cc by"
+  },
+  {
+   "index": 446,
+   "id": "medrxiv:10.64898/2026.10.02.26364587",
+   "label": "Public and global health",
+   "sha256": "3d03aac220ee9ea08f26e795d4d46e357c74bc398d478a8618df151afd05b928",
+   "license": "cc by"
+  },
+  {
+   "index": 447,
+   "id": "medrxiv:10.64898/2026.07.14.26357825",
+   "label": "Public and global health",
+   "sha256": "d2b4f359e244786e13f392d7da2383a67ff9dd2132bc6e58e0a9dc728326840d",
+   "license": "cc by"
+  },
+  {
+   "index": 448,
+   "id": "medrxiv:10.64898/2026.10.21.26366143",
+   "label": "Public and global health",
+   "sha256": "a9aaa433466b58db448027786619d240295a9912d1ac39cf1515e8671ab48298",
+   "license": "cc by"
+  },
+  {
+   "index": 449,
+   "id": "medrxiv:10.64898/2026.09.02.26361744",
+   "label": "Public and global health",
+   "sha256": "ef52bc312f86578de5709846d1d7359e9ab88a7c451b4364eda5b4e9eb852f3c",
+   "license": "cc by"
+  },
+  {
+   "index": 450,
+   "id": "medrxiv:10.64898/2026.08.27.26361520",
+   "label": "Radiology and imaging",
+   "sha256": "87bfadf9b2f80e86f8ed14d9f4ee8d39112cc9271d7a386cb74e581cd5db7fd9",
+   "license": "cc by"
+  },
+  {
+   "index": 451,
+   "id": "medrxiv:10.64898/2026.07.23.26358829",
+   "label": "Radiology and imaging",
+   "sha256": "72d1a797df2a9407923801570e752772156125495e0a4e50c32a66dc4b0d054a",
+   "license": "cc by"
+  },
+  {
+   "index": 452,
+   "id": "medrxiv:10.64898/2026.09.04.26361840",
+   "label": "Radiology and imaging",
+   "sha256": "8e35bae57d9fa7e7e9aa53f02a9de32894a80b5419840f9b2c30c39a160934d9",
+   "license": "cc by"
+  },
+  {
+   "index": 453,
+   "id": "medrxiv:10.64898/2026.08.17.26360254",
+   "label": "Radiology and imaging",
+   "sha256": "71b3f34fb19a0c0518b8dcf341156bb4553d951d23eef66965df1c0418d46a94",
+   "license": "cc by"
+  },
+  {
+   "index": 454,
+   "id": "medrxiv:10.64898/2026.09.09.26362667",
+   "label": "Radiology and imaging",
+   "sha256": "fe9647b92c8be506678c763fc1ac4f48482c37cd7b642add6426ec04247bb0b8",
+   "license": "cc by"
+  },
+  {
+   "index": 455,
+   "id": "medrxiv:10.64898/2026.09.16.26363275",
+   "label": "Radiology and imaging",
+   "sha256": "0b09a9f05cfd9e53cdcff9f27b56203afe65bba84e80ddda21fa7464fd27bf8e",
+   "license": "cc by"
+  },
+  {
+   "index": 456,
+   "id": "medrxiv:10.64898/2026.08.20.26360908",
+   "label": "Radiology and imaging",
+   "sha256": "168b5848b73b12ad8f69483c8db6d06fd83dbf81db2ed8b908363e23392ac739",
+   "license": "cc by"
+  },
+  {
+   "index": 457,
+   "id": "medrxiv:10.64898/2026.08.28.26361674",
+   "label": "Radiology and imaging",
+   "sha256": "a5e8daead19dc89083cecd58c171c0ef66f6bb241350bf9ba3aa8f0a456b5881",
+   "license": "cc by"
+  },
+  {
+   "index": 458,
+   "id": "medrxiv:10.64898/2026.10.28.26366759",
+   "label": "Radiology and imaging",
+   "sha256": "739228870df4532c248e031aee296e79d7da3cad80d19c01eda4be2aa656a5cd",
+   "license": "cc by"
+  },
+  {
+   "index": 459,
+   "id": "medrxiv:10.64898/2026.10.22.26365566",
+   "label": "Radiology and imaging",
+   "sha256": "7fc79e51ffdd2fcee9003bad19dc747813ea3d4986099364b569bdcefbd41f44",
+   "license": "cc by"
+  },
+  {
+   "index": 460,
+   "id": "medrxiv:10.64898/2026.08.10.26360043",
+   "label": "Radiology and imaging",
+   "sha256": "432abfd0a8ea38f1df5ac2dbffd1892d76c6735112a0b9e2b9594ef5d91ff000",
+   "license": "cc by"
+  },
+  {
+   "index": 461,
+   "id": "medrxiv:10.64898/2026.10.16.26365737",
+   "label": "Radiology and imaging",
+   "sha256": "2c6f55106a30c8d4d78c48037bb1cc7eb10604d84332bbac76bc07674ede792c",
+   "license": "cc by"
+  },
+  {
+   "index": 462,
+   "id": "medrxiv:10.64898/2026.10.05.26364781",
+   "label": "Radiology and imaging",
+   "sha256": "9796b674a643b0731bb903a6bef71d069409297ca34d4909f8b3d47224b9177f",
+   "license": "cc by"
+  },
+  {
+   "index": 463,
+   "id": "medrxiv:10.64898/2026.10.22.26366227",
+   "label": "Radiology and imaging",
+   "sha256": "c39eafeefa38183f397d1a08c59d29d98050b9bca194dae5e99e96b6d291f247",
+   "license": "cc by"
+  },
+  {
+   "index": 464,
+   "id": "medrxiv:10.64898/2026.09.15.26363110",
+   "label": "Radiology and imaging",
+   "sha256": "952631b76b4e4101a03daf4e7c6cee3fc902024de986a64c2bbc2362006e897e",
+   "license": "cc by"
+  },
+  {
+   "index": 465,
+   "id": "medrxiv:10.64898/2026.07.30.26358859",
+   "label": "Radiology and imaging",
+   "sha256": "6be744ceee8e913f3d40012df3e766272fe4a774dc8ff6f1803602c564b420d2",
+   "license": "cc by"
+  },
+  {
+   "index": 466,
+   "id": "medrxiv:10.64898/2026.09.02.26361270",
+   "label": "Radiology and imaging",
+   "sha256": "a9db8dc48bf76e18504f1b4eef56a89c6d575f55c22031dccabccfbe9fcba0ca",
+   "license": "cc by"
+  },
+  {
+   "index": 467,
+   "id": "medrxiv:10.64898/2026.09.08.26362537",
+   "label": "Radiology and imaging",
+   "sha256": "28e837055ae10bb3dda4e95975cfa8b41093d4ad8f71752e94542450f72c9e81",
+   "license": "cc by"
+  },
+  {
+   "index": 468,
+   "id": "medrxiv:10.64898/2026.07.30.26359350",
+   "label": "Radiology and imaging",
+   "sha256": "b674e3c5d6a8a227880f8f281b3efec8f919f7755fe28c2604c108d7e70111c3",
+   "license": "cc by"
+  },
+  {
+   "index": 469,
+   "id": "medrxiv:10.64898/2026.06.25.26356440",
+   "label": "Radiology and imaging",
+   "sha256": "c33dd459abad32d62f4911102a1b59ce9ea1b30480c0e0d0f4d50b986b934213",
+   "license": "cc by"
+  },
+  {
+   "index": 470,
+   "id": "medrxiv:10.64898/2026.08.11.26360175",
+   "label": "Radiology and imaging",
+   "sha256": "93c82009187ecca75ffb0db751e64ee64830062f2814ba8fc8acad87d166c1aa",
+   "license": "cc by"
+  },
+  {
+   "index": 471,
+   "id": "medrxiv:10.64898/2026.10.08.26365027",
+   "label": "Radiology and imaging",
+   "sha256": "e9d09ab2faf2b700d7e388fd18a254a4822cb46fe158135311e45f1872699981",
+   "license": "cc by"
+  },
+  {
+   "index": 472,
+   "id": "medrxiv:10.64898/2026.09.05.26362337",
+   "label": "Radiology and imaging",
+   "sha256": "8dec50caf07ccef5d5a3ebd807214ba2b2873659f576c70050af257f7b08e51d",
+   "license": "cc by"
+  },
+  {
+   "index": 473,
+   "id": "medrxiv:10.64898/2026.06.25.26356599",
+   "label": "Radiology and imaging",
+   "sha256": "ae030115e723aefc6dfd6ae1310f1a8a55a89356e4fe5d835657cf645352233a",
+   "license": "cc by"
+  },
+  {
+   "index": 474,
+   "id": "medrxiv:10.64898/2026.10.17.26365791",
+   "label": "Radiology and imaging",
+   "sha256": "2f705e304b0d57696712d8cbe2ddc117cd71b8e1bd9d65221f18a2005e69923a",
+   "license": "cc by"
+  },
+  {
+   "index": 475,
+   "id": "medrxiv:10.64898/2026.08.03.26359564",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "27d499c1240ef9af3f21fbe00ac96f5e389e5b0653fe441f153fc17ffcbff2d0",
+   "license": "cc by"
+  },
+  {
+   "index": 476,
+   "id": "medrxiv:10.64898/2026.08.12.26360287",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "80ea9ba332b471fdb1c15eb684e0707f5dee7787ed58fe441c3d3897a6c24fbe",
+   "license": "cc by"
+  },
+  {
+   "index": 477,
+   "id": "medrxiv:10.64898/2026.09.25.26364015",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "80746bb1fba5f21dbd841fa3dce40afca8957d3eb24e537e99d0469fd26c3df4",
+   "license": "cc by"
+  },
+  {
+   "index": 478,
+   "id": "medrxiv:10.64898/2026.10.21.26365989",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "d99ad72b90041d7713fcdeb9cc44908a4f254295b405e1d4c883dc5e16750671",
+   "license": "cc by"
+  },
+  {
+   "index": 479,
+   "id": "medrxiv:10.64898/2026.08.30.26361786",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "7345acafb32e51bc074a9d2d16099622177b38a50e29ded3450502655b702225",
+   "license": "cc by"
+  },
+  {
+   "index": 480,
+   "id": "medrxiv:10.64898/2026.09.24.26363958",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "9d00b75535190733cfbc421dd9034279e016cf080cafd7c5f38ab1baec084d48",
+   "license": "cc by"
+  },
+  {
+   "index": 481,
+   "id": "medrxiv:10.64898/2026.08.21.26360982",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "c40d629ec56dcc45cb8948f444b2fb7aae533b8299cae431e9571e557f2e7d52",
+   "license": "cc by"
+  },
+  {
+   "index": 482,
+   "id": "medrxiv:10.64898/2026.09.14.26363000",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "a8008d9781d56813abcbcfc142f30c5349f4c0bda035685f5a491b4da1609aa8",
+   "license": "cc by"
+  },
+  {
+   "index": 483,
+   "id": "medrxiv:10.64898/2026.07.26.26358522",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "98af539cc58d3da02997f5e950e980ab8cddf9c70e19155c4a29e4ec581a1a0c",
+   "license": "cc by"
+  },
+  {
+   "index": 484,
+   "id": "medrxiv:10.64898/2026.09.21.26363589",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "6abb7762ed18db49480a072dcc01f4b4905e81272164d71a70e6a87f1220719f",
+   "license": "cc by"
+  },
+  {
+   "index": 485,
+   "id": "medrxiv:10.64898/2026.07.16.26358289",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "8a76df0824adaeb301284fba3b00d71d9b4afd847ab6b4d107d9a524eb0acf3e",
+   "license": "cc by"
+  },
+  {
+   "index": 486,
+   "id": "medrxiv:10.64898/2026.09.28.26364152",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "eb64a2487b9c944b13efa66efad6c9c6e4211df670e99d6f923a1a139e24f17b",
+   "license": "cc by"
+  },
+  {
+   "index": 487,
+   "id": "medrxiv:10.64898/2026.07.27.26359033",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "fbc9cb0b12520e911e52f78014773269d77d4ab1d95e9ae48f30e746b68f4423",
+   "license": "cc by"
+  },
+  {
+   "index": 488,
+   "id": "medrxiv:10.64898/2026.09.17.26362966",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "613b27b9a6566eeb13c27d49781eb46aec64d39bca2131ec6da597e491ef822a",
+   "license": "cc by"
+  },
+  {
+   "index": 489,
+   "id": "medrxiv:10.64898/2026.07.06.26356658",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "5c3627879427fda13da0de2cada5b7f1b0df5dd628eae7433710d981abbfb138",
+   "license": "cc by"
+  },
+  {
+   "index": 490,
+   "id": "medrxiv:10.64898/2026.10.03.26363941",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "b6ee9b534a3e3fbb29cbada25859bb847224ec1ecf275965cf45312854cdc12f",
+   "license": "cc by"
+  },
+  {
+   "index": 491,
+   "id": "medrxiv:10.64898/2026.08.28.26361691",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "a4e35ee13ca1181aad1ddf46e78dd7322c2ad53dbd079500f85e8a820734c4c4",
+   "license": "cc by"
+  },
+  {
+   "index": 492,
+   "id": "medrxiv:10.64898/2026.08.10.26360087",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "ec50b14c029eae31692201f435a1ed226a48dcdac68421618881d3b103dd8dcd",
+   "license": "cc by"
+  },
+  {
+   "index": 493,
+   "id": "medrxiv:10.64898/2026.08.04.26359668",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "e5320e89c51c3dfd0fb168bce58f3221964cedf41feac9a677a7f8c06be9cac9",
+   "license": "cc by"
+  },
+  {
+   "index": 494,
+   "id": "medrxiv:10.64898/2026.08.07.26359182",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "58997f307dea32a4992970b3469d72a75870811dc2daa0dd51bdbb76de4d75c7",
+   "license": "cc by"
+  },
+  {
+   "index": 495,
+   "id": "medrxiv:10.64898/2026.09.11.26362878",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "60ef333506712a00a28c2b5edd3c8419e233ca24c58c7e3a6cd1407e4123aabb",
+   "license": "cc by"
+  },
+  {
+   "index": 496,
+   "id": "medrxiv:10.64898/2026.10.13.26364897",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "d930c70c902a44470e14c8cbd0d724f629e80a94546d1d8ea7df70dd51bedf32",
+   "license": "cc by"
+  },
+  {
+   "index": 497,
+   "id": "medrxiv:10.64898/2026.09.06.26361926",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "0e2099a664b222e7dac01e68efcbbecd7f5a8888f88f6bf0f2e2b7cce42b505f",
+   "license": "cc by"
+  },
+  {
+   "index": 498,
+   "id": "medrxiv:10.64898/2026.08.25.26361347",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "3a43b038e3fe70ccfeadd156cb05b01e7d7d75f03bf4c3cd6547c08f22b4d1f8",
+   "license": "cc by"
+  },
+  {
+   "index": 499,
+   "id": "medrxiv:10.64898/2026.09.29.26363758",
+   "label": "Rehabilitation medicine and physical therapy",
+   "sha256": "6fb78dadb8326547596199d5aceb3d50c14c71426e7da23e1b12710c28e2088d",
+   "license": "cc by"
+  },
+  {
+   "index": 500,
+   "id": "medrxiv:10.64898/2026.09.14.26362793",
+   "label": "Sexual and reproductive health",
+   "sha256": "7e3fffe65bbb64bf9a916fbce01591406c33b3a0e6b0f84854f39d1385cf9452",
+   "license": "cc by"
+  },
+  {
+   "index": 501,
+   "id": "medrxiv:10.64898/2026.10.21.26366168",
+   "label": "Sexual and reproductive health",
+   "sha256": "1e3a1c77fbbd4f669a87fe1f999783d23c491411f30da6937c275c1c98ac7d61",
+   "license": "cc by"
+  },
+  {
+   "index": 502,
+   "id": "medrxiv:10.64898/2026.06.25.26356580",
+   "label": "Sexual and reproductive health",
+   "sha256": "3d729f4585bf3236919aefc66eec55774eb16799bb65cd50a15dae298e0f0d0d",
+   "license": "cc by"
+  },
+  {
+   "index": 503,
+   "id": "medrxiv:10.64898/2026.09.20.26363531",
+   "label": "Sexual and reproductive health",
+   "sha256": "09a117c65e48bbd7386437821baf6079716468bdfc81e60f0c9d9c45bec32c17",
+   "license": "cc by"
+  },
+  {
+   "index": 504,
+   "id": "medrxiv:10.64898/2026.07.10.26357787",
+   "label": "Sexual and reproductive health",
+   "sha256": "483e0c5b4a729f550818508ab74adf567a47727e5e82fd8301e74581561f7ef8",
+   "license": "cc by"
+  },
+  {
+   "index": 505,
+   "id": "medrxiv:10.64898/2026.09.24.26363969",
+   "label": "Sexual and reproductive health",
+   "sha256": "f03d69b99ad9eb9eb08c504a86672cea7d2d9ecac51d1aee28ed9f0136e414b9",
+   "license": "cc by"
+  },
+  {
+   "index": 506,
+   "id": "medrxiv:10.64898/2026.10.07.26365008",
+   "label": "Sexual and reproductive health",
+   "sha256": "65b7cfd65521b3fdb82dd9c5e1cdb738e8bd6e2a5f5d61861e1d838a8cf5a4de",
+   "license": "cc by"
+  },
+  {
+   "index": 507,
+   "id": "medrxiv:10.64898/2026.09.21.26363592",
+   "label": "Sexual and reproductive health",
+   "sha256": "885a86f13e2a9d96bad9a256d7440b9ce04c4b8182216e31f48fa3b253aad0a3",
+   "license": "cc by"
+  },
+  {
+   "index": 508,
+   "id": "medrxiv:10.64898/2026.09.30.26364433",
+   "label": "Sexual and reproductive health",
+   "sha256": "bf9a45bf21f7085bb711e249b93dc57f1ddd67b1162f70c0a761858a171044bd",
+   "license": "cc by"
+  },
+  {
+   "index": 509,
+   "id": "medrxiv:10.64898/2026.09.01.26361973",
+   "label": "Sexual and reproductive health",
+   "sha256": "65658f6448a7e62c8f91d0468df6759ea365bc8ee61b8a30bc1d71888be7c11d",
+   "license": "cc by"
+  },
+  {
+   "index": 510,
+   "id": "medrxiv:10.64898/2026.07.24.26358840",
+   "label": "Sexual and reproductive health",
+   "sha256": "db210cf96519b0d7499fb6a1b8961931d49e796c4ec765a7f725d11e818e5bab",
+   "license": "cc by"
+  },
+  {
+   "index": 511,
+   "id": "medrxiv:10.64898/2026.08.26.26361385",
+   "label": "Sexual and reproductive health",
+   "sha256": "54be727cb81714f2dc68807c67e749e8ce005c0f1ae40cc1220dde095bf58f38",
+   "license": "cc by"
+  },
+  {
+   "index": 512,
+   "id": "medrxiv:10.64898/2026.08.09.26360053",
+   "label": "Sexual and reproductive health",
+   "sha256": "e42c32d10edaeb2c94e24f587d5a7cdd6422b33f1c28afdea6ddc8606a9ced00",
+   "license": "cc by"
+  },
+  {
+   "index": 513,
+   "id": "medrxiv:10.64898/2026.09.10.26362702",
+   "label": "Sexual and reproductive health",
+   "sha256": "69bc58a9599b4c02730cb60e63232ac72c10768f35bfcb8b988c576d57f35de7",
+   "license": "cc by"
+  },
+  {
+   "index": 514,
+   "id": "medrxiv:10.64898/2026.09.21.26363609",
+   "label": "Sexual and reproductive health",
+   "sha256": "0016258d927931fe94518effe5ace58b70820466f193347072efd65d12ec43c2",
+   "license": "cc by"
+  },
+  {
+   "index": 515,
+   "id": "medrxiv:10.64898/2026.07.30.26359339",
+   "label": "Sexual and reproductive health",
+   "sha256": "cfde1295cdb7e9a782b877a39279924a639c98bfb8f91bd9755948c109fda979",
+   "license": "cc by"
+  },
+  {
+   "index": 516,
+   "id": "medrxiv:10.64898/2026.08.29.26361435",
+   "label": "Sexual and reproductive health",
+   "sha256": "359946fa69dd1a49aafa184f9b1d180b2e0d8e18ffe0b5197d6fb1774f5c3f29",
+   "license": "cc by"
+  },
+  {
+   "index": 517,
+   "id": "medrxiv:10.64898/2026.09.14.26363074",
+   "label": "Sexual and reproductive health",
+   "sha256": "7a7cff1898bf647b2cc5cc670d7628b5912c9f0bffa9cc5a8379936a31047491",
+   "license": "cc by"
+  },
+  {
+   "index": 518,
+   "id": "medrxiv:10.64898/2026.07.14.26358044",
+   "label": "Sexual and reproductive health",
+   "sha256": "5f4c1c70c58323db20bc49d502873f63ba988a3e23e54bef574835aad01347de",
+   "license": "cc by"
+  },
+  {
+   "index": 519,
+   "id": "medrxiv:10.64898/2026.06.25.26355673",
+   "label": "Sexual and reproductive health",
+   "sha256": "ad2e60ccccdf33df1d8c388a1f3b1f2920b7b25c2020297e49dc15bca3cdd9bb",
+   "license": "cc by"
+  },
+  {
+   "index": 520,
+   "id": "medrxiv:10.64898/2026.07.22.26358718",
+   "label": "Sexual and reproductive health",
+   "sha256": "21a5225efb4c449061136b74ab85107cb699b2f6fd54f94ef3796197ef2c70e6",
+   "license": "cc by"
+  },
+  {
+   "index": 521,
+   "id": "medrxiv:10.64898/2026.08.27.26361582",
+   "label": "Sexual and reproductive health",
+   "sha256": "d82b2b9dddb3efe7687e2558f21a5de918b52b4c3030fa70afd9f2e704a0543b",
+   "license": "cc by"
+  },
+  {
+   "index": 522,
+   "id": "medrxiv:10.64898/2026.10.06.26364576",
+   "label": "Sexual and reproductive health",
+   "sha256": "32217f8d3e1260510d1a890b58a00bbd36efa8747d3e71e35127274e066324cb",
+   "license": "cc by"
+  },
+  {
+   "index": 523,
+   "id": "medrxiv:10.64898/2026.10.01.26364542",
+   "label": "Sexual and reproductive health",
+   "sha256": "a03b6e99bad514f0205007f3e8bccdbf86b062b856400b0ce07e469ee322542f",
+   "license": "cc by"
+  },
+  {
+   "index": 524,
+   "id": "medrxiv:10.64898/2026.09.06.26362000",
+   "label": "Sexual and reproductive health",
+   "sha256": "493f85fd0eefcc8e8aaa7fc63524c7982f7ae24a4ce8c6910f1159ec938f6e8e",
+   "license": "cc by"
+  }
+ ]
+}

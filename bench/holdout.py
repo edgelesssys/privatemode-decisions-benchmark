@@ -2,6 +2,7 @@
 
     python -m bench.holdout run --task fin_topic --out runs/holdout [--concurrency 4]
     python -m bench.holdout report --run runs/holdout --out results/calibration/holdout
+    python -m bench.holdout report --set fresh --run runs/fresh --out results/calibration/fresh
 
 ``run`` asks the Privatemode arm for raw probabilities (T = 1) on one frozen
 task from ``bench.holdout_data`` and writes a run file ``load_run`` reads.
@@ -20,6 +21,7 @@ import random
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import Lock
@@ -31,14 +33,16 @@ from decisions.types import ChoiceAnswer
 
 from . import calibration as c
 from .adapters import PrivatemodeArm, library_version
-from .holdout_data import FROZEN, TASKS, load
+from .holdout_data import FROZEN, SETS, TASKS, load
 
 MODEL = "glm-5.3-flash"
 #: The family each task is scored under for the family temperature, fixed
 #: in the plan before the run. PubMed and GitHub are families the benchmark
 #: doesn't have; they get the nearest one.
 FAMILY = {"fin_topic": "topic", "fin_sentiment": "sentiment", "arxiv_field": "topic",
-          "pubmed_study": "topic", "github_issue": "intent"}
+          "pubmed_study": "topic", "github_issue": "intent",
+          "biorxiv_subject": "topic", "medrxiv_subject": "topic", "arxiv_cs": "topic",
+          "stackexchange_site": "topic", "github_pr": "intent"}
 #: One temperature for every task, fitted on all 28 text datasets of part 1
 #: (results/calibration/part-1/summary.json, "shipped.global").
 GLOBAL_T = 2.1477
@@ -163,7 +167,35 @@ def labelled(cal: c.Dataset, test: c.Dataset, base: float, labels: int | None, b
         "draws": draws, "violations": int(sum(r["violation"] for r in results))}
 
 
-def evaluate(run: dict[str, c.Dataset]) -> dict:
+@contextmanager
+def one_sequence():
+    """The automation rule before privatemode-decisions#5: without a late
+    start the library runs the single sequence from the top."""
+    saved = lib.LATE_START
+    lib.LATE_START = 0
+    try:
+        yield
+    finally:
+        lib.LATE_START = saved
+
+
+def compare_rules(cal: c.Dataset, test: c.Dataset, base: float, seed: int) -> dict:
+    """Automation under one and two sequences, on the same draws (the same
+    seed draws the same labels in the same order)."""
+    out = {}
+    for bias in (False, True):
+        for labels in (LABELS, None):
+            fit = f"{'T + bias' if bias else 'T'}, {labels or 'all'} labels"
+            two = labelled(cal, test, base, labels, bias, DRAWS, seed)
+            with one_sequence():
+                one = labelled(cal, test, base, labels, bias, DRAWS, seed)
+            out[fit] = {rule: {"automated": r["automated"], "error": r["error"],
+                               "violations": r["violations"], "draws": r["draws"]}
+                        for rule, r in (("one sequence", one), ("two sequences", two))}
+    return out
+
+
+def evaluate(run: dict[str, c.Dataset], rules: bool = False) -> dict:
     out = {}
     for name, data in run.items():
         cal, test = c.split(data)
@@ -195,6 +227,8 @@ def evaluate(run: dict[str, c.Dataset]) -> dict:
                      "option_mass": float(np.mean(data.mass)) if data.mass is not None else None,
                      "served_model": data.meta.get("served_model"), "dropped": data.meta.get("dropped"),
                      "zero_label": zero, "labelled": fits, "coverage_check": coverage}
+        if rules:
+            out[name]["rules"] = compare_rules(cal, test, base, seed)
     return out
 
 
@@ -238,15 +272,66 @@ def share_of_gain(result: dict, method: str) -> float:
     return (raw - mean(method)) / (raw - best) if raw != best else float("nan")
 
 
-def write_report(result: dict, meta: dict, out: Path) -> None:
+def decision(result: dict) -> list[str]:
+    """The fresh plan's decision (results/calibration/fresh/plan.md) and what
+    it reports beside it."""
+    names = list(result)
+    fits = ["T, all labels", "T + bias, all labels"]
+    rules = ("one sequence", "two sequences")
+    auto = lambda f, rule: float(np.mean([result[n]["rules"][f][rule]["automated"]  # noqa: E731
+                                          for n in names]))
+    v = sum(result[n]["rules"][f]["two sequences"]["violations"] for n in names for f in fits)
+    d = sum(result[n]["rules"][f]["two sequences"]["draws"] for n in names for f in fits)
+    gains = {f: auto(f, "two sequences") - auto(f, "one sequence") for f in fits}
+    keep = v / d <= 0.10 and all(g >= 0 for g in gains.values())
+    lines = ["## The decision", "",
+             "| question | measure | stays if | result | |", "|---|---|---|---|---|",
+             f"| does it keep the bound? | draws over 10% error, all labels, both fits | ≤ 10% | "
+             f"{v}/{d} ({v / d:.1%}) | {'pass' if v / d <= 0.10 else '**fail**'} |"]
+    for f in fits:
+        lines.append(f"| is it worth its cost? ({f.split(',')[0]}) | automated, two minus one sequence | "
+                     f"≥ 0 | {auto(f, 'two sequences'):.1%} − {auto(f, 'one sequence'):.1%} = "
+                     f"{gains[f]:+.1%} | {'pass' if gains[f] >= 0 else '**fail**'} |")
+    lines += ["", f"**The second sequence {'stays' if keep else 'goes'}.**", "",
+              "Per task, the automated share of the test half (mean over draws) and draws "
+              "over 10% error, one sequence → two:", "",
+              "| task | fit | automated | draws over |", "|---|---|---|---|"]
+    for n in names:
+        for f in result[n]["rules"]:
+            r = result[n]["rules"][f]
+            lines.append(f"| {n} | {f} | {r['one sequence']['automated']:.1%} → "
+                         f"{r['two sequences']['automated']:.1%} | {r['one sequence']['violations']} → "
+                         f"{r['two sequences']['violations']} of {r['two sequences']['draws']} |")
+    less = [(n, f) for n in names for f in fits
+            if result[n]["rules"][f]["two sequences"]["automated"]
+            < result[n]["rules"][f]["one sequence"]["automated"]]
+    lines += ["", "Where two sequences automate less: "
+              + (", ".join(f"{n} ({f})" for n, f in less) if less else "nowhere") + "."]
+    for rule in rules:
+        symptom = [(n, b) for n in names for b in ("T", "T + bias")
+                   if result[n]["rules"][f"{b}, {LABELS} labels"][rule]["automated"]
+                   > result[n]["rules"][f"{b}, all labels"][rule]["automated"]]
+        lines.append(f"With {rule}, {LABELS} labels automate more than all labels on: "
+                     + (", ".join(f"{n} ({b})" for n, b in symptom) if symptom else "none") + ".")
+    same = all(result[n]["rules"][f"{b}, {LABELS} labels"]["one sequence"]
+               == result[n]["rules"][f"{b}, {LABELS} labels"]["two sequences"]
+               for n in names for b in ("T", "T + bias"))
+    lines += ["", f"Check: with {LABELS} labels the two rules give "
+              + ("the same results on every task, as they must below the switch." if same
+                 else "**different results**, which they must not below the switch."), ""]
+    return lines
+
+
+def write_report(result: dict, meta: dict, out: Path, plan: str = "../part-3/holdout-plan.md") -> None:
     names = list(result)
     default = "option formula (default)"
     lines = ["# Held-out test: results", "",
              f"Generated by `bench.holdout report` from run {meta['run']}; the model "
              f"reported serving {', '.join(meta['served'])}. Test halves, each dataset "
-             "weighted equally. The plan and the criteria: "
-             "[../part-3/holdout-plan.md](../part-3/holdout-plan.md).", "",
-             "## Against the pre-registered criteria", "",
+             f"weighted equally. The plan and the criteria: [{plan}]({plan}).", ""]
+    if "rules" in result[names[0]]:
+        lines += decision(result)
+    lines += ["## Against the pre-registered criteria", "",
              "| measure | pass | result | |", "|---|---|---|---|"]
     for measure, rule, value, ok in verdict(result):
         lines.append(f"| {measure} | {rule} | {value} | {'pass' if ok else '**fail**'} |")
@@ -309,12 +394,12 @@ def write_report(result: dict, meta: dict, out: Path) -> None:
                                                  default=float) + "\n")
 
 
-def report(run_dir: Path, out: Path) -> None:
+def report(run_dir: Path, out: Path, which: str = "first") -> None:
     data = c.load_run(run_dir)
-    missing = set(TASKS) - set(data)
+    missing = set(SETS[which]) - set(data)
     if missing:
         raise SystemExit(f"no run for {sorted(missing)}")
-    data = {n: data[n] for n in TASKS}
+    data = {n: data[n] for n in SETS[which]}
     unrecorded = [n for n, d in data.items() if not d.meta.get("served_model")]
     if unrecorded:
         raise SystemExit(f"no served model recorded for {unrecorded}")
@@ -325,7 +410,9 @@ def report(run_dir: Path, out: Path) -> None:
     meta = {"run": f"{starts[0]}–{starts[-1]}", "served": served, "model": MODEL,
             "scored_with_library": library_version(),
             "global_t": GLOBAL_T, "families": FAMILY, "draws": DRAWS, "labels": LABELS}
-    write_report(evaluate(data), meta, out)
+    fresh = which == "fresh"
+    write_report(evaluate(data, rules=fresh), meta, out,
+                 "plan.md" if fresh else "../part-3/holdout-plan.md")
     print((out / "report.md").read_text())
 
 
@@ -339,11 +426,13 @@ def main() -> None:
     p = sub.add_parser("report")
     p.add_argument("--run", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--set", choices=sorted(SETS), default="first",
+                   help="fresh: also compare one automation sequence with two")
     args = parser.parse_args()
     if args.command == "run":
         run(args.task, args.out, args.concurrency)
     else:
-        report(args.run, args.out)
+        report(args.run, args.out, args.set)
 
 
 if __name__ == "__main__":
