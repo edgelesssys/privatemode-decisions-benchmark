@@ -195,7 +195,7 @@ def compare_rules(cal: c.Dataset, test: c.Dataset, base: float, seed: int) -> di
     return out
 
 
-def evaluate(run: dict[str, c.Dataset], rules: bool = False) -> dict:
+def evaluate(run: dict[str, c.Dataset], rules: bool) -> dict:
     out = {}
     for name, data in run.items():
         cal, test = c.split(data)
@@ -322,7 +322,7 @@ def decision(result: dict) -> list[str]:
     return lines
 
 
-def write_report(result: dict, meta: dict, out: Path, plan: str = "../part-3/holdout-plan.md") -> None:
+def write_report(result: dict, meta: dict, out: Path, plan: str) -> None:
     names = list(result)
     default = "option formula (default)"
     lines = ["# Held-out test: results", "",
