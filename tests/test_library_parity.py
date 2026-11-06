@@ -96,6 +96,18 @@ def test_automation_threshold_on_both_sequences(n, max_error):
             list(conf), list(right), max_error, 0.1)
 
 
+@pytest.mark.parametrize("max_error, delta, n, wrong", [
+    (0.2, 0.1, 86, 13),   # the first n with two sequences (late = 2 * smallest)
+    (0.1, 0.5, 53, 16),   # a late start moved up to the fewest answers that pass at its share
+])
+def test_automation_threshold_where_the_switch_decides(max_error, delta, n, wrong):
+    conf = np.linspace(1, 0, n)
+    right = np.ones(n, bool)
+    right[wrong] = False
+    assert c.automation_threshold(conf, right, max_error, delta) == library._automation_threshold(
+        list(conf), list(right), max_error, delta)
+
+
 def test_ece(data):
     P, y, answers, labels = data
     assert c.ece(P, y) == pytest.approx(library.evaluate(answers, labels)["ece"], abs=1e-12)

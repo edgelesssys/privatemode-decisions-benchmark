@@ -13,9 +13,9 @@ dependencies = []
 # The Privatemode arm measures the library that actually ships, rather than a
 # reimplementation of it. To change the library alongside, clone it next to
 # this one and `pip install -e ../privatemode-decisions` instead.
-# Pinned to the library's automation commit on main (the arm needs its
-# temperature= and optimize=, the parity tests its two automation
-# sequences), with CI and the README. A commit, not the
+# Pinned to the library's commit with two automation sequences (the arm
+# needs its temperature= and optimize=, the parity tests the sequences),
+# with CI and the README. A commit, not the
 # branch: main moves.
 privatemode = ["privatemode-decisions[images] @ git+https://github.com/edgelesssys/privatemode-decisions@bf973b9cec3fec33b29130dd47fe1ddda8e6dd04"]
 # The local arm. Heavy (torch + transformers, ~1.7 GB of weights on first
