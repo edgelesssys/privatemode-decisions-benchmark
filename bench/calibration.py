@@ -499,7 +499,8 @@ def automation_threshold(confidence: np.ndarray, correct: np.ndarray, max_error:
     ``LATE_DELTA`` of ``delta``, the first runs at the rest, and the lower
     threshold wins; once the first reaches the late start it tests at the
     whole ``delta``. Both starts depend on the number of labels,
-    ``max_error`` and ``delta`` only. Returns ``inf`` (automate nothing) if
+    ``max_error`` and ``delta`` only, never on which answers are wrong, so
+    the union keeps the bound (Bonferroni). Returns ``inf`` (automate nothing) if
     no level is certified.
     """
     order = np.argsort(-confidence, kind="stable")
