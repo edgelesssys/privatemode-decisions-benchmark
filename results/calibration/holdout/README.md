@@ -132,7 +132,7 @@ checked on a fresh set of held-out tasks, not on these. Filed as
 The library has a second sequence from a quarter of the labels for this
 ([privatemode-decisions#5](https://github.com/edgelesssys/privatemode-decisions/pull/5)).
 On a [fresh set of tasks](../fresh/README.md) it kept the bound and never
-automated less than one sequence. The numbers on this page are from the
+automated less than one sequence; the symptom remained on one of them. The numbers on this page are from the
 library before it.
 
 ## Notes on the run

@@ -37,6 +37,11 @@ results later), so it refuses to replace a frozen task without ``--force``:
 rebuilding makes a different test, not a reproduction. The two Hugging
 Face datasets were read at ``HF_REVISIONS``, their last commits before the
 build.
+
+The fresh set (``SETS["fresh"]``, results/calibration/fresh/plan.md) works
+the same way with ``--set fresh``: its abstracts (``FRESH_SHIPPED``) from
+their own release (``FRESH_TEXTS_URL``), the Stack Exchange questions and
+GitHub pull requests by id.
 """
 
 from __future__ import annotations
@@ -64,13 +69,20 @@ CACHE = ROOT / ".cache" / "holdout"
 SEED = 0
 MAX_CHARS = 4000
 #: The tasks whose texts the release carries: open-access abstracts.
-SHIPPED = ("arxiv_field", "pubmed_study", "biorxiv_subject", "medrxiv_subject", "arxiv_cs")
+SHIPPED = ("arxiv_field", "pubmed_study")
 #: The released texts, one JSON line each: task, id, licence, source, text.
 TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
              "calibration-2026-09-26/holdout-texts.jsonl")
 #: The Hugging Face datasets' commits at build time (unchanged since
 #: 2024-02-23). The datasets-server serves only the latest revision, so
 #: ``build_hf`` checks that it still is this one.
+#: The fresh set's abstracts (CC BY, CC0), in a release of their own; until
+#: it is published they exist only in the cache of the machine that built them.
+FRESH_SHIPPED = ("biorxiv_subject", "arxiv_cs")
+FRESH_TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
+                   "calibration-fresh-2026-11-06/holdout-texts.jsonl")
+#: Per set: the release its abstracts come from, and which tasks they are.
+RELEASES = {"first": (TEXTS_URL, SHIPPED), "fresh": (FRESH_TEXTS_URL, FRESH_SHIPPED)}
 HF_REVISIONS = {"zeroshot/twitter-financial-news-topic": "acbc8af2a35ccf0916124efcbe9e6cf25f191012",
                 "zeroshot/twitter-financial-news-sentiment": "ccbe24de388e287beb92dd393a335c376b350ac3"}
 
@@ -289,21 +301,30 @@ def issue_text(issue: dict) -> str:
 
 
 def build_github(per_label: int = 250) -> list[dict]:
+    return github_sample(ISSUE_LABELS, "issue", range(1, 7), 2, "",
+                         lambda item: not item.get("pull_request"), per_label)
+
+
+def github_sample(kinds: dict[str, str], what: str, months: range, pages: int, extra: str,
+                  keep, per_label: int) -> list[dict]:
+    """Issues or pull requests carrying exactly one of the ``kinds`` labels,
+    from days 1-28 of ``months`` in 2026, in permissively licensed
+    repositories, at most 5 per repository and ``per_label`` per label."""
     rng = random.Random(SEED)
     licenses: dict[str, str | None] = {}
     out = []
-    for label, name in ISSUE_LABELS.items():
+    for label, name in kinds.items():
         candidates = []
-        for month in range(1, 7):
-            q = f'is:issue is:public label:{label} created:2026-{month:02d}-01..2026-{month:02d}-28'
-            for page in (1, 2):
+        for month in months:
+            q = f'is:{what} is:public label:{label} created:2026-{month:02d}-01..2026-{month:02d}-28' + extra
+            for page in range(1, pages + 1):
                 result = gh("search/issues?" + urllib.parse.urlencode(
                     {"q": q, "per_page": 100, "page": page, "sort": "created"}))
-                for issue in result.get("items", []):
-                    labels = {l["name"].lower() for l in issue.get("labels", [])}
-                    if len(labels & set(ISSUE_LABELS)) != 1 or issue.get("pull_request"):
+                for item in result.get("items", []):
+                    labels = {tag["name"].lower() for tag in item.get("labels", [])}
+                    if len(labels & set(kinds)) != 1 or not keep(item):
                         continue
-                    repo = issue["repository_url"].split("repos/", 1)[1]
+                    repo = item["repository_url"].split("repos/", 1)[1]
                     if repo not in licenses:
                         try:
                             licenses[repo] = ((gh(f"repos/{repo}").get("license") or {}).get("key"))
@@ -311,9 +332,9 @@ def build_github(per_label: int = 250) -> list[dict]:
                             licenses[repo] = None
                     if licenses[repo] not in PERMISSIVE:
                         continue
-                    text = issue_text(issue)
+                    text = issue_text(item)
                     if len(text) > 80:
-                        candidates.append({"id": f"github:{repo}#{issue['number']}", "label": name,
+                        candidates.append({"id": f"github:{repo}#{item['number']}", "label": name,
                                            "text": text, "license": licenses[repo]})
                 time.sleep(2.5)       # the search API allows 30 requests a minute
         # One repository mustn't dominate a label.
@@ -328,8 +349,8 @@ def build_github(per_label: int = 250) -> list[dict]:
 # -- the fresh set's sources --------------------------------------------------------
 
 def days(stride: int = 1) -> list[str]:
-    start, end = (time.mktime(time.strptime(d, "%Y-%m-%d")) for d in WINDOW)
-    return [time.strftime("%Y-%m-%d", time.localtime(start + o * 86400))
+    start, end = (calendar.timegm(time.strptime(d, "%Y-%m-%d")) for d in WINDOW)
+    return [time.strftime("%Y-%m-%d", time.gmtime(start + o * 86400))
             for o in range(0, int((end - start) / 86400) + 1, stride)]
 
 
@@ -440,43 +461,14 @@ def build_stackexchange(per: int = 100) -> list[dict]:
 BOTS = ("dependabot", "renovate", "github-actions", "pre-commit-ci", "snyk-bot", "mergify")
 
 
+def human(pr: dict) -> bool:
+    author = (pr.get("user") or {}).get("login", "").lower()
+    return (pr.get("user") or {}).get("type") != "Bot" and not any(b in author for b in BOTS)
+
+
 def build_github_pr(per_label: int = 250) -> list[dict]:
-    rng = random.Random(SEED)
-    licenses: dict[str, str | None] = {}
-    out = []
-    for label, name in PR_LABELS.items():
-        candidates = []
-        for month in range(7, 11):
-            q = (f"is:pr is:public label:{label} created:2026-{month:02d}-01..2026-{month:02d}-28 "
-                 + " ".join(f"-author:app/{b}" for b in BOTS[:2]))
-            for page in (1, 2, 3):
-                result = gh("search/issues?" + urllib.parse.urlencode(
-                    {"q": q, "per_page": 100, "page": page, "sort": "created"}))
-                for pr in result.get("items", []):
-                    labels = {l["name"].lower() for l in pr.get("labels", [])}
-                    author = (pr.get("user") or {}).get("login", "").lower()
-                    if (len(labels & set(PR_LABELS)) != 1 or (pr.get("user") or {}).get("type") == "Bot"
-                            or any(b in author for b in BOTS)):
-                        continue
-                    repo = pr["repository_url"].split("repos/", 1)[1]
-                    if repo not in licenses:
-                        try:
-                            licenses[repo] = ((gh(f"repos/{repo}").get("license") or {}).get("key"))
-                        except subprocess.CalledProcessError:
-                            licenses[repo] = None
-                    if licenses[repo] not in PERMISSIVE:
-                        continue
-                    text = issue_text(pr)
-                    if len(text) > 80:
-                        candidates.append({"id": f"github:{repo}#{pr['number']}", "label": name,
-                                           "text": text, "license": licenses[repo]})
-                time.sleep(2.5)
-        by_repo: dict[str, list[dict]] = {}
-        for c in sorted(candidates, key=lambda r: r["id"]):
-            by_repo.setdefault(c["id"].split("#")[0], []).append(c)
-        capped = [c for rows in by_repo.values() for c in rows[:5]]
-        out += rng.sample(capped, min(per_label, len(capped)))
-    return out
+    return github_sample(PR_LABELS, "pr", range(7, 11), 3,
+                         " " + " ".join(f"-author:app/{b}" for b in BOTS[:2]), human, per_label)
 
 
 BUILDERS = {
@@ -602,20 +594,20 @@ REFETCH = {"fin_topic": refetch_hf, "fin_sentiment": refetch_hf, "github_issue":
            "github_pr": refetch_github, "stackexchange_site": refetch_stackexchange}
 
 
-def fetch(url: str = TEXTS_URL) -> None:
-    """Every task's texts into the cache, one file per task: the released
-    ones from ``url``, the others by id from their sources."""
+def fetch(url: str = TEXTS_URL, names: list[str] | None = None) -> None:
+    """The tasks' texts (all by default) into the cache, one file per task:
+    the released ones from ``url``, the others by id from their sources."""
     with urllib.request.urlopen(url, timeout=300) as response:
         rows = [json.loads(line) for line in response.read().decode().splitlines() if line.strip()]
     CACHE.mkdir(parents=True, exist_ok=True)
-    for name in TASKS:
+    for name in names or TASKS:
         if name in REFETCH:
             ids = [e["id"] for e in json.loads((FROZEN / f"{name}.json").read_text())["examples"]]
             texts = REFETCH[name](name, ids)
         else:
             texts = {r["id"]: r["text"] for r in rows if r["task"] == name}
             if not texts:
-                continue    # not in this release: the cache, if any, stays
+                raise SystemExit(f"{name}: not in {url}")
         (CACHE / f"{name}.jsonl").write_text("".join(
             json.dumps({"id": i, "text": t}) + "\n" for i, t in texts.items()))
 
@@ -631,11 +623,12 @@ def source(i: str) -> str:
             "biorxiv": f"https://doi.org/{ident}", "medrxiv": f"https://doi.org/{ident}"}[kind]
 
 
-def export(path: Path) -> None:
-    """The released tasks' cached texts as one file, each checked against its
-    hash, with its licence and source for attribution."""
+def export(path: Path, shipped: tuple[str, ...] | None = None) -> None:
+    """The released tasks' cached texts (the first set's by default) as one
+    file, each checked against its hash, with its licence and source for
+    attribution."""
     lines = []
-    for name in SHIPPED:
+    for name in shipped or SHIPPED:
         frozen = json.loads((FROZEN / f"{name}.json").read_text())
         texts = {t.index: t.state for t in load(name)}
         lines += [json.dumps({"task": name, "id": e["id"], "license": LICENCES[e["license"]],
@@ -665,20 +658,24 @@ def verify(name: str) -> int:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("command", choices=("fetch", "check", "build", "export"))
-    parser.add_argument("--only", default=",".join(TASKS))
+    parser.add_argument("--set", choices=sorted(SETS), default="first",
+                        help="fetch, check, export: the held-out set")
+    parser.add_argument("--only", help="check, build: these tasks instead of the set's")
     parser.add_argument("--force", action="store_true",
                         help="build: replace a frozen task (a new test, not a reproduction)")
     parser.add_argument("--out", type=Path, default=Path("holdout-texts.jsonl"), help="export: the file")
     args = parser.parse_args()
+    url, shipped = RELEASES[args.set]
+    names = args.only.split(",") if args.only else SETS[args.set]
     if args.command == "fetch":
-        fetch()
-        for name in TASKS:
+        fetch(url, SETS[args.set])
+        for name in SETS[args.set]:
             print(name, len(load(name, strict=False)), "examples match their frozen hashes")
         return
     if args.command == "export":
-        export(args.out)
+        export(args.out, shipped)
         return
-    for name in args.only.split(","):
+    for name in names:
         if args.command == "build":
             if (FROZEN / f"{name}.json").exists() and not args.force:
                 raise SystemExit(f"{name} is frozen; `build --force` would replace it with a new "
