@@ -6,10 +6,11 @@ The library's fix runs a second test sequence from a quarter of the labels
 ([#5](https://github.com/edgelesssys/privatemode-decisions/pull/5)). It
 splits `delta`, so it could also automate less where the top only just
 passes. The [plan](plan.md), committed before any of these tasks was
-chosen, says a fix is checked on fresh tasks and fixes what decides.
+built, says a fix is checked on fresh tasks and fixes what decides.
 
-**Result: the second sequence stays.** On four tasks first published from
-July to October 2026, with all ~500 calibration labels:
+**Result: the second sequence stays.** On four tasks published from July
+to October 2026 (see the arXiv caveat below), with all ~500 calibration
+labels:
 
 | | one sequence | two sequences |
 |---|---|---|
@@ -17,10 +18,14 @@ July to October 2026, with all ~500 calibration labels:
 | automated, temperature + bias | 39.4% | **46.0%** |
 | draws over the 10% error bound | 0 of 400 | 0 of 400 |
 
-- Two sequences never automate less than one, on any task or fit. None of
-  these tasks hit the case where the split costs (a top that only just
-  passes before the late start), so this shows the cost is rare, not that
-  it is zero.
+The 400 draws are fewer outcomes than they look: with the temperature
+alone and all labels, every draw is the same fit in another order, so
+those 200 are one outcome per task. With the bias, the order moves the
+folds: 0 of 200 distinct draws over.
+
+- Two sequences never automate less than one, on any task or fit as
+  frozen. Without the pre-window arXiv papers they do on one (below), so
+  the cost is real, but small next to the gain.
 - The gain is where a few confidently wrong labels stop the first
   sequence: `github_pr` 7% → 28% and `stackexchange_site` 94% → 100%, both
   with the bias.
@@ -31,8 +36,31 @@ July to October 2026, with all ~500 calibration labels:
   accurate with 25 options, so no large test gets under 10% error; the
   small one passes by chance (1 of its 50 draws went over).
 - The first plan's criteria pass here too: excess ECE 0.028 without labels
-  (highest 0.087, `github_pr`), coverage 0.920, no draw over the bound,
-  accuracy 77.8% → 79.0% from the bias.
+  (highest 0.087, `github_pr`), coverage 0.920, no draw with the bias over
+  the bound (with the temperature alone and 100 labels, 2 of 200 went over:
+  `biorxiv_subject` and `arxiv_cs`), accuracy 77.8% → 79.0% from the bias.
+
+## The arXiv caveat
+
+The plan asks for papers first submitted in the window. `build_arxiv_cs`
+read that from the OAI record's `created` date, which isn't the first
+submission: 237 of the 1,000 `arxiv_cs` papers have ids from before July
+2026 (back to 2020), so the model may have seen them. The task stays as
+frozen and run; rebuilding it would be a new test. The answers are the
+same under both rules, so this can't favour either one, but it does move
+the result. Scored again on the 763 papers from the window (not part of
+the plan's decision):
+
+| automated, all labels | one sequence | two sequences |
+|---|---|---|
+| mean of the four tasks, temperature + bias | 37.0% | 43.3% |
+| `arxiv_cs`, temperature + bias | 46.8% | **45.1%** |
+
+The decision holds (+6.3 points, no draw over the bound), and `arxiv_cs`
+there is the case the split costs, 1.6 points. The first set's
+`arxiv_field` has the same flaw (29 papers from 2025) and reaches into
+July 2026; one paper is in both sets. A future arXiv task should filter
+on the id's year and month.
 
 [report.md](report.md) has every number; `summary.json` the same as data.
 
@@ -73,7 +101,8 @@ How each builder read "published in the window" (the plan didn't say):
 - arXiv: every 2nd day from July 1, stopping once every category had 300
   candidates.
 - Stack Exchange: the first 100 questions of each month on each site, so
-  the first days of each month.
+  the first days of each month. Three sites had fewer than the plan's 100
+  in all: history 47, computer science 78, biology 78.
 - GitHub: the first 300 search results of days 1–28 of each month per
   label (`github_issue` took 200).
 

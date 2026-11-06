@@ -204,8 +204,39 @@ def ruled(one=0.3, two=0.3, violations=0) -> dict:
     ([ruled(), ruled()], True),                            # no cost, no gain
     ([ruled(two=0.5), ruled(one=0.4, two=0.3)], True),      # a loss on one task, a gain on average
     ([ruled(two=0.2), ruled()], False),                     # less automation on average
-    ([ruled(violations=11), ruled(violations=11)], False),  # 22 of 200 draws over: 11%
+    # Both fits of both tasks: 4 x 50 draws.
+    ([ruled(violations=5), ruled(violations=5)], True),     # 20 of 200 draws over: exactly 10%
+    ([ruled(violations=6), ruled(violations=6)], False),    # 24 of 200 draws over: 12%
 ])
 def test_the_fresh_decision(tasks, stays):
     lines = holdout.decision({f"t{i}": t for i, t in enumerate(tasks)})
     assert ("**The second sequence stays.**" in lines) is stays
+
+
+def wrong_at_the_top(n: int):
+    """``n`` answers, most confident first, with three wrong near the top and
+    errors growing below: the case of privatemode-decisions#4."""
+    conf = [1 - i / n for i in range(n)]
+    right = [True] * n
+    for i in (3, 11, 19):
+        right[i] = False
+    for i in range(n * 3 // 5, n, 2):
+        right[i] = False
+    return conf, right
+
+
+def test_one_sequence_is_the_rule_before_the_late_start():
+    lib = holdout.lib
+    many, few = wrong_at_the_top(500), wrong_at_the_top(100)
+    two = [lib._automation_threshold(*data, 0.1, 0.1) for data in (many, few)]
+    with holdout.one_sequence():
+        one = [lib._automation_threshold(*data, 0.1, 0.1) for data in (many, few)]
+    assert one[0] == float("inf") and two[0] < 1   # 500: the first test fails, the late one passes
+    assert one[1] == two[1]                         # 100: below the switch, the same rule
+    assert lib.LATE_START == 0.25
+
+
+def test_one_sequence_restores_the_late_start_after_an_error():
+    with pytest.raises(RuntimeError), holdout.one_sequence():
+        raise RuntimeError
+    assert holdout.lib.LATE_START == 0.25

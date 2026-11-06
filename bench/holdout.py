@@ -179,14 +179,15 @@ def one_sequence():
         lib.LATE_START = saved
 
 
-def compare_rules(cal: c.Dataset, test: c.Dataset, base: float, seed: int) -> dict:
-    """Automation under one and two sequences, on the same draws (the same
-    seed draws the same labels in the same order)."""
+def compare_rules(cal: c.Dataset, test: c.Dataset, base: float, seed: int, fits: dict) -> dict:
+    """Automation under one and two sequences, on the same draws: ``fits``
+    are the library's (two sequences); the same seed draws the same labels
+    in the same order for one."""
     out = {}
     for bias in (False, True):
         for labels in (LABELS, None):
             fit = f"{'T + bias' if bias else 'T'}, {labels or 'all'} labels"
-            two = labelled(cal, test, base, labels, bias, DRAWS, seed)
+            two = fits[fit]
             with one_sequence():
                 one = labelled(cal, test, base, labels, bias, DRAWS, seed)
             out[fit] = {rule: {"automated": r["automated"], "error": r["error"],
@@ -228,7 +229,7 @@ def evaluate(run: dict[str, c.Dataset], rules: bool) -> dict:
                      "served_model": data.meta.get("served_model"), "dropped": data.meta.get("dropped"),
                      "zero_label": zero, "labelled": fits, "coverage_check": coverage}
         if rules:
-            out[name]["rules"] = compare_rules(cal, test, base, seed)
+            out[name]["rules"] = compare_rules(cal, test, base, seed, fits)
     return out
 
 

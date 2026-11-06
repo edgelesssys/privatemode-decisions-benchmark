@@ -403,6 +403,10 @@ def build_rxiv(name: str, server: str, stride: int, per: int, at_least: int,
 
 
 def build_arxiv_cs(per: int = 100) -> list[dict]:
+    """As frozen: the window is read from the OAI record's ``created`` date,
+    which isn't the first submission (237 of the 1,000 have older ids; see
+    results/calibration/fresh/README.md). A new task should filter on the
+    id's year and month instead."""
     by: dict[str, list[dict]] = {c: [] for c in ARXIV_CS}
     seen = set()
     for day in days(2):
