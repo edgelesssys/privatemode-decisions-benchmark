@@ -20,7 +20,8 @@
    "github_pr": "intent"
   },
   "draws": 50,
-  "labels": 100
+  "labels": 100,
+  "window_only": true
  },
  "datasets": {
   "biorxiv_subject": {
