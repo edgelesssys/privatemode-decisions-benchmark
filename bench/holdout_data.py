@@ -73,8 +73,7 @@ SHIPPED = ("arxiv_field", "pubmed_study")
 #: The released texts, one JSON line each: task, id, licence, source, text.
 TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
              "calibration-2026-09-26/holdout-texts.jsonl")
-#: The fresh set's abstracts (CC BY, CC0), in a release of their own; until
-#: it is published they exist only in the cache of the machine that built them.
+#: The fresh set's abstracts (CC BY, CC0), in a release of their own.
 FRESH_SHIPPED = ("biorxiv_subject", "arxiv_cs")
 FRESH_TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
                    "calibration-fresh-2026-11-06/holdout-texts.jsonl")

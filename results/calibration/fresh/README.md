@@ -89,8 +89,9 @@ came back, and frozen before its run like the others.
 - Scored with the library at `df9541c`; the one-sequence rule is the same
   library with `LATE_START = 0`.
 - The bioRxiv and arXiv abstracts (CC BY, CC0) go in a release of their
-  own (`calibration-fresh-2026-11-06`), not published yet: until it is,
-  `fetch --set fresh` fails and the texts exist only where they were built.
+  own,
+  [`calibration-fresh-2026-11-06`](https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/tag/calibration-fresh-2026-11-06),
+  with the raw runs.
   The Stack Exchange questions and GitHub pull requests are fetched again
   by id.
 
@@ -112,7 +113,7 @@ How each builder read "published in the window" (the plan didn't say):
 ## Reproduce
 
 ```sh
-python -m bench.holdout_data fetch --set fresh     # needs the release (see above)
+python -m bench.holdout_data fetch --set fresh
 python -m bench.holdout_data check --set fresh
 python -m bench.holdout run --task arxiv_cs --out runs/fresh     # each of the four
 python -m bench.holdout report --set fresh --run runs/fresh --out results/calibration/fresh
