@@ -37,11 +37,17 @@ results later), so it refuses to replace a frozen task without ``--force``:
 rebuilding makes a different test, not a reproduction. The two Hugging
 Face datasets were read at ``HF_REVISIONS``, their last commits before the
 build.
+
+The fresh set (``SETS["fresh"]``, results/calibration/fresh/plan.md) works
+the same way with ``--set fresh``: its abstracts (``FRESH_SHIPPED``) from
+their own release (``FRESH_TEXTS_URL``), the Stack Exchange questions and
+GitHub pull requests by id.
 """
 
 from __future__ import annotations
 
 import argparse
+import calendar
 import hashlib
 import html
 import json
@@ -67,6 +73,12 @@ SHIPPED = ("arxiv_field", "pubmed_study")
 #: The released texts, one JSON line each: task, id, licence, source, text.
 TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
              "calibration-2026-09-26/holdout-texts.jsonl")
+#: The fresh set's abstracts (CC BY, CC0), in a release of their own.
+FRESH_SHIPPED = ("biorxiv_subject", "arxiv_cs")
+FRESH_TEXTS_URL = ("https://github.com/edgelesssys/privatemode-decisions-benchmark/releases/download/"
+                   "calibration-fresh-2026-11-06/holdout-texts.jsonl")
+#: Per set: the release its abstracts come from, and which tasks they are.
+RELEASES = {"first": (TEXTS_URL, SHIPPED), "fresh": (FRESH_TEXTS_URL, FRESH_SHIPPED)}
 #: The Hugging Face datasets' commits at build time (unchanged since
 #: 2024-02-23). The datasets-server serves only the latest revision, so
 #: ``build_hf`` checks that it still is this one.
@@ -104,6 +116,25 @@ ISSUE_LABELS = {"bug": "Bug report", "enhancement": "Feature request",
                 "documentation": "Documentation", "question": "Question"}
 PERMISSIVE = {"mit", "apache-2.0", "bsd-2-clause", "bsd-3-clause"}
 
+#: The fresh set (results/calibration/fresh/plan.md): published in this window.
+WINDOW = ("2026-07-01", "2026-10-31")
+ARXIV_CS = {"cs.AI": "Artificial Intelligence", "cs.CL": "Computation and Language",
+            "cs.CR": "Cryptography and Security", "cs.CV": "Computer Vision and Pattern Recognition",
+            "cs.DC": "Distributed, Parallel, and Cluster Computing",
+            "cs.HC": "Human-Computer Interaction", "cs.IR": "Information Retrieval",
+            "cs.LG": "Machine Learning", "cs.RO": "Robotics", "cs.SE": "Software Engineering"}
+SE_SITES = {"math": "Mathematics", "physics": "Physics", "stats": "Statistics (Cross Validated)",
+            "cs": "Computer Science", "biology": "Biology", "chemistry": "Chemistry",
+            "history": "History", "philosophy": "Philosophy", "english": "English Language & Usage",
+            "travel": "Travel"}
+PR_LABELS = {"bug": "Bug fix", "enhancement": "Feature", "documentation": "Documentation",
+             "dependencies": "Dependency update"}
+#: The subject categories the walked posts had when the tasks were built
+#: (``build_rxiv`` takes them from the source; a rebuild records its own).
+BIORXIV_SUBJECTS = ["Animal behavior and cognition", "Biochemistry", "Bioengineering", "Bioinformatics", "Biophysics", "Cancer biology", "Cell biology", "Developmental biology", "Ecology", "Evolutionary biology", "Genetics", "Genomics", "Immunology", "Microbiology", "Molecular biology", "Neuroscience", "Paleontology", "Pathology", "Pharmacology and toxicology", "Physiology", "Plant biology", "Scientific communication and education", "Synthetic biology", "Systems biology", "Zoology"]
+MEDRXIV_SUBJECTS = ["Cardiovascular medicine", "Endocrinology", "Epidemiology", "Genetic and genomic medicine", "Health economics", "Health informatics", "Health policy", "Health systems and quality improvement", "Hiv aids", "Infectious diseases", "Neurology", "Nutrition", "Obstetrics and gynecology", "Occupational and environmental health", "Oncology", "Pediatrics", "Psychiatry and clinical psychology", "Public and global health", "Radiology and imaging", "Rehabilitation medicine and physical therapy", "Sexual and reproductive health"]
+RXIV_OPTIONS: dict[str, list[str]] = {}
+
 TASKS = {
     "fin_topic": ("Which topic is this financial news post about?", FIN_TOPICS),
     "fin_sentiment": ("What market sentiment does this financial news post express?", FIN_SENTIMENTS),
@@ -111,7 +142,17 @@ TASKS = {
                     sorted(list(ARXIV_GROUPS.values()) + [PHYSICS])),
     "pubmed_study": ("What kind of study is this abstract from?", list(STUDY_TYPES)),
     "github_issue": ("What kind of issue is this?", list(ISSUE_LABELS.values())),
+    # The fresh set.
+    "biorxiv_subject": ("Which subject category is this preprint in?", BIORXIV_SUBJECTS),
+    "medrxiv_subject": ("Which subject category is this preprint in?", MEDRXIV_SUBJECTS),
+    "arxiv_cs": ("Which computer science area is this paper's primary subject?", list(ARXIV_CS.values())),
+    "stackexchange_site": ("On which Stack Exchange site was this question asked?", list(SE_SITES.values())),
+    "github_pr": ("What kind of pull request is this?", list(PR_LABELS.values())),
 }
+#: The held-out sets: the first, and the fresh one that checks the fix of #4.
+#: medrxiv_subject is frozen but dropped by the fresh plan's rule (525 < 600 examples).
+SETS = {"first": ["fin_topic", "fin_sentiment", "arxiv_field", "pubmed_study", "github_issue"],
+        "fresh": ["biorxiv_subject", "arxiv_cs", "stackexchange_site", "github_pr"]}
 
 
 def sha(text: str) -> str:
@@ -121,7 +162,7 @@ def sha(text: str) -> str:
 def get(url: str, attempts: int = 5) -> bytes:
     """curl rather than urllib: arXiv's CDN refuses urllib's requests."""
     for attempt in range(attempts):
-        done = subprocess.run(["curl", "-sfL", "--max-time", "120", "-A",
+        done = subprocess.run(["curl", "-sfL", "--max-time", "300", "-A",
                                "privatemode-decisions-benchmark", url], capture_output=True)
         if done.returncode == 0:
             return done.stdout
@@ -259,21 +300,30 @@ def issue_text(issue: dict) -> str:
 
 
 def build_github(per_label: int = 250) -> list[dict]:
+    return github_sample(ISSUE_LABELS, "issue", range(1, 7), 2, "",
+                         lambda item: not item.get("pull_request"), per_label)
+
+
+def github_sample(kinds: dict[str, str], what: str, months: range, pages: int, extra: str,
+                  keep, per_label: int) -> list[dict]:
+    """Issues or pull requests carrying exactly one of the ``kinds`` labels,
+    from days 1-28 of ``months`` in 2026, in permissively licensed
+    repositories, at most 5 per repository and ``per_label`` per label."""
     rng = random.Random(SEED)
     licenses: dict[str, str | None] = {}
     out = []
-    for label, name in ISSUE_LABELS.items():
+    for label, name in kinds.items():
         candidates = []
-        for month in range(1, 7):
-            q = f'is:issue is:public label:{label} created:2026-{month:02d}-01..2026-{month:02d}-28'
-            for page in (1, 2):
+        for month in months:
+            q = f'is:{what} is:public label:{label} created:2026-{month:02d}-01..2026-{month:02d}-28' + extra
+            for page in range(1, pages + 1):
                 result = gh("search/issues?" + urllib.parse.urlencode(
                     {"q": q, "per_page": 100, "page": page, "sort": "created"}))
-                for issue in result.get("items", []):
-                    labels = {l["name"].lower() for l in issue.get("labels", [])}
-                    if len(labels & set(ISSUE_LABELS)) != 1 or issue.get("pull_request"):
+                for item in result.get("items", []):
+                    labels = {tag["name"].lower() for tag in item.get("labels", [])}
+                    if len(labels & set(kinds)) != 1 or not keep(item):
                         continue
-                    repo = issue["repository_url"].split("repos/", 1)[1]
+                    repo = item["repository_url"].split("repos/", 1)[1]
                     if repo not in licenses:
                         try:
                             licenses[repo] = ((gh(f"repos/{repo}").get("license") or {}).get("key"))
@@ -281,9 +331,9 @@ def build_github(per_label: int = 250) -> list[dict]:
                             licenses[repo] = None
                     if licenses[repo] not in PERMISSIVE:
                         continue
-                    text = issue_text(issue)
+                    text = issue_text(item)
                     if len(text) > 80:
-                        candidates.append({"id": f"github:{repo}#{issue['number']}", "label": name,
+                        candidates.append({"id": f"github:{repo}#{item['number']}", "label": name,
                                            "text": text, "license": licenses[repo]})
                 time.sleep(2.5)       # the search API allows 30 requests a minute
         # One repository mustn't dominate a label.
@@ -295,12 +345,146 @@ def build_github(per_label: int = 250) -> list[dict]:
     return out
 
 
+# -- the fresh set's sources --------------------------------------------------------
+
+def days(stride: int = 1) -> list[str]:
+    start, end = (calendar.timegm(time.strptime(d, "%Y-%m-%d")) for d in WINDOW)
+    return [time.strftime("%Y-%m-%d", time.gmtime(start + o * 86400))
+            for o in range(0, int((end - start) / 86400) + 1, stride)]
+
+
+def rxiv_day(server: str, day: str) -> list[dict]:
+    """bioRxiv's or medRxiv's posts of one day, cached."""
+    cached = CACHE / server / f"{day}.json"
+    if cached.exists():
+        return json.loads(cached.read_text())
+    out, cursor = [], 0
+    while True:
+        body = json.loads(get(f"https://api.biorxiv.org/details/{server}/{day}/{day}/{cursor}/json"))
+        page = body.get("collection") or []
+        out += [{k: r.get(k) for k in ("doi", "version", "date", "license", "category", "abstract")}
+                for r in page]
+        cursor += len(page)
+        if not page or cursor >= int(body["messages"][0].get("total") or 0):
+            break
+    cached.parent.mkdir(parents=True, exist_ok=True)
+    cached.write_text(json.dumps(out))
+    return out
+
+
+def build_rxiv(name: str, server: str, stride: int, per: int, at_least: int,
+               most: int = 1000) -> list[dict]:
+    """First versions under CC BY posted in the window, the label the
+    authors' subject category; categories with at least ``at_least`` posts,
+    up to ``per`` each, at most ``most`` in all."""
+    by: dict[str, list[dict]] = {}
+    seen = set()
+    for day in days(stride):
+        for r in rxiv_day(server, day):
+            if r["doi"] in seen or r["version"] != "1" or r["license"] != "cc_by" or not r["category"]:
+                continue
+            seen.add(r["doi"])
+            text = clean(r["abstract"] or "")
+            if len(text) > 200:
+                category = r["category"].strip().capitalize()
+                by.setdefault(category, []).append({"id": f"{server}:{r['doi']}", "label": category,
+                                                    "text": text, "license": "cc by"})
+    kept = sorted(c for c, rows in by.items() if len(rows) >= at_least)
+    rng = random.Random(SEED)
+    out = []
+    for category in kept:
+        rows = sorted(by[category], key=lambda r: r["id"])
+        out += rng.sample(rows, min(per, len(rows)))
+    if len(out) > most:
+        out = sorted(rng.sample(out, most), key=lambda r: (kept.index(r["label"]), r["id"]))
+    RXIV_OPTIONS[name] = sorted({r["label"] for r in out})
+    return out
+
+
+def build_arxiv_cs(per: int = 100) -> list[dict]:
+    """As frozen: the window is read from the OAI record's ``created`` date,
+    which isn't the first submission (237 of the 1,000 have older ids; see
+    results/calibration/fresh/README.md). A new task should filter on the
+    id's year and month instead."""
+    by: dict[str, list[dict]] = {c: [] for c in ARXIV_CS}
+    seen = set()
+    for day in days(2):
+        for r in arxiv_records(day):
+            if (r["id"] in seen or not WINDOW[0] <= r["created"] <= WINDOW[1]
+                    or r["license"] not in OPEN_LICENSES or not r["categories"]
+                    or r["categories"][0] not in ARXIV_CS):
+                continue
+            seen.add(r["id"])
+            by[r["categories"][0]].append({"id": f"arxiv:{r['id']}", "label": ARXIV_CS[r["categories"][0]],
+                                           "text": clean(r["abstract"]), "license": r["license"]})
+        if all(len(v) >= 3 * per for v in by.values()):
+            break
+        time.sleep(3)
+    rng = random.Random(SEED)
+    out = []
+    for category, rows in sorted(by.items()):
+        rows.sort(key=lambda r: r["id"])
+        out += rng.sample(rows, min(per, len(rows)))
+    return out
+
+
+def stackexchange(path: str, **params) -> dict:
+    url = f"https://api.stackexchange.com/2.3/{path}?" + urllib.parse.urlencode(params)
+    body = json.loads(subprocess.run(["curl", "-sf", "--compressed", "--max-time", "120", url],
+                                     check=True, capture_output=True).stdout)
+    if body.get("backoff"):
+        time.sleep(body["backoff"])
+    return body
+
+
+def question_text(q: dict) -> str:
+    return clean(f"{html.unescape(q['title'])}\n\n{q.get('body') or ''}")
+
+
+def build_stackexchange(per: int = 100) -> list[dict]:
+    """Questions asked in the window, one page of 100 per site and month."""
+    rng = random.Random(SEED)
+    months = [("2026-07-01", "2026-08-01"), ("2026-08-01", "2026-09-01"),
+              ("2026-09-01", "2026-10-01"), ("2026-10-01", "2026-11-01")]
+    epoch = lambda d: calendar.timegm(time.strptime(d, "%Y-%m-%d"))  # noqa: E731
+    out = []
+    for site, name in SE_SITES.items():
+        candidates = []
+        for start, end in months:
+            body = stackexchange("questions", site=site, fromdate=epoch(start), todate=epoch(end) - 1,
+                                 pagesize=100, sort="creation", order="asc", filter="withbody")
+            candidates += [{"id": f"stackexchange:{site}/{q['question_id']}", "label": name,
+                            "text": question_text(q)} for q in body["items"]]
+            time.sleep(1)
+        candidates = sorted((c for c in candidates if len(c["text"]) > 80), key=lambda r: r["id"])
+        out += rng.sample(candidates, min(per, len(candidates)))
+    return out
+
+
+BOTS = ("dependabot", "renovate", "github-actions", "pre-commit-ci", "snyk-bot", "mergify")
+
+
+def human(pr: dict) -> bool:
+    author = (pr.get("user") or {}).get("login", "").lower()
+    return (pr.get("user") or {}).get("type") != "Bot" and not any(b in author for b in BOTS)
+
+
+def build_github_pr(per_label: int = 250) -> list[dict]:
+    return github_sample(PR_LABELS, "pr", range(7, 11), 3,
+                         " " + " ".join(f"-author:app/{b}" for b in BOTS[:2]), human, per_label)
+
+
 BUILDERS = {
     "fin_topic": lambda: build_hf("fin_topic", "zeroshot/twitter-financial-news-topic"),
     "fin_sentiment": lambda: build_hf("fin_sentiment", "zeroshot/twitter-financial-news-sentiment"),
     "arxiv_field": build_arxiv,
     "pubmed_study": build_pubmed,
     "github_issue": build_github,
+    "biorxiv_subject": lambda: build_rxiv("biorxiv_subject", "biorxiv", stride=4, per=40, at_least=1),
+    "medrxiv_subject": lambda: build_rxiv("medrxiv_subject", "medrxiv", stride=1, per=25, at_least=25),
+    "arxiv_cs": build_arxiv_cs,
+    "stackexchange_site": build_stackexchange,
+    "github_pr": build_github_pr,
 }
 
 
@@ -308,6 +492,7 @@ BUILDERS = {
 
 def freeze(name: str, rows: list[dict]) -> None:
     question, options = TASKS[name]
+    options = RXIV_OPTIONS.get(name, options)
     FROZEN.mkdir(parents=True, exist_ok=True)
     CACHE.mkdir(parents=True, exist_ok=True)
     counts = {o: sum(r["label"] == o for r in rows) for o in options}
@@ -385,28 +570,47 @@ def refetch_github(name: str, ids: list[str]) -> dict[str, str]:
         return {i: text for i, text in pool.map(one, ids) if text is not None}
 
 
+def refetch_stackexchange(name: str, ids: list[str]) -> dict[str, str]:
+    """Questions by site and id, 100 per request; a deleted one is left out."""
+    by_site: dict[str, list[str]] = {}
+    for i in ids:
+        site, qid = i.removeprefix("stackexchange:").split("/")
+        by_site.setdefault(site, []).append(qid)
+    out = {}
+    for site, qids in by_site.items():
+        for k in range(0, len(qids), 100):
+            body = stackexchange("questions/" + ";".join(qids[k:k + 100]), site=site, pagesize=100,
+                                 filter="withbody")
+            out |= {f"stackexchange:{site}/{q['question_id']}": question_text(q) for q in body["items"]}
+            time.sleep(1)
+    return out
+
+
 #: Tasks whose sources change after the freeze: ``check`` reports their
 #: edited or deleted texts instead of failing (a run leaves them out), as
 #: long as at least ``DRIFT_FLOOR`` of them still match.
-DRIFTS = ("github_issue",)
+DRIFTS = ("github_issue", "github_pr", "stackexchange_site")
 DRIFT_FLOOR = 0.9
 
 #: How the tasks the release doesn't carry are fetched again, by id.
-REFETCH = {"fin_topic": refetch_hf, "fin_sentiment": refetch_hf, "github_issue": refetch_github}
+REFETCH = {"fin_topic": refetch_hf, "fin_sentiment": refetch_hf, "github_issue": refetch_github,
+           "github_pr": refetch_github, "stackexchange_site": refetch_stackexchange}
 
 
-def fetch(url: str = TEXTS_URL) -> None:
-    """Every task's texts into the cache, one file per task: the released
+def fetch(url: str, names: list[str]) -> None:
+    """The tasks' texts into the cache, one file per task: the released
     ones from ``url``, the others by id from their sources."""
     with urllib.request.urlopen(url, timeout=300) as response:
         rows = [json.loads(line) for line in response.read().decode().splitlines() if line.strip()]
     CACHE.mkdir(parents=True, exist_ok=True)
-    for name in TASKS:
+    for name in names:
         if name in REFETCH:
             ids = [e["id"] for e in json.loads((FROZEN / f"{name}.json").read_text())["examples"]]
             texts = REFETCH[name](name, ids)
         else:
             texts = {r["id"]: r["text"] for r in rows if r["task"] == name}
+            if not texts:
+                raise SystemExit(f"{name}: not in {url}")
         (CACHE / f"{name}.jsonl").write_text("".join(
             json.dumps({"id": i, "text": t}) + "\n" for i, t in texts.items()))
 
@@ -418,15 +622,15 @@ LICENCES = {"http://creativecommons.org/licenses/by/4.0/": "CC BY 4.0",
 
 def source(i: str) -> str:
     kind, ident = i.split(":", 1)
-    return {"arxiv": f"https://arxiv.org/abs/{ident}",
-            "pmc": f"https://europepmc.org/article/PMC/{ident}"}[kind]
+    return {"arxiv": f"https://arxiv.org/abs/{ident}", "pmc": f"https://europepmc.org/article/PMC/{ident}",
+            "biorxiv": f"https://doi.org/{ident}", "medrxiv": f"https://doi.org/{ident}"}[kind]
 
 
-def export(path: Path) -> None:
+def export(path: Path, shipped: tuple[str, ...]) -> None:
     """The released tasks' cached texts as one file, each checked against its
     hash, with its licence and source for attribution."""
     lines = []
-    for name in SHIPPED:
+    for name in shipped:
         frozen = json.loads((FROZEN / f"{name}.json").read_text())
         texts = {t.index: t.state for t in load(name)}
         lines += [json.dumps({"task": name, "id": e["id"], "license": LICENCES[e["license"]],
@@ -456,20 +660,24 @@ def verify(name: str) -> int:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("command", choices=("fetch", "check", "build", "export"))
-    parser.add_argument("--only", default=",".join(TASKS))
+    parser.add_argument("--set", choices=sorted(SETS), default="first",
+                        help="fetch, check, export: the held-out set")
+    parser.add_argument("--only", help="check, build: these tasks instead of the set's")
     parser.add_argument("--force", action="store_true",
                         help="build: replace a frozen task (a new test, not a reproduction)")
     parser.add_argument("--out", type=Path, default=Path("holdout-texts.jsonl"), help="export: the file")
     args = parser.parse_args()
+    url, shipped = RELEASES[args.set]
+    names = args.only.split(",") if args.only else SETS[args.set]
     if args.command == "fetch":
-        fetch()
-        for name in TASKS:
+        fetch(url, SETS[args.set])
+        for name in SETS[args.set]:
             print(name, len(load(name, strict=False)), "examples match their frozen hashes")
         return
     if args.command == "export":
-        export(args.out)
+        export(args.out, shipped)
         return
-    for name in args.only.split(","):
+    for name in names:
         if args.command == "build":
             if (FROZEN / f"{name}.json").exists() and not args.force:
                 raise SystemExit(f"{name} is frozen; `build --force` would replace it with a new "
